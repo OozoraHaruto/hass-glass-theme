@@ -18,10 +18,17 @@ from glassbuild.color import (
         ("rgb(10, 20, 30)", (10, 20, 30, 1.0)),
         ("rgba(10, 20, 30, 0.5)", (10, 20, 30, 0.5)),
         ("rgba(10,20,30,.25)", (10, 20, 30, 0.25)),
+        ("#3C3C4399", (60, 60, 67, 0.6)),
+        ("#EBEBF561", (235, 235, 245, 0.38)),
+        ("#FFFF", (255, 255, 255, 1.0)),
     ],
 )
 def test_parse_rgba(value, expected):
     assert parse_rgba(value) == expected
+
+
+def test_parse_rgba_six_digit_hex_alpha_is_exactly_one():
+    assert parse_rgba("#FFFFFF")[3] == 1.0
 
 
 def test_parse_rgba_rejects_garbage():

@@ -6,25 +6,27 @@ import re
 
 RGBA = tuple[int, int, int, float]
 
-_HEX_RE = re.compile(r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
+_HEX_RE = re.compile(r"^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$")
 _FUNC_RE = re.compile(
     r"^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([0-9]*\.?[0-9]+)\s*)?\)$"
 )
 
 
 def parse_rgba(value: str) -> RGBA:
-    """Parse ``#RGB``, ``#RRGGBB``, ``rgb(...)``, or ``rgba(...)`` into an RGBA tuple."""
+    """Parse ``#RGB``, ``#RGBA``, ``#RRGGBB``, ``#RRGGBBAA``, ``rgb(...)``, or
+    ``rgba(...)`` into an RGBA tuple."""
     text = value.strip()
 
     if _HEX_RE.match(text):
         digits = text[1:]
-        if len(digits) == 3:
+        if len(digits) in (3, 4):
             digits = "".join(c * 2 for c in digits)
+        alpha = round(int(digits[6:8], 16) / 255, 3) if len(digits) == 8 else 1.0
         return (
             int(digits[0:2], 16),
             int(digits[2:4], 16),
             int(digits[4:6], 16),
-            1.0,
+            alpha,
         )
 
     match = _FUNC_RE.match(text)
