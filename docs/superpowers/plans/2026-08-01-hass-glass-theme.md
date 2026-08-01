@@ -108,7 +108,12 @@ __pycache__/
 .venv/
 venv/
 *.egg-info/
+.superpowers/
+actionlint
 ```
+
+`.superpowers/` holds build-process scratch and must stay ignored. `actionlint` is the
+binary Task 12 downloads for local workflow linting.
 
 `.yamllint.yml`:
 
