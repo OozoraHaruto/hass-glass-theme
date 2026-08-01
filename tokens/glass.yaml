@@ -1,0 +1,6 @@
+# Clear material: minimal blur, high transparency, bright specular rim.
+material:
+  name: Glass
+  blur_px: 8
+  saturate_pct: 180
+  rim_alpha: 0.45

@@ -1,0 +1,20 @@
+material:
+  fill_rgb: [255, 255, 255]
+  fill_alpha_glass: 0.10
+  fill_alpha_frosted: 0.55
+  rim_rgb: [255, 255, 255]
+
+palette:
+  accent: "#007AFF"
+  success: "#34C759"
+  warning: "#FF9500"
+  error: "#FF3B30"
+  scene: "#AF52DE"
+  text_primary: "#1C1C1E"
+  text_secondary: "#3C3C4399"
+  text_disabled: "#3C3C4361"
+  divider: "rgba(60, 60, 67, 0.18)"
+  opaque_surface: "#F2F2F7"
+  background_from: "#EEF2F8"
+  background_via: "#E6ECF6"
+  background_to: "#F7F4FA"
