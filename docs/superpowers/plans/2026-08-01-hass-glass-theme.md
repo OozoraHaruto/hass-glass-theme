@@ -534,7 +534,7 @@ palette:
 
 ```yaml
 material:
-  fill_rgb: [255, 255, 255]
+  fill_rgb: [90, 90, 94]
   fill_alpha_glass: 0.14
   fill_alpha_frosted: 0.45
   rim_rgb: [255, 255, 255]
@@ -555,7 +555,16 @@ palette:
   background_to: "#1B1620"
 ```
 
-Note on the dark Lite fill: Lite clamps alpha to 0.72 over a dark background, so `fill_rgb` of white would produce a near-white surface in dark mode. Task 4 handles this by using `opaque_surface` as the Lite fill base rather than `fill_rgb`.
+Note on the dark Lite fill: Lite clamps alpha to 0.72, so it uses `opaque_surface` as its fill
+base rather than `fill_rgb` (Task 4 handles this).
+
+**Amended during execution (2026-08-02).** Dark `fill_rgb` was originally specified as
+`[255, 255, 255]`. That is wrong: a white tint at frosted's 0.45 alpha composites to mid-grey
+(124, 124, 126) over the dark gradient, so white body text lands at 4.17:1 and fails the WCAG
+AA floor of 4.5:1 — Task 10's contrast suite caught it. Apple's dark-mode materials tint dark,
+not white. The value is now `[90, 90, 94]`, which clears the thresholds with headroom
+(primary 12.95:1, secondary 5.04:1) while keeping the two dark materials ~23 grey levels
+apart, so Glass and Frosted Glass stay visually distinct. The alphas are unchanged.
 
 - [ ] **Step 2: Write the failing test**
 
