@@ -83,6 +83,29 @@ which can look a little washed out rather than opaque), and header/sidebar
 type uses default tracking instead of the tightened letter-spacing. Nothing
 breaks either way.
 
+## Outside dashboards
+
+`lovelace-background` — the gradient this theme ships — is a Lovelace-view
+variable. It only paints behind dashboard views. Settings, Developer Tools,
+History, Logbook, and Media Browser are not Lovelace views, so none of them
+read it; they fall back to Home Assistant's own `--primary-background-color`,
+a flat, near-opaque page color (`#F2F2F7` in light mode, `#1C1C1E` in dark).
+
+A glass card dropped onto a flat page still gets its translucent fill and
+blur, but there's no gradient behind it for the blur to catch — a card there
+looks like a slightly different flat tint rather than the layered glass
+effect you see on a dashboard. On those pages the card's **rim** and
+**shadow** do the work of separating it from the page that the gradient does
+elsewhere, which is why the light-mode rim is a dark hairline
+(`rgba(60, 60, 67, ...)`, matching the palette's divider color) rather than
+white: a white rim is invisible against light-mode's light flat pages, the
+dashboard gradient included. Dark mode's rim stays white, since it already
+reads clearly against dark, low-luminance surfaces everywhere it appears.
+
+If a card still looks flat on these pages, that's expected, not a bug — it's
+the same fill and border token used on the dashboard, just without a gradient
+underneath to blur.
+
 ## Known issue: dropdowns
 
 Two Home Assistant frontend bugs affect any theme that sets

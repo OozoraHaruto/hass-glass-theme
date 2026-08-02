@@ -2,7 +2,12 @@ material:
   fill_rgb: [255, 255, 255]
   fill_alpha_glass: 0.10
   fill_alpha_frosted: 0.55
-  rim_rgb: [255, 255, 255]
+  # A white rim is invisible on light-mode pages (dashboards and the flat
+  # --primary-background-color fallback used by Settings/Developer
+  # Tools/History/Logbook/Media alike). Apple uses a dark hairline for the
+  # light-mode material edge; this matches the palette's existing divider
+  # hue (`rgba(60, 60, 67, ...)`) instead of inventing a new one.
+  rim_rgb: [60, 60, 67]
 
 palette:
   accent: "#007AFF"

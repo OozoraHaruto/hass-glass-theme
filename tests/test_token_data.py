@@ -72,9 +72,14 @@ def test_base_tokens_match_the_spec(tokens):
 
 
 def test_light_mode_material_rgb_values_match_the_spec(tokens):
+    # The rim is a dark hairline in light mode ([60, 60, 67], matching the
+    # palette's divider hue) -- a white rim is invisible both on the
+    # dashboard gradient and on the flat --primary-background-color page
+    # background used outside dashboards. The fill stays white: it's the
+    # frosted material tint, not the edge.
     material = tokens["modes"]["light"]["material"]
     assert material["fill_rgb"] == [255, 255, 255]
-    assert material["rim_rgb"] == [255, 255, 255]
+    assert material["rim_rgb"] == [60, 60, 67]
 
 
 def test_dark_mode_material_rgb_values_match_the_spec(tokens):
