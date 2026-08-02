@@ -9,7 +9,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from glassbuild.materials import Material
+from glassbuild.color import parse_rgba, rgba_str
+from glassbuild.materials import LITE_FILL_ALPHA, Material
 
 
 def build_variables(
@@ -23,6 +24,18 @@ def build_variables(
     light = materials["light"]
 
     opaque = palette["opaque_surface"]
+    opaque_r, opaque_g, opaque_b, _ = parse_rgba(opaque)
+    # The sidebar sits over arbitrary dashboard content, not over the theme's
+    # own gradient like a card does. With no blur behind it (blur only exists
+    # when card-mod is installed -- see cardmod.py), the card's low-alpha
+    # glass fill lets that content show straight through, tanking sidebar
+    # text/icon contrast. So the sidebar gets its own fill: the same opaque
+    # base + alpha the Lite entries use (`LITE_FILL_ALPHA`), which stays
+    # legible with nothing behind it. Deliberately NOT full.fill (the card's
+    # white-based glass) at this alpha: in dark mode that would drop the
+    # selected-item accent below the 3:1 floor. Basing it on the opaque
+    # surface instead keeps dark mode dark and preserves accent contrast.
+    sidebar_fill = rgba_str(opaque_r, opaque_g, opaque_b, LITE_FILL_ALPHA)
 
     variables: dict[str, str] = {
         # ---- core palette -------------------------------------------------
@@ -60,8 +73,8 @@ def build_variables(
         # ---- header and sidebar --------------------------------------------
         "app-header-background-color": full.fill,
         "app-header-text-color": palette["text_primary"],
-        "sidebar-background-color": full.fill,
-        "sidebar-icon-color": palette["text_secondary"],
+        "sidebar-background-color": sidebar_fill,
+        "sidebar-icon-color": palette["text_primary"],
         "sidebar-text-color": palette["text_primary"],
         "sidebar-selected-icon-color": palette["accent"],
         "sidebar-selected-text-color": palette["accent"],

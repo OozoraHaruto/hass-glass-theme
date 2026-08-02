@@ -95,3 +95,68 @@ def test_accent_clears_large_text_minimum_on_the_card(themes, material, mode):
         assert ratio >= LARGE_MIN, (
             f"{name} ({mode}): accent is {ratio:.2f}:1, need {LARGE_MIN}:1"
         )
+
+
+# ---- sidebar ---------------------------------------------------------------
+#
+# The sidebar sits outside Lovelace views entirely -- it is not a card and
+# never lands on the dashboard gradient, so unlike everything above, its
+# backdrop here is `primary-background-color`, not a gradient stop.
+
+
+def _sidebar_surface(payload: dict[str, str]) -> tuple[int, int, int, float]:
+    fill = parse_rgba(payload["sidebar-background-color"])
+    backdrop = parse_rgba(payload["primary-background-color"])
+    return composite(fill, backdrop)
+
+
+@pytest.mark.parametrize("name", ENTRY_NAMES)
+def test_sidebar_text_clears_wcag_aa(themes, name):
+    for mode in _mode_for(name):
+        payload = _entry_payload(themes, name, mode)
+        surface = _sidebar_surface(payload)
+        text = parse_rgba(payload["sidebar-text-color"])
+        ratio = contrast_ratio(composite(text, surface)[:3], surface[:3])
+        assert ratio >= BODY_MIN, (
+            f"{name} ({mode}): sidebar text on the sidebar fill is "
+            f"{ratio:.2f}:1, need {BODY_MIN}:1"
+        )
+
+
+@pytest.mark.parametrize("name", ENTRY_NAMES)
+def test_sidebar_icon_clears_large_text_minimum(themes, name):
+    for mode in _mode_for(name):
+        payload = _entry_payload(themes, name, mode)
+        surface = _sidebar_surface(payload)
+        icon = parse_rgba(payload["sidebar-icon-color"])
+        ratio = contrast_ratio(composite(icon, surface)[:3], surface[:3])
+        assert ratio >= LARGE_MIN, (
+            f"{name} ({mode}): sidebar icon on the sidebar fill is "
+            f"{ratio:.2f}:1, need {LARGE_MIN}:1"
+        )
+
+
+@pytest.mark.parametrize("name", ENTRY_NAMES)
+def test_sidebar_selected_text_clears_large_text_minimum(themes, name):
+    for mode in _mode_for(name):
+        payload = _entry_payload(themes, name, mode)
+        surface = _sidebar_surface(payload)
+        text = parse_rgba(payload["sidebar-selected-text-color"])
+        ratio = contrast_ratio(composite(text, surface)[:3], surface[:3])
+        assert ratio >= LARGE_MIN, (
+            f"{name} ({mode}): sidebar selected text on the sidebar fill is "
+            f"{ratio:.2f}:1, need {LARGE_MIN}:1"
+        )
+
+
+@pytest.mark.parametrize("name", ENTRY_NAMES)
+def test_sidebar_selected_icon_clears_large_text_minimum(themes, name):
+    for mode in _mode_for(name):
+        payload = _entry_payload(themes, name, mode)
+        surface = _sidebar_surface(payload)
+        icon = parse_rgba(payload["sidebar-selected-icon-color"])
+        ratio = contrast_ratio(composite(icon, surface)[:3], surface[:3])
+        assert ratio >= LARGE_MIN, (
+            f"{name} ({mode}): sidebar selected icon on the sidebar fill is "
+            f"{ratio:.2f}:1, need {LARGE_MIN}:1"
+        )

@@ -45,6 +45,22 @@ cloned locally):
   ``ha-list-item-button`` are real classes/elements in ``ha-sidebar.ts``'s
   render output.
 
+  This rule's ``background`` is the card's *glass* fill (``full.fill``),
+  which deliberately differs from ``--sidebar-background-color`` in
+  ``glassbuild/variables.py`` (the opaque-surface-based fill used as the
+  native fallback). That is not an inconsistency to "fix" -- it is two
+  different answers to two different questions. This card-mod rule only
+  ever fires alongside a real ``backdrop-filter`` on the same ``:host``
+  (see ``_SIDEBAR_TEMPLATE`` below; the whole block is skipped for Lite,
+  which has no blur), so the low-alpha glass fill stays legible: blur
+  softens whatever dashboard content is behind it before the fill's alpha
+  ever gets a chance to expose it. ``--sidebar-background-color`` has no
+  such backdrop -- Home Assistant defines no ``--sidebar-backdrop-filter``
+  variable, and blur only exists at all when card-mod is installed -- so it
+  must be legible standing alone against arbitrary dashboard content, which
+  is why it uses the same opaque base + alpha as the Lite materials instead
+  of the card's glass fill.
+
 There is deliberately **no** ``card-mod-more-info-yaml`` here (an earlier
 version of this module had one). It was removed after verifying it can never
 fire: card-mod's ``src/patch/ha-more-info-dialog.ts`` does

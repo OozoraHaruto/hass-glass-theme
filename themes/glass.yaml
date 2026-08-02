@@ -52,8 +52,8 @@ Glass:
       ha-dialog-surface-background: rgba(255, 255, 255, 0.1)
       app-header-background-color: rgba(255, 255, 255, 0.1)
       app-header-text-color: '#1C1C1E'
-      sidebar-background-color: rgba(255, 255, 255, 0.1)
-      sidebar-icon-color: '#3C3C4399'
+      sidebar-background-color: rgba(242, 242, 247, 0.72)
+      sidebar-icon-color: '#1C1C1E'
       sidebar-text-color: '#1C1C1E'
       sidebar-selected-icon-color: '#007AFF'
       sidebar-selected-text-color: '#007AFF'
@@ -117,8 +117,8 @@ Glass:
       ha-dialog-surface-background: rgba(90, 90, 94, 0.14)
       app-header-background-color: rgba(90, 90, 94, 0.14)
       app-header-text-color: '#FFFFFF'
-      sidebar-background-color: rgba(90, 90, 94, 0.14)
-      sidebar-icon-color: '#EBEBF599'
+      sidebar-background-color: rgba(28, 28, 30, 0.72)
+      sidebar-icon-color: '#FFFFFF'
       sidebar-text-color: '#FFFFFF'
       sidebar-selected-icon-color: '#0A84FF'
       sidebar-selected-text-color: '#0A84FF'
@@ -187,8 +187,8 @@ Glass Light:
   mdc-dialog-scrim-color: rgba(0, 0, 0, 0.32)
   app-header-background-color: rgba(255, 255, 255, 0.1)
   app-header-text-color: '#1C1C1E'
-  sidebar-background-color: rgba(255, 255, 255, 0.1)
-  sidebar-icon-color: '#3C3C4399'
+  sidebar-background-color: rgba(242, 242, 247, 0.72)
+  sidebar-icon-color: '#1C1C1E'
   sidebar-text-color: '#1C1C1E'
   sidebar-selected-icon-color: '#007AFF'
   sidebar-selected-text-color: '#007AFF'
@@ -278,8 +278,8 @@ Glass Dark:
   mdc-dialog-scrim-color: rgba(0, 0, 0, 0.32)
   app-header-background-color: rgba(90, 90, 94, 0.14)
   app-header-text-color: '#FFFFFF'
-  sidebar-background-color: rgba(90, 90, 94, 0.14)
-  sidebar-icon-color: '#EBEBF599'
+  sidebar-background-color: rgba(28, 28, 30, 0.72)
+  sidebar-icon-color: '#FFFFFF'
   sidebar-text-color: '#FFFFFF'
   sidebar-selected-icon-color: '#0A84FF'
   sidebar-selected-text-color: '#0A84FF'
@@ -384,7 +384,7 @@ Glass Lite:
       app-header-background-color: rgba(242, 242, 247, 0.72)
       app-header-text-color: '#1C1C1E'
       sidebar-background-color: rgba(242, 242, 247, 0.72)
-      sidebar-icon-color: '#3C3C4399'
+      sidebar-icon-color: '#1C1C1E'
       sidebar-text-color: '#1C1C1E'
       sidebar-selected-icon-color: '#007AFF'
       sidebar-selected-text-color: '#007AFF'
@@ -440,7 +440,7 @@ Glass Lite:
       app-header-background-color: rgba(28, 28, 30, 0.72)
       app-header-text-color: '#FFFFFF'
       sidebar-background-color: rgba(28, 28, 30, 0.72)
-      sidebar-icon-color: '#EBEBF599'
+      sidebar-icon-color: '#FFFFFF'
       sidebar-text-color: '#FFFFFF'
       sidebar-selected-icon-color: '#0A84FF'
       sidebar-selected-text-color: '#0A84FF'
@@ -501,7 +501,7 @@ Glass Light Lite:
   app-header-background-color: rgba(242, 242, 247, 0.72)
   app-header-text-color: '#1C1C1E'
   sidebar-background-color: rgba(242, 242, 247, 0.72)
-  sidebar-icon-color: '#3C3C4399'
+  sidebar-icon-color: '#1C1C1E'
   sidebar-text-color: '#1C1C1E'
   sidebar-selected-icon-color: '#007AFF'
   sidebar-selected-text-color: '#007AFF'
@@ -575,7 +575,7 @@ Glass Dark Lite:
   app-header-background-color: rgba(28, 28, 30, 0.72)
   app-header-text-color: '#FFFFFF'
   sidebar-background-color: rgba(28, 28, 30, 0.72)
-  sidebar-icon-color: '#EBEBF599'
+  sidebar-icon-color: '#FFFFFF'
   sidebar-text-color: '#FFFFFF'
   sidebar-selected-icon-color: '#0A84FF'
   sidebar-selected-text-color: '#0A84FF'
@@ -671,8 +671,8 @@ Frosted Glass:
       ha-dialog-surface-background: rgba(255, 255, 255, 0.55)
       app-header-background-color: rgba(255, 255, 255, 0.55)
       app-header-text-color: '#1C1C1E'
-      sidebar-background-color: rgba(255, 255, 255, 0.55)
-      sidebar-icon-color: '#3C3C4399'
+      sidebar-background-color: rgba(242, 242, 247, 0.72)
+      sidebar-icon-color: '#1C1C1E'
       sidebar-text-color: '#1C1C1E'
       sidebar-selected-icon-color: '#007AFF'
       sidebar-selected-text-color: '#007AFF'
@@ -736,8 +736,8 @@ Frosted Glass:
       ha-dialog-surface-background: rgba(90, 90, 94, 0.45)
       app-header-background-color: rgba(90, 90, 94, 0.45)
       app-header-text-color: '#FFFFFF'
-      sidebar-background-color: rgba(90, 90, 94, 0.45)
-      sidebar-icon-color: '#EBEBF599'
+      sidebar-background-color: rgba(28, 28, 30, 0.72)
+      sidebar-icon-color: '#FFFFFF'
       sidebar-text-color: '#FFFFFF'
       sidebar-selected-icon-color: '#0A84FF'
       sidebar-selected-text-color: '#0A84FF'
@@ -806,8 +806,8 @@ Frosted Glass Light:
   mdc-dialog-scrim-color: rgba(0, 0, 0, 0.32)
   app-header-background-color: rgba(255, 255, 255, 0.55)
   app-header-text-color: '#1C1C1E'
-  sidebar-background-color: rgba(255, 255, 255, 0.55)
-  sidebar-icon-color: '#3C3C4399'
+  sidebar-background-color: rgba(242, 242, 247, 0.72)
+  sidebar-icon-color: '#1C1C1E'
   sidebar-text-color: '#1C1C1E'
   sidebar-selected-icon-color: '#007AFF'
   sidebar-selected-text-color: '#007AFF'
@@ -897,8 +897,8 @@ Frosted Glass Dark:
   mdc-dialog-scrim-color: rgba(0, 0, 0, 0.32)
   app-header-background-color: rgba(90, 90, 94, 0.45)
   app-header-text-color: '#FFFFFF'
-  sidebar-background-color: rgba(90, 90, 94, 0.45)
-  sidebar-icon-color: '#EBEBF599'
+  sidebar-background-color: rgba(28, 28, 30, 0.72)
+  sidebar-icon-color: '#FFFFFF'
   sidebar-text-color: '#FFFFFF'
   sidebar-selected-icon-color: '#0A84FF'
   sidebar-selected-text-color: '#0A84FF'
@@ -1003,7 +1003,7 @@ Frosted Glass Lite:
       app-header-background-color: rgba(242, 242, 247, 0.72)
       app-header-text-color: '#1C1C1E'
       sidebar-background-color: rgba(242, 242, 247, 0.72)
-      sidebar-icon-color: '#3C3C4399'
+      sidebar-icon-color: '#1C1C1E'
       sidebar-text-color: '#1C1C1E'
       sidebar-selected-icon-color: '#007AFF'
       sidebar-selected-text-color: '#007AFF'
@@ -1059,7 +1059,7 @@ Frosted Glass Lite:
       app-header-background-color: rgba(28, 28, 30, 0.72)
       app-header-text-color: '#FFFFFF'
       sidebar-background-color: rgba(28, 28, 30, 0.72)
-      sidebar-icon-color: '#EBEBF599'
+      sidebar-icon-color: '#FFFFFF'
       sidebar-text-color: '#FFFFFF'
       sidebar-selected-icon-color: '#0A84FF'
       sidebar-selected-text-color: '#0A84FF'
@@ -1120,7 +1120,7 @@ Frosted Glass Light Lite:
   app-header-background-color: rgba(242, 242, 247, 0.72)
   app-header-text-color: '#1C1C1E'
   sidebar-background-color: rgba(242, 242, 247, 0.72)
-  sidebar-icon-color: '#3C3C4399'
+  sidebar-icon-color: '#1C1C1E'
   sidebar-text-color: '#1C1C1E'
   sidebar-selected-icon-color: '#007AFF'
   sidebar-selected-text-color: '#007AFF'
@@ -1194,7 +1194,7 @@ Frosted Glass Dark Lite:
   app-header-background-color: rgba(28, 28, 30, 0.72)
   app-header-text-color: '#FFFFFF'
   sidebar-background-color: rgba(28, 28, 30, 0.72)
-  sidebar-icon-color: '#EBEBF599'
+  sidebar-icon-color: '#FFFFFF'
   sidebar-text-color: '#FFFFFF'
   sidebar-selected-icon-color: '#0A84FF'
   sidebar-selected-text-color: '#0A84FF'
