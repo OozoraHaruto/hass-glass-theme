@@ -103,8 +103,8 @@ tabs, menus, tooltips, toasts, quick bar — has no native hook and needs card-m
 > **Amended during execution (2026-08-02).** Wrong on two counts. First, native coverage is
 > wider: it's cards, dialogs (both surface and scrim), bottom sheets (both surface and
 > scrim), **and the header** — seven variables total, not two (see the amendment above).
-> Second, of what's left, only the sidebar and the header's tab strip actually have a
-> card-mod hook that works; menus, tooltips, toasts, and the quick bar were never
+> Second, of what's left, only the sidebar and the header actually have a card-mod hook that
+> works (the tab strip gets letter-spacing only); menus, tooltips, toasts, and the quick bar were never
 > implemented, and at least one of them (`ha-toast`) turned out not to be feasible at all —
 > it uses a hardcoded colour and is not themeable via card-mod or theme variables. See
 > "card-mod scope: corrected" under UI surface coverage below.
@@ -173,10 +173,12 @@ Each non-Lite entry applies its material in two layers:
 > **Amended during execution (2026-08-02).** The native layer is seven variables, not two —
 > it also covers both dialog scrims, both bottom-sheet variables, and the header (see the
 > amendments above). The card-mod layer is correspondingly narrower than described: it
-> extends the material to the **sidebar** (fill, blur, and border — there is no native
-> `--sidebar-backdrop-filter`) and to the header's **tab strip**, plus letter-spacing and
-> transition timing on both, since Home Assistant has no theme variable for either of those
-> anywhere. It does **not** reach menus, tooltips, toasts, or the quick bar — those were
+> extends the material to the **sidebar** (blur and border — the fill is already native via
+> `--sidebar-background-color`; there is no native `--sidebar-backdrop-filter`, so card-mod
+> supplies the blur) and re-asserts the **header's** fill and bottom border at raised
+> specificity so they survive dashboard edit mode. It adds letter-spacing and transition
+> timing on both, since Home Assistant has no theme variable for either of those anywhere.
+> The **tab strip** receives letter-spacing only — no background. It does **not** reach menus, tooltips, toasts, or the quick bar — those were
 > never implemented; see "card-mod scope: corrected" under UI surface coverage.
 
 ### Lite entries
@@ -269,8 +271,11 @@ containers; overflow menus and dropdowns; quick-bar / search dialog; toasts; too
 > properties Home Assistant has no theme variable for at all:
 > - The **sidebar**'s blur and border (its fill is native; there's no
 >   `--sidebar-backdrop-filter`, so card-mod supplies the blur itself).
-> - The header's **tab strip** background.
-> - **Letter-spacing** on the header and the sidebar's title/list items.
+> - The **header**'s fill and bottom border, re-asserted at raised specificity
+>   (`.header.header.header`) so they outrank Home Assistant's `.edit-mode .header` rule and
+>   the glass survives dashboard edit mode. The header's *blur* is native, not this.
+> - **Letter-spacing** on the header, the tab strip (`ha-tab-group` — letter-spacing only,
+>   no background), and the sidebar's title/list items.
 > - **Transition duration/easing** on the header and sidebar.
 >
 > **Not themed, and why** — the original list named app header/toolbar (now native, see
@@ -334,6 +339,17 @@ still break contrast; the README states this plainly.
 | `drift` | `build_themes.py --check` | committed `themes/glass.yaml` does not match generator output |
 | `validate` | custom Python check | any of the twelve entries missing; a required HA variable undefined; a `var(--x)` reference resolving to neither a defined token nor a known HA builtin; malformed colour values; **any `backdrop-filter` present in a Lite entry** |
 | `hacs` | `hacs/action` with `CATEGORY: theme` | repository is not installable via HACS |
+
+> **Amended during execution (2026-08-02).** There is no separate `validate` job in the
+> shipped `ci.yml`. Every check in that row exists and runs, but via two paths already
+> covered by other jobs: `glassbuild/validate.py` is exercised directly by
+> `tests/test_validate.py` under the `test` job, and it also gates `build_themes.py` before
+> any write, which the `drift` job invokes. A third job calling the same function would add
+> CI time without adding coverage. The shipped jobs are `lint`, `drift`, `test` (a 3.11 /
+> 3.12 / 3.13 matrix), and `hacs`. Note the consequence: because some load-bearing
+> invariants — notably the Auto-vs-flat entry equality — live only in the test suite and not
+> in `validate()`, CI **must** keep running pytest; dropping it to a lint-only gate would
+> silently lose them.
 
 The dangling-variable check in `validate` is the highest-value job: an undefined `var()` in
 an HA theme fails silently at runtime, rendering transparent or black with no error surfaced
@@ -416,8 +432,9 @@ verification is a human step, and the demo dashboard exists to make that step fa
 > 3. With no card-mod installed, cards, dialogs (surface and scrim), bottom sheets
 >    (surface and scrim), and the header already show the material natively (criterion 2,
 >    extended — see the native-variable amendment above). With card-mod additionally
->    installed, the sidebar and the header's tab strip also show the material, and the
->    header/sidebar pick up tightened letter-spacing and themed transition timing. card-mod
+>    installed, the sidebar also shows the material, the header's fill and border survive
+>    dashboard edit mode, and the header, tab strip and sidebar pick up tightened
+>    letter-spacing and themed transition timing. card-mod
 >    does **not** extend the material to menus, tooltips, toasts, or the quick bar — those
 >    were never implemented (`ha-toast` specifically cannot be, per the UI surface coverage
 >    amendment above).
