@@ -46,7 +46,7 @@ def test_tuning_table_values_match_the_spec(tokens):
     assert tokens["modes"]["light"]["material"]["fill_alpha_glass"] == 0.10
     assert tokens["modes"]["light"]["material"]["fill_alpha_frosted"] == 0.55
     assert tokens["modes"]["dark"]["material"]["fill_alpha_glass"] == 0.14
-    assert tokens["modes"]["dark"]["material"]["fill_alpha_frosted"] == 0.14
+    assert tokens["modes"]["dark"]["material"]["fill_alpha_frosted"] == 0.45
 
 
 def test_base_tokens_match_the_spec(tokens):
@@ -71,10 +71,19 @@ def test_base_tokens_match_the_spec(tokens):
     assert base["motion"]["easing"] == "cubic-bezier(0.25, 0.1, 0.25, 1)"
 
 
-@pytest.mark.parametrize("mode", MODES)
-def test_mode_material_rgb_values_match_the_spec(tokens, mode):
-    material = tokens["modes"][mode]["material"]
+def test_light_mode_material_rgb_values_match_the_spec(tokens):
+    material = tokens["modes"]["light"]["material"]
     assert material["fill_rgb"] == [255, 255, 255]
+    assert material["rim_rgb"] == [255, 255, 255]
+
+
+def test_dark_mode_material_rgb_values_match_the_spec(tokens):
+    # The dark-mode fill tints dark ([90, 90, 94], i.e. #5A5A5E) -- a white
+    # fill in dark mode composites to mid-grey against the dark gradient and
+    # collapses contrast against light dark-mode text. The rim stays white:
+    # it's the specular highlight, not the fill.
+    material = tokens["modes"]["dark"]["material"]
+    assert material["fill_rgb"] == [90, 90, 94]
     assert material["rim_rgb"] == [255, 255, 255]
 
 
