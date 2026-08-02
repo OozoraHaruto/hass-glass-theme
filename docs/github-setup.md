@@ -86,22 +86,35 @@ existing ignore:
           ignore: "images brands"
 ```
 
-## 7. Adding the remote
+## 7. Remotes and mirroring
 
-No GitHub remote is configured yet. `origin` currently points at an unrelated self-hosted
-GitLab, so the GitHub Actions workflows would never run there.
-
-After creating the repo on GitHub:
+`origin` is the self-hosted GitLab at `server.lan`, which **push-mirrors to**
+<https://github.com/OozoraHaruto/hass-glass-theme>. So the normal flow is:
 
 ```bash
-# Keep the existing GitLab remote under a different name, if you still want it
-git remote rename origin gitlab
-
-git remote add origin git@github.com:<you>/hass-glass-theme.git
-git push -u origin main
+git push origin main      # GitLab -> mirrored to GitHub -> Actions run there
 ```
 
-Do steps 1–3 **before** that first push, or the `hacs` job fails on its first run.
+No second GitHub remote is needed. GitHub Actions fire on mirrored pushes because a mirror
+is an ordinary git push.
+
+Do steps 1–3 **before** the first push, or the `hacs` job fails on its first run.
+
+### Two things to verify in the mirror configuration
+
+1. **Tags must be mirrored.** `.github/workflows/release.yml` triggers on `v*` tags. GitLab's
+   *"Mirror only protected branches"* option excludes tags, which would silently mean
+   releases never build. Either leave that option off, or push tags to GitHub directly.
+2. **The mirror is one-way and force-updates.** Anything committed on GitHub — a merged PR,
+   a README edit through the web UI — is overwritten on the next mirror run. Treat GitLab as
+   the source of truth and never commit on the GitHub side.
+
+If you ever need to push straight to GitHub as well:
+
+```bash
+git remote add github git@github.com:OozoraHaruto/hass-glass-theme.git
+git push github main
+```
 
 ## 8. Cutting a release
 
@@ -119,8 +132,14 @@ It will not publish if either check fails.
 
 ## 9. Installing it in Home Assistant
 
-HACS → three-dot menu → Custom repositories → add the GitHub URL with category **Theme**.
-Then in `configuration.yaml`:
+HACS → three-dot menu → Custom repositories → add
+
+```
+https://github.com/OozoraHaruto/hass-glass-theme
+```
+
+with category **Theme**. (HACS reads from GitHub, not GitLab — which is what the mirror is
+for.) Then in `configuration.yaml`:
 
 ```yaml
 frontend:
