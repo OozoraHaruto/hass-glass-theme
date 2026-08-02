@@ -99,17 +99,35 @@ def test_background_is_a_gradient():
     assert "#101014" in v["lovelace-background"]
 
 
+_BACKDROP_FILTER_KEYS = (
+    "ha-card-backdrop-filter",
+    "ha-dialog-surface-backdrop-filter",
+    "app-header-backdrop-filter",
+    "ha-bottom-sheet-surface-backdrop-filter",
+    "ha-dialog-scrim-backdrop-filter",
+    "dialog-backdrop-filter",
+    "ha-bottom-sheet-scrim-backdrop-filter",
+)
+
+
 def test_lite_omits_every_backdrop_filter_key():
     v = _vars(lite=True)
-    assert "ha-card-backdrop-filter" not in v
-    assert "ha-dialog-surface-backdrop-filter" not in v
+    for key in _BACKDROP_FILTER_KEYS:
+        assert key not in v, key
     assert not [key for key in v if "backdrop-filter" in key]
 
 
-def test_full_material_includes_both_backdrop_filter_keys():
+def test_full_material_includes_every_backdrop_filter_key():
     v = _vars(lite=False)
-    assert "ha-card-backdrop-filter" in v
-    assert "ha-dialog-surface-backdrop-filter" in v
+    full_backdrop = "blur(8px) saturate(180%)"
+    scrim_backdrop = "blur(4px) saturate(180%)"  # light material: half blur
+    assert v["ha-card-backdrop-filter"] == full_backdrop
+    assert v["ha-dialog-surface-backdrop-filter"] == full_backdrop
+    assert v["app-header-backdrop-filter"] == full_backdrop
+    assert v["ha-bottom-sheet-surface-backdrop-filter"] == full_backdrop
+    assert v["ha-dialog-scrim-backdrop-filter"] == scrim_backdrop
+    assert v["dialog-backdrop-filter"] == scrim_backdrop
+    assert v["ha-bottom-sheet-scrim-backdrop-filter"] == scrim_backdrop
 
 
 def test_lite_still_defines_the_card_background():
@@ -117,8 +135,8 @@ def test_lite_still_defines_the_card_background():
     assert v["ha-card-background"] == "rgba(28, 28, 30, 0.72)"
 
 
-# 71 base keys + 2 conditional backdrop-filter keys (full material only).
-EXPECTED_FULL_KEY_COUNT = 73
+# 71 base keys + 7 conditional backdrop-filter keys (full material only).
+EXPECTED_FULL_KEY_COUNT = 78
 EXPECTED_LITE_KEY_COUNT = 71
 
 

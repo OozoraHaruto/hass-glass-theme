@@ -112,7 +112,20 @@ def build_variables(
     }
 
     if full.backdrop is not None:
+        # `light` shares the same lite-gating as `full` (see
+        # glassbuild/materials.py derive()): both are None together, so one
+        # conditional safely covers all seven keys below.
+        #
+        # Scrims (--ha-dialog-scrim-backdrop-filter, --dialog-backdrop-filter,
+        # --ha-bottom-sheet-scrim-backdrop-filter) deliberately get the
+        # *light* material's half-blur backdrop, not full: a scrim covers the
+        # whole viewport, and full blur there is expensive on tablets.
         variables["ha-card-backdrop-filter"] = full.backdrop
         variables["ha-dialog-surface-backdrop-filter"] = full.backdrop
+        variables["app-header-backdrop-filter"] = full.backdrop
+        variables["ha-bottom-sheet-surface-backdrop-filter"] = full.backdrop
+        variables["ha-dialog-scrim-backdrop-filter"] = light.backdrop
+        variables["dialog-backdrop-filter"] = light.backdrop  # legacy alias, set both
+        variables["ha-bottom-sheet-scrim-backdrop-filter"] = light.backdrop
 
     return variables

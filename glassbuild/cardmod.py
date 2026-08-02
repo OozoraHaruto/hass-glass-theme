@@ -1,17 +1,31 @@
 """card-mod CSS injection for surfaces with no native theme-variable hook.
 
-Home Assistant natively supports ``--ha-card-backdrop-filter`` and
-``--ha-dialog-surface-backdrop-filter`` (see ``glassbuild/variables.py``), and
-nothing else. Everything else this theme needs to glass -- the header/tab
-strip, the sidebar, and the more-info dialog body -- has no theme variable
-and must be reached with card-mod's per-surface theme hooks instead.
+Home Assistant natively supports **seven** backdrop-filter theme variables
+(all set in ``glassbuild/variables.py``, gated on ``full.backdrop is not
+None``): ``--ha-card-backdrop-filter``, ``--ha-dialog-surface-backdrop-filter``,
+``--app-header-backdrop-filter``, ``--ha-bottom-sheet-surface-backdrop-filter``,
+``--ha-dialog-scrim-backdrop-filter``, ``--dialog-backdrop-filter`` (legacy
+alias of the scrim variable), and ``--ha-bottom-sheet-scrim-backdrop-filter``.
+Between them, cards, dialogs (including the more-info dialog's inner
+``ha-dialog`` -- CSS custom properties inherit through shadow-DOM boundaries,
+so the variable reaches it even though it's nested inside
+``ha-adaptive-dialog``'s own shadow root), the header, and bottom sheets all
+get their glass natively. None of this module's job.
 
-card-mod exposes those hooks as dedicated ``card-mod-<thing>(-yaml)`` theme
-variables, each already scoped to a specific element -- it does **not** work
-by piercing down from some shared root with ``$`` chains. Verified directly
-against thomasloven/lovelace-card-mod's source (README-themes.md and
-src/patch/*.ts, cloned locally) plus the Home Assistant frontend source
-(also cloned locally):
+What's left, with no native hook at all, is what this module covers:
+
+- The **sidebar**'s backdrop-filter and fill -- there is no
+  ``--sidebar-backdrop-filter`` variable.
+- The header's **tab strip** styling.
+- **letter-spacing** and **transition duration/easing** -- Home Assistant has
+  no theme variable for either, anywhere.
+
+card-mod exposes hooks for these as dedicated ``card-mod-<thing>(-yaml)``
+theme variables, each already scoped to a specific element -- it does **not**
+work by piercing down from some shared root with ``$`` chains. Verified
+directly against thomasloven/lovelace-card-mod's source (README-themes.md and
+src/patch/*.ts, cloned locally) plus the Home Assistant frontend source (also
+cloned locally):
 
 - ``card-mod-root-yaml`` is applied to ``hui-root``'s *own* shadow root
   (card-mod's ``src/patch/hui-root.ts`` calls
@@ -30,14 +44,21 @@ src/patch/*.ts, cloned locally) plus the Home Assistant frontend source
   hui-root). ``:host`` is the sidebar surface itself; ``.title`` and
   ``ha-list-item-button`` are real classes/elements in ``ha-sidebar.ts``'s
   render output.
-- ``card-mod-more-info-yaml`` is applied to the light-DOM children of the
-  ``<ha-dialog>`` inside ``ha-more-info-dialog``'s shadow root
-  (``src/patch/ha-more-info-dialog.ts`` calls ``apply_card_mod(haDialog,
-  "more-info", ..., false)`` -- the trailing ``false`` selects
-  the element itself rather than its shadow root, i.e. light DOM). The
-  dialog's ``.content`` wrapper and its ``.title`` (``slot="headerTitle"``)
-  are both slotted light-DOM children of ``ha-dialog`` and so are reachable
-  with plain selectors here.
+
+There is deliberately **no** ``card-mod-more-info-yaml`` here (an earlier
+version of this module had one). It was removed after verifying it can never
+fire: card-mod's ``src/patch/ha-more-info-dialog.ts`` does
+``this.shadowRoot.querySelector("ha-dialog")`` and bails (``if (!haDialog)
+return``) if that's null. But the frontend's ``ha-more-info-dialog.ts`` no
+longer renders ``<ha-dialog>`` directly -- it renders ``<ha-adaptive-dialog>``
+(confirmed in frontend source), which nests its own ``<ha-dialog>`` inside
+*its own separate* shadow root (``ha-adaptive-dialog.ts``). A shallow
+``querySelector`` on ``ha-more-info-dialog``'s shadow root cannot see through
+that second shadow boundary, so ``haDialog`` is always ``null`` and the patch
+silently never applies -- the key would have parsed as valid YAML and passed
+a naive substring test while doing nothing at runtime. Nothing is lost by
+dropping it: the more-info dialog's surface is already glassed by the native
+``--ha-dialog-surface-backdrop-filter`` variable (see above).
 
 ``ha-tabs`` (named in the card-mod theme cookbook's older examples, and in
 the original brief for this task) no longer exists anywhere in the current
@@ -53,16 +74,19 @@ from glassbuild.materials import Material
 
 _ROOT_TEMPLATE = """\
 .: |
-  .header {{
-    backdrop-filter: {backdrop};
-    -webkit-backdrop-filter: {backdrop};
+  /* .header's own backdrop-filter is native (--app-header-backdrop-filter,
+     set in glassbuild/variables.py) -- this only supplies what HA has no
+     variable for: fill, border, and type tracking.
+     Selector is tripled to reach specificity (0,3,0), which beats hui-root's
+     own ".edit-mode .header" rule (0,2,0) so the glass fill survives edit
+     mode regardless of style-tag order. */
+  .header.header.header {{
     background: {fill};
     border-bottom: 1px solid {rim};
     letter-spacing: {tracking_headline};
-    transition: background {duration} {easing}, backdrop-filter {duration} {easing};
+    transition: background {duration} {easing};
   }}
   ha-tab-group {{
-    background: transparent;
     letter-spacing: {tracking_body};
   }}
 """
@@ -81,17 +105,6 @@ _SIDEBAR_TEMPLATE = """\
   }}
   ha-list-item-button {{
     letter-spacing: {tracking_body};
-  }}
-"""
-
-_MORE_INFO_TEMPLATE = """\
-.: |
-  .content {{
-    background: transparent;
-    letter-spacing: {tracking_body};
-  }}
-  .title {{
-    letter-spacing: {tracking_headline};
   }}
 """
 
@@ -125,5 +138,4 @@ def build_cardmod(
         "card-mod-theme": entry_name,
         "card-mod-root-yaml": _ROOT_TEMPLATE.format(**fmt_args),
         "card-mod-sidebar-yaml": _SIDEBAR_TEMPLATE.format(**fmt_args),
-        "card-mod-more-info-yaml": _MORE_INFO_TEMPLATE.format(**fmt_args),
     }

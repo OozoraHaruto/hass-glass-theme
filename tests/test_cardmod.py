@@ -1,3 +1,5 @@
+import re
+
 import yaml
 
 from glassbuild.cardmod import build_cardmod
@@ -25,7 +27,22 @@ def _block(entry_name: str = "Glass", lite: bool = False) -> dict[str, str]:
     return build_cardmod(entry_name, materials, MERGED)
 
 
+def _rule_body(css: str, selector: str) -> str:
+    """Extract the declaration block for a live (uncommented-enough) rule.
+
+    A plain substring check would also pass against a selector sitting inside
+    a CSS comment, or one with no declarations at all. This requires an
+    actual "selector { ... }" pair and hands back what's between the braces,
+    so callers can assert real declarations landed inside it.
+    """
+    match = re.search(re.escape(selector) + r"\s*\{([^}]*)\}", css)
+    assert match, f"no live rule for {selector!r} in:\n{css}"
+    return match.group(1)
+
+
 def test_lite_produces_no_cardmod_keys():
+    # Load-bearing: a later task hard-fails the build if any backdrop-filter
+    # reaches a Lite entry, and Lite must not carry any card-mod key at all.
     assert _block("Glass Lite", lite=True) == {}
 
 
@@ -34,19 +51,21 @@ def test_theme_name_is_echoed():
     assert block["card-mod-theme"] == "Glass"
 
 
-def test_root_yaml_is_valid_yaml():
+def test_root_yaml_is_valid_yaml_with_only_the_root_key():
+    # card-mod interprets any key other than "." as a further shadow-piercing
+    # selector, so a stray non-"." key would be silently reinterpreted rather
+    # than raise -- isinstance(dict) alone would not catch that.
     block = _block()
-    assert isinstance(yaml.safe_load(block["card-mod-root-yaml"]), dict)
+    parsed = yaml.safe_load(block["card-mod-root-yaml"])
+    assert isinstance(parsed, dict)
+    assert list(parsed) == ["."]
 
 
-def test_sidebar_yaml_is_valid_yaml():
+def test_sidebar_yaml_is_valid_yaml_with_only_the_root_key():
     block = _block()
-    assert isinstance(yaml.safe_load(block["card-mod-sidebar-yaml"]), dict)
-
-
-def test_more_info_yaml_is_valid_yaml():
-    block = _block()
-    assert isinstance(yaml.safe_load(block["card-mod-more-info-yaml"]), dict)
+    parsed = yaml.safe_load(block["card-mod-sidebar-yaml"])
+    assert isinstance(parsed, dict)
+    assert list(parsed) == ["."]
 
 
 def test_root_yaml_covers_the_header_and_tabs():
@@ -60,37 +79,31 @@ def test_root_yaml_covers_the_header_and_tabs():
         assert selector in css
 
 
+def test_header_rule_is_live_and_no_longer_sets_backdrop_filter():
+    # .header's backdrop-filter is now native (--app-header-backdrop-filter,
+    # glassbuild/variables.py) -- this rule must supply only what HA has no
+    # variable for. The selector is tripled to specificity (0,3,0) so it
+    # still wins over hui-root's own ".edit-mode .header" rule (0,2,0).
+    css = _block()["card-mod-root-yaml"]
+    body = _rule_body(css, ".header.header.header")
+    assert "background: rgba(255, 255, 255, 0.14)" in body
+    assert "border-bottom: 1px solid rgba(255, 255, 255, 0.45)" in body
+    assert "letter-spacing: -0.4px" in body
+    assert "backdrop-filter" not in body
+
+
 def test_sidebar_yaml_covers_the_sidebar():
     # card-mod-sidebar-yaml is scoped to ha-sidebar's own shadow root
     # directly (see src/patch/ha-sidebar.ts: apply_card_mod(this, "sidebar")).
-    # It is NOT reachable through card-mod-root-yaml/ha-drawer$.
+    # It is NOT reachable through card-mod-root-yaml/ha-drawer$ -- there is no
+    # native sidebar backdrop-filter variable, so this is the only route.
     css = _block()["card-mod-sidebar-yaml"]
     for selector in (":host", ".title", "ha-list-item-button"):
         assert selector in css
 
 
-def test_more_info_yaml_covers_the_dialog_content():
-    # card-mod-more-info-yaml is applied to the light-DOM children of the
-    # <ha-dialog> inside ha-more-info-dialog's shadow root (shadow=false in
-    # src/patch/ha-more-info-dialog.ts), so plain selectors for slotted
-    # content like `.content` and `.title` (slot="headerTitle") work.
-    css = _block()["card-mod-more-info-yaml"]
-    for selector in (".content", ".title"):
-        assert selector in css
-
-
-def test_root_yaml_carries_the_backdrop_filter():
-    assert "blur(8px) saturate(180%)" in _block()["card-mod-root-yaml"]
-
-
 def test_sidebar_yaml_carries_the_backdrop_filter():
     assert "blur(8px) saturate(180%)" in _block()["card-mod-sidebar-yaml"]
-
-
-def test_lite_never_carries_a_backdrop_filter_key():
-    # Load-bearing: a later task hard-fails the build if any backdrop-filter
-    # reaches a Lite entry.
-    assert _block("Glass Lite", lite=True) == {}
 
 
 def test_letter_spacing_tracking_tokens_appear():
