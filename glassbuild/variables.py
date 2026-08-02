@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import Any
 
 from glassbuild.color import parse_rgba, rgba_str
-from glassbuild.materials import SIDEBAR_FILL_ALPHA, Material
+from glassbuild.materials import LITE_FILL_ALPHA, SIDEBAR_FILL_ALPHA, Material
 
 
 def build_variables(
@@ -38,6 +38,20 @@ def build_variables(
     # composited over a black or white worst case, below the 3:1 floor. See
     # `SIDEBAR_FILL_ALPHA`'s docstring in materials.py for the sweep.
     sidebar_fill = rgba_str(opaque_r, opaque_g, opaque_b, SIDEBAR_FILL_ALPHA)
+    # The closed select box is in the same boat as the sidebar above: Home
+    # Assistant exposes no `--mdc-select-backdrop-filter`, and card-mod's scope
+    # reaches the header, sidebar, and tab strip but not controls. So nothing
+    # blurs the dashboard content behind it, and a low-alpha glass fill lets
+    # that content show straight through -- the "text behind shows too
+    # clearly" the sidebar comment describes, applied to a control. It gets
+    # its own opaque-surface fill at `LITE_FILL_ALPHA` rather than reusing the
+    # sidebar's higher alpha: a select has to carry the selected value's label
+    # (primary text, not the accent), so the 0.72 that Lite's card fill uses
+    # for body text is the right floor here, not the 0.94 the sidebar needs to
+    # lift the accent. The glass `light.fill` stays on the text field below:
+    # that one is at least usually editable-on-card and was not the reported
+    # failure, so it keeps the glass look.
+    select_fill = rgba_str(opaque_r, opaque_g, opaque_b, LITE_FILL_ALPHA)
 
     variables: dict[str, str] = {
         # ---- core palette -------------------------------------------------
@@ -90,7 +104,7 @@ def build_variables(
         "input-label-ink-color": palette["text_secondary"],
         "input-dropdown-icon-color": palette["text_secondary"],
         "mdc-text-field-fill-color": light.fill,
-        "mdc-select-fill-color": light.fill,
+        "mdc-select-fill-color": select_fill,
         "mdc-theme-primary": palette["accent"],
         "mdc-theme-secondary": palette["accent"],
         "mdc-theme-surface": opaque,

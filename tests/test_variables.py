@@ -132,6 +132,25 @@ def test_controls_use_the_light_material():
     assert v["mdc-text-field-fill-color"] == "rgba(255, 255, 255, 0.22)"
 
 
+def test_select_fill_is_opaque_based_not_glass():
+    """The closed select box has no backdrop-filter behind it (Home Assistant
+    exposes no `--mdc-select-backdrop-filter`, and card-mod does not reach
+    controls), so it cannot borrow a card's blur to stay legible through a
+    low-alpha glass fill. Its fill therefore has to be opaque-surface-based at
+    the no-blur alpha (LITE_FILL_ALPHA), not the glass `light.fill` that the
+    text field still uses -- the same split the sidebar already makes.
+
+    Pinned on the opaque RGB (`1C1C1E` here, the dark-mode fixture), not on a
+    full rgba string, so a retune of the alpha constant only changes the
+    number that actually moved.
+    """
+    v = _vars()
+    assert v["mdc-select-fill-color"] == "rgba(28, 28, 30, 0.72)"
+    # Still distinct from the glass text-field fill, which kept its glass tint.
+    assert v["mdc-text-field-fill-color"] == "rgba(255, 255, 255, 0.22)"
+    assert v["mdc-select-fill-color"] != v["mdc-text-field-fill-color"]
+
+
 def test_background_is_a_gradient():
     v = _vars()
     assert "gradient" in v["lovelace-background"]
