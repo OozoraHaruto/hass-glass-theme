@@ -8,7 +8,7 @@ from typing import Any
 
 import yaml
 
-MATERIALS: tuple[str, ...] = ("glass", "frosted-glass")
+MATERIALS: tuple[str, ...] = ("glass", "frosted-glass", "liquid-glass")
 MODES: tuple[str, ...] = ("light", "dark")
 
 

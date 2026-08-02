@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from glassbuild.emit import build_themes
+from glassbuild.emit import ENTRY_NAMES, build_themes
 from glassbuild.validate import REQUIRED_VARIABLES, validate
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -58,9 +58,9 @@ def test_missing_entry_is_reported(themes):
     assert any("Glass Dark" in p and "missing" in p for p in problems)
 
 
-def test_all_entries_missing_reports_twelve_problems_without_raising():
+def test_all_entries_missing_reports_one_problem_each_without_raising():
     problems = validate({})
-    assert len(problems) == 12
+    assert len(problems) == len(ENTRY_NAMES)
     assert all(isinstance(p, str) for p in problems)
 
 

@@ -1,10 +1,15 @@
-"""Assembly of the twelve theme entries.
+"""Assembly of the theme entries.
 
-Each material (glass, frosted-glass) x each weight (full, lite) yields three
-display entries: an "Auto" entry that follows the browser/HA light-dark
-setting via a ``modes`` block, plus flat "Light" and "Dark" entries that pin
-one mode regardless of the ambient setting. That's 2 materials x 2 weights x
-3 entries = 12.
+Each material x each weight it supports (full, lite) yields three display
+entries: an "Auto" entry that follows the browser/HA light-dark setting via a
+``modes`` block, plus flat "Light" and "Dark" entries that pin one mode
+regardless of the ambient setting.
+
+The matrix is not fully rectangular. Glass and Frosted Glass span both
+weights (2 materials x 2 weights x 3 entries = 12); Liquid Glass spans only
+the full weight (3 more), for 15 in total -- see ``_NO_LITE`` below for why.
+Nothing downstream hardcodes the count: ``ENTRY_NAMES`` is the single source
+of truth for which entries exist and in what order.
 
 The Auto entry's ``modes.light``/``modes.dark`` payloads are built the same
 way as the flat entries -- same merged tokens, same derived materials, same
@@ -30,15 +35,35 @@ from glassbuild.materials import derive
 from glassbuild.tokens import MATERIALS, load_tokens, merge
 from glassbuild.variables import build_variables
 
-_LABEL = {"glass": "Glass", "frosted-glass": "Frosted Glass"}
+MATERIAL_LABEL = {
+    "glass": "Glass",
+    "frosted-glass": "Frosted Glass",
+    "liquid-glass": "Liquid Glass",
+}
 _MODE_LABEL = {"light": "Light", "dark": "Dark"}
+
+# Materials that span the mode axis but not the weight axis.
+#
+# Lite exists to drop `backdrop-filter` entirely on weak GPUs, and a
+# refractive material is *only* a backdrop-filter -- its displacement, blur,
+# and remap all live there. "Liquid Glass Lite" would therefore be an opaque
+# card with none of the three, identical to "Glass Lite" in everything but a
+# name promising the one thing it cannot do. Better to not offer the entry
+# than to offer a lie; users on hardware that needs Lite want "Glass Lite".
+_NO_LITE: frozenset[str] = frozenset({"liquid-glass"})
+
+
+def _weights(material: str) -> tuple[bool, ...]:
+    """The ``lite`` flags this material is built at: both, or full only."""
+    return (False,) if material in _NO_LITE else (False, True)
 
 
 def _entry_names() -> tuple[str, ...]:
     names: list[str] = []
     for material in MATERIALS:
-        label = _LABEL[material]
-        for suffix in ("", " Lite"):
+        label = MATERIAL_LABEL[material]
+        for lite in _weights(material):
+            suffix = " Lite" if lite else ""
             names.append(f"{label}{suffix}")
             names.append(f"{label} Light{suffix}")
             names.append(f"{label} Dark{suffix}")
@@ -80,8 +105,8 @@ def build_themes(root: Path) -> dict[str, dict[str, Any]]:
     built: dict[str, dict[str, Any]] = {}
 
     for material in MATERIALS:
-        label = _LABEL[material]
-        for lite in (False, True):
+        label = MATERIAL_LABEL[material]
+        for lite in _weights(material):
             suffix = " Lite" if lite else ""
             auto_name = f"{label}{suffix}"
 

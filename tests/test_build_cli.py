@@ -61,10 +61,10 @@ def test_render_is_deterministic_across_process_hash_seeds():
     assert len(set(outputs)) == 1, "render() output differs across PYTHONHASHSEED values"
 
 
-def test_committed_file_parses_and_has_twelve_entries():
+def test_committed_file_parses_and_has_every_entry():
     document = yaml.safe_load((ROOT / "themes" / "glass.yaml").read_text(encoding="utf-8"))
     assert set(document) == set(ENTRY_NAMES)
-    assert len(document) == 12
+    assert len(document) == len(ENTRY_NAMES) == 15
 
 
 def test_committed_file_entry_order_matches_entry_names():

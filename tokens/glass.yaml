@@ -8,11 +8,21 @@
 # fill alpha 0.10/0.14) was `.clear` in all but name: the backdrop stayed
 # legible straight through the card.
 #
-# `blur_px` is the lever that fixes that. At 8px the backdrop keeps its
-# shapes and the eye refocuses past the card; at 28 it collapses into a
-# colour field and the card reads as a surface. iOS 27's headline change was
-# exactly this -- Apple tuned Liquid Glass to "diffuse complex content behind
-# it much more effectively" rather than simply tinting it more heavily.
+# `blur_px` is the lever that fixes that -- but only up to a point, and
+# overshooting it is its own failure. Apple distinguishes *lensing*, which
+# bends and concentrates light, from *blur*, which scatters it; scattering is
+# precisely what frosted glass does. At 8px the backdrop kept its shapes and
+# the eye refocused past the card. At 28, paired with a heavy dim and a 0.30
+# fill, it stopped being glass at all and read as frost. 20px sits where
+# detail stops resolving but the backdrop still reads as a place rather than
+# a milky field.
+#
+# The transparency, then, is not bought back by weakening the diffusion --
+# it comes from the fill alphas staying low (0.14/0.16, see tokens/modes/)
+# and from the specular edge being brighter than the body. A clear body with
+# light concentrated at its rim is what separates glass from frost when
+# there is no real refraction to do the job; the material that does have it
+# is tokens/liquid-glass.yaml.
 #
 # `saturate_pct` drops from the 180 it used to be: boosting the backdrop's
 # chroma pulls attention to what is *behind* the card. Apple's materials
@@ -20,7 +30,7 @@
 # tests/test_token_data.py.
 material:
   name: Glass
-  blur_px: 28
+  blur_px: 20
   saturate_pct: 140
   rim_alpha: 0.45
   # Full-strength specular edge -- see `edge_scale` in frosted-glass.yaml for

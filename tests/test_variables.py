@@ -178,6 +178,14 @@ def test_lite_still_defines_the_card_background():
 # 71 base keys + 7 conditional backdrop-filter keys (full material only).
 EXPECTED_FULL_KEY_COUNT = 78
 EXPECTED_LITE_KEY_COUNT = 71
+# ...plus the three --ha-glass-refraction-* keys (the alternative backdrop
+# chain, and the displacement scale and edge fraction the companion module
+# reads), for a full material whose tuning table carries a `refraction`
+# block. Counted from the same token data the build reads rather than from a
+# list of material names, so this stays a check on the *rule* ("a refraction
+# block adds exactly these keys, and only on full") rather than on today's
+# roster of materials.
+EXPECTED_REFRACTION_KEY_COUNT = 3
 
 
 def test_real_tokens_produce_valid_variables_for_every_combination():
@@ -191,5 +199,16 @@ def test_real_tokens_produce_valid_variables_for_every_combination():
                     assert isinstance(key, str), (material, mode, lite, key)
                     assert isinstance(value, str), (material, mode, lite, key)
                     assert not key.startswith("--"), (material, mode, lite, key)
-                expected = EXPECTED_LITE_KEY_COUNT if lite else EXPECTED_FULL_KEY_COUNT
+                refracts = "refraction" in merged["material"]
+                if lite:
+                    expected = EXPECTED_LITE_KEY_COUNT
+                else:
+                    expected = EXPECTED_FULL_KEY_COUNT + (
+                        EXPECTED_REFRACTION_KEY_COUNT if refracts else 0
+                    )
                 assert len(v) == expected, (material, mode, lite, sorted(v))
+                # Lite has no backdrop-filter at all, so there is nothing for
+                # a displacement to run in front of -- the refraction
+                # variable must not survive the lite gate even for a material
+                # that declares one.
+                assert ("ha-glass-refraction-backdrop" in v) == (refracts and not lite)

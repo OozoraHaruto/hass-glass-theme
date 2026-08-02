@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 
 from glassbuild.color import composite, contrast_ratio, parse_rgba
-from glassbuild.emit import ENTRY_NAMES, build_themes
+from glassbuild.emit import ENTRY_NAMES, MATERIAL_LABEL, build_themes
 from glassbuild.tokens import MATERIALS, MODES, load_tokens, merge
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -85,7 +85,12 @@ def test_secondary_text_clears_large_text_minimum(themes, name):
 @pytest.mark.parametrize("mode", MODES)
 @pytest.mark.parametrize("material", MATERIALS)
 def test_accent_clears_large_text_minimum_on_the_card(themes, material, mode):
-    name = "Glass" if material == "glass" else "Frosted Glass"
+    # Looked up rather than branched on. This was `"Glass" if material ==
+    # "glass" else "Frosted Glass"`, which silently stopped covering anything
+    # new the moment a third material was added: liquid-glass fell into the
+    # else and re-tested Frosted Glass, so the parametrisation grew a case
+    # while the assertions covered one fewer material than before.
+    name = MATERIAL_LABEL[material]
     payload = _entry_payload(themes, name, mode)
     card = parse_rgba(payload["ha-card-background"])
     accent = parse_rgba(payload["primary-color"])

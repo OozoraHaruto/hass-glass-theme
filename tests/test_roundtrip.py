@@ -20,7 +20,7 @@ def test_file_parses(document):
     assert isinstance(document, dict)
 
 
-def test_exactly_the_twelve_entries(document):
+def test_exactly_the_declared_entries(document):
     assert set(document) == set(ENTRY_NAMES)
 
 

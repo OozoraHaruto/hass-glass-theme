@@ -1,7 +1,9 @@
 material:
   fill_rgb: [90, 90, 94]
-  fill_alpha_glass: 0.30
+  fill_alpha_glass: 0.16
   fill_alpha_frosted: 0.45
+  # Below the glass alpha on purpose -- see tokens/liquid-glass.yaml.
+  fill_alpha_liquid: 0.13
   rim_rgb: [255, 255, 255]
 
   # Luminance remap applied to the backdrop *after* the blur. Dark mode pulls
@@ -10,16 +12,26 @@ material:
   # is the "more depth and separation" half of iOS 27's retune, and it is
   # what buys legibility here without driving `fill_alpha_glass` up toward
   # opaque.
-  brightness_pct: 60
-  contrast_pct: 110
+  #
+  # 85, not the 60 this once was: a dim that hard crushes the backdrop toward
+  # black, which is a scattering operation in all but name and reads as milk
+  # rather than depth. The remap should settle what is behind the card, not
+  # erase it -- there has to be something left back there to see through to.
+  brightness_pct: 85
+  contrast_pct: 106
 
   # The specular edge. White on top, black underneath, in both modes -- a lit
   # pane catches light on its upper edge and falls into shadow on its lower
   # one regardless of the ambient appearance. Only the strengths flip: against
   # a dark background the shade does more of the separating, so it carries the
   # heavier alpha of the two here.
+  #
+  # The highlight has to stay well clear of `fill_alpha_glass` above. With no
+  # displacement map to bend light at the rim, a rim brighter than the body is
+  # the only thing distinguishing this surface from frost -- once the body
+  # catches up to the edge, both read as one flat translucent slab.
   highlight_rgb: [255, 255, 255]
-  highlight_alpha: 0.28
+  highlight_alpha: 0.45
   shade_rgb: [0, 0, 0]
   shade_alpha: 0.22
 

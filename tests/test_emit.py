@@ -12,8 +12,7 @@ def themes():
     return build_themes(ROOT)
 
 
-def test_all_twelve_names_present():
-    assert len(ENTRY_NAMES) == 12
+def test_every_entry_name_is_present_in_matrix_order():
     assert ENTRY_NAMES == (
         "Glass",
         "Glass Light",
@@ -27,6 +26,11 @@ def test_all_twelve_names_present():
         "Frosted Glass Lite",
         "Frosted Glass Light Lite",
         "Frosted Glass Dark Lite",
+        # Liquid Glass spans the mode axis but not the weight axis -- see
+        # `_NO_LITE` in glassbuild/emit.py.
+        "Liquid Glass",
+        "Liquid Glass Light",
+        "Liquid Glass Dark",
     )
 
 
@@ -83,7 +87,7 @@ def test_full_entries_have_cardmod_keys(themes):
 
 def test_frosted_uses_its_own_blur(themes):
     assert "blur(40px)" in themes["Frosted Glass Dark"]["ha-card-backdrop-filter"]
-    assert "blur(28px)" in themes["Glass Dark"]["ha-card-backdrop-filter"]
+    assert "blur(20px)" in themes["Glass Dark"]["ha-card-backdrop-filter"]
 
 
 def test_lite_entries_have_no_backdrop_filter_anywhere(themes):
@@ -141,3 +145,63 @@ def test_auto_entries_match_ha_real_merge_algorithm_against_the_flat_entries(the
             applied.pop("card-mod-theme", None)
             expected.pop("card-mod-theme", None)
             assert applied == expected, f"{auto_name} {mode}"
+
+
+def test_liquid_glass_adds_three_entries_and_no_lite_variants():
+    """Lite strips backdrop-filter entirely, which is where refraction lives.
+
+    A "Liquid Glass Lite" would be a card with no blur, no displacement, and
+    an opaque fill -- indistinguishable from "Glass Lite" but carrying a name
+    that promises the one thing it cannot do. So this material is the first
+    to opt out of the weight axis, and ``_entry_names`` has to model that
+    rather than assuming every material spans the full matrix.
+    """
+    liquid = [n for n in ENTRY_NAMES if n.startswith("Liquid Glass")]
+    assert liquid == ["Liquid Glass", "Liquid Glass Light", "Liquid Glass Dark"]
+    assert not any(n.endswith("Lite") for n in liquid)
+
+
+def test_the_matrix_is_fifteen_entries():
+    assert len(ENTRY_NAMES) == 15
+
+
+@pytest.mark.parametrize(
+    "name", ["Liquid Glass", "Liquid Glass Light", "Liquid Glass Dark"]
+)
+def test_liquid_entries_carry_the_refraction_backdrop(themes, name):
+    """The upgraded chain ships in the theme; the module only switches to it.
+
+    Putting the whole chain here rather than assembling it in JavaScript
+    means the module never has to know this material's blur radius or
+    luminance remap -- it reassigns one variable to another and every tuning
+    decision stays in tokens/.
+    """
+    entry = themes[name]
+    values = dict(entry)
+    for payload in entry.get("modes", {}).values():
+        values.update(payload)
+    upgraded = values["ha-glass-refraction-backdrop"]
+    assert upgraded.startswith("url(#glass-refraction) ")
+    assert "blur(" in upgraded
+
+
+def test_non_refractive_entries_have_no_refraction_variable(themes):
+    """A dangling ``url(#id)`` invalidates the *entire* filter chain.
+
+    If this variable leaked onto Glass or Frosted Glass and the module were
+    installed, the module would point those cards at a filter tuned for a
+    different material. Worse, per the Filter Effects spec an unresolved
+    reference drops every function in the chain, so the failure mode is a
+    completely unfiltered card rather than a slightly wrong one.
+    """
+    for name in ENTRY_NAMES:
+        if name.startswith("Liquid Glass"):
+            continue
+        values = dict(themes[name])
+        for payload in themes[name].get("modes", {}).values():
+            values.update(payload)
+        assert "ha-glass-refraction-backdrop" not in values, name
+
+
+def test_liquid_glass_auto_entry_still_has_both_modes(themes):
+    assert set(themes["Liquid Glass"]["modes"]) == {"light", "dark"}

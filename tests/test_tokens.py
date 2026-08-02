@@ -4,7 +4,7 @@ from glassbuild.tokens import MATERIALS, MODES, load_tokens, merge
 
 
 def test_material_and_mode_names():
-    assert MATERIALS == ("glass", "frosted-glass")
+    assert MATERIALS == ("glass", "frosted-glass", "liquid-glass")
     assert MODES == ("light", "dark")
 
 
@@ -29,6 +29,7 @@ def test_load_tokens_reads_every_file(tmp_path):
     (tmp_path / "tokens" / "base.yaml").write_text("radius: 18px\n")
     (tmp_path / "tokens" / "glass.yaml").write_text("blur: 8px\n")
     (tmp_path / "tokens" / "frosted-glass.yaml").write_text("blur: 40px\n")
+    (tmp_path / "tokens" / "liquid-glass.yaml").write_text("blur: 18px\n")
     (tmp_path / "tokens" / "modes" / "light.yaml").write_text("bg: white\n")
     (tmp_path / "tokens" / "modes" / "dark.yaml").write_text("bg: black\n")
 
@@ -37,6 +38,7 @@ def test_load_tokens_reads_every_file(tmp_path):
     assert tokens["base"] == {"radius": "18px"}
     assert tokens["materials"]["glass"] == {"blur": "8px"}
     assert tokens["materials"]["frosted-glass"] == {"blur": "40px"}
+    assert tokens["materials"]["liquid-glass"] == {"blur": "18px"}
     assert tokens["modes"]["light"] == {"bg": "white"}
     assert tokens["modes"]["dark"] == {"bg": "black"}
 

@@ -16,17 +16,28 @@ variant, each with a matching Lite twin:
 | Glass Lite          | `Glass Lite`        | `Glass Light Lite`        | `Glass Dark Lite`        |
 | Frosted Glass        | `Frosted Glass`     | `Frosted Glass Light`     | `Frosted Glass Dark`     |
 | Frosted Glass Lite  | `Frosted Glass Lite`| `Frosted Glass Light Lite`| `Frosted Glass Dark Lite`|
+| Liquid Glass        | `Liquid Glass`      | `Liquid Glass Light`      | `Liquid Glass Dark`      |
 
-- **Glass** (`blur(28px)`) is Apple's *regular* Liquid Glass — translucent, but
+- **Glass** (`blur(20px)`) is Apple's *regular* Liquid Glass — translucent, but
   wide enough to diffuse whatever is behind it into a colour field rather than
-  leaving it legible through the card.
+  leaving it legible through the card. The blur sits where detail stops
+  resolving and no further: blur *scatters* light, which is what frosted glass
+  does, so pushing it harder to buy legibility just turns glass into frost.
 - **Frosted Glass** is a heavier blur (`blur(40px)`) — closer to macOS's thick
   material.
-- Both materials remap the backdrop's luminance after blurring it (dark mode
-  dims and hardens, light mode lifts and softens) and carry a directional
+- **Liquid Glass** (`blur(18px)`) is the clearest of the three, and the only one
+  that can actually *bend* light rather than scatter it — but only if you also
+  install the optional companion module (see **Refraction** below). Without it
+  the entry is still a valid, slightly clearer Glass; the refraction is an
+  upgrade layered on top, never the thing holding it up. It has no **Lite**
+  variants, because Lite drops `backdrop-filter` entirely and that is precisely
+  where the refraction lives.
+- All three materials remap the backdrop's luminance after blurring it (dark
+  mode dims and hardens, light mode lifts and softens) and carry a directional
   specular edge — a highlight along the top, shadow along the bottom — so a
   card reads as a surface in front of the background rather than a hole
-  through to it.
+  through to it. With no way to refract in plain CSS, a rim brighter than the
+  body is what separates glass from frost.
 - **Auto** entries follow Home Assistant's light/dark setting; **Light**/**Dark**
   entries pin one mode regardless of the ambient setting.
 - **Lite** entries exist for the dropdown bug below and for underpowered wall
@@ -42,7 +53,7 @@ variant, each with a matching Lite twin:
      themes: !include_dir_merge_named themes
    ```
 3. Restart Home Assistant.
-4. Open your user profile, scroll to **Theme**, and pick one of the twelve
+4. Open your user profile, scroll to **Theme**, and pick one of the fifteen
    entries above.
 
 `hacs.json` sets a floor of Home Assistant **2024.5.0**, since that's roughly
@@ -162,14 +173,61 @@ nothing to do for a Lite entry, since there's no blur anywhere for it to
 add. This is intentional, not a bug, but it can be a surprise if you're
 expecting card-mod's touch-ups on every entry uniformly.
 
+## Refraction (optional, Chromium only)
+
+The **Liquid Glass** entries are the only ones that can bend light rather than
+just scatter it — and doing that needs one file outside `themes/`.
+
+Plain CSS has no way to refract: `backdrop-filter` gives you `blur()` and
+nothing that displaces a pixel. Real refraction needs an SVG
+`feDisplacementMap`, and a `backdrop-filter` can only reach one through a
+**same-document** `url(#id)` fragment. Chromium resolves nothing else —
+external `.svg` files and `data:` URIs are both rejected
+([Blink bug 109212](https://issues.chromium.org/issues/41054930)) — and a
+rejected reference doesn't just skip its own term: per the Filter Effects
+spec it invalidates the *entire* chain, so the card would lose its blur too.
+
+A Home Assistant theme is a YAML map of CSS variables, and card-mod injects
+CSS rather than markup. Neither can put an element in the document. Hence
+`www/glass-refraction.js`:
+
+1. Copy `www/glass-refraction.js` from this repo to `<config>/www/glass-refraction.js`.
+2. Add to `configuration.yaml`:
+   ```yaml
+   frontend:
+     extra_module_url:
+       - /local/glass-refraction.js
+   ```
+3. Restart Home Assistant and pick a **Liquid Glass** entry.
+
+**Skipping this is a supported configuration.** The Liquid Glass entries ship
+an ordinary blur chain of their own and the module only ever *upgrades* it, by
+repointing four surface variables at an alternative chain the theme also
+publishes. There is no broken intermediate state — which is exactly why the
+theme never references the refraction chain itself, and why the module
+disables its own override the moment a non-refractive theme is active.
+
+Caveats, stated plainly:
+
+- **Chromium only** (Chrome, Edge, the Android companion app's webview).
+  Firefox and Safari get the plain blur on purpose — see WebKit bug
+  [245510](https://bugs.webkit.org/show_bug.cgi?id=245510). The module detects
+  the engine by proxy (the Houdini Paint API, which only Blink ships) because
+  `CSS.supports` reports on *syntax* and every engine parses `url(#x)` happily
+  whether or not it will later resolve it.
+- **Not for wall tablets.** Displacing the backdrop is genuinely expensive to
+  composite. If a device needs the **Lite** entries, it does not want this.
+- The displacement is confined to the outer ~18% of each axis, so it reads as
+  the thickness at a card's edge rather than a fish-eye across its face.
+
 ## Accessibility
 
-Every one of the twelve entries clears WCAG AA against the shipped
+Every one of the fifteen entries clears WCAG AA against the shipped
 `lovelace-background` gradient: body text at 4.5:1, secondary/large text at
 3.0:1. This is checked by an automated test suite
 (`tests/test_contrast.py`) that composites each entry's card fill and text
 color over three sample points along its gradient (start, middle, and end
-stop) and asserts the resulting contrast ratio, across all twelve entries and
+stop) and asserts the resulting contrast ratio, across all fifteen entries and
 both light/dark modes where an entry supports both.
 
 The tightest margin among all of those checks is **3.24:1**, for secondary

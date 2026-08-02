@@ -148,4 +148,35 @@ def build_variables(
         variables["dialog-backdrop-filter"] = light.backdrop  # legacy alias, set both
         variables["ha-bottom-sheet-scrim-backdrop-filter"] = light.backdrop
 
+        refraction = merged["material"].get("refraction")
+        if refraction:
+            # An *alternative* chain, not a replacement: nothing in the theme
+            # reads this variable. www/glass-refraction.js repoints the four
+            # surface variables above at it once it has put the matching
+            # `<filter>` in the document, and leaves them alone otherwise.
+            #
+            # Shipping the whole chain here rather than assembling it in
+            # JavaScript keeps every tuning decision in tokens/ -- the module
+            # never learns this material's blur radius or luminance remap, it
+            # just swaps one variable for another.
+            #
+            # The url() leads because filter functions apply left to right:
+            # displacement has to bend the raw backdrop *before* the blur
+            # smooths it, or it would be shuffling an already-flat field.
+            #
+            # Only the four surface variables get upgraded, never the three
+            # scrims -- a scrim covers the whole viewport, and there is no
+            # edge there for a rim lens to sit on.
+            variables["ha-glass-refraction-backdrop"] = (
+                f"url(#{refraction['filter_id']}) {full.backdrop}"
+            )
+            # The displacement's own tuning, published for the module to read
+            # rather than left as literals on its side. Same rule as the blur
+            # radius above: a copy in JavaScript that matches the token today
+            # goes on matching right up until someone retunes the token, and
+            # then diverges silently -- nothing renders differently enough for
+            # review to catch it.
+            variables["ha-glass-refraction-scale"] = str(refraction["scale"])
+            variables["ha-glass-refraction-edge"] = str(refraction["edge_fraction"])
+
     return variables

@@ -57,7 +57,11 @@ class Material:
     backdrop: str | None
 
 
-_ALPHA_KEY = {"glass": "fill_alpha_glass", "frosted-glass": "fill_alpha_frosted"}
+_ALPHA_KEY = {
+    "glass": "fill_alpha_glass",
+    "frosted-glass": "fill_alpha_frosted",
+    "liquid-glass": "fill_alpha_liquid",
+}
 
 
 def _backdrop(spec: dict[str, Any], blur: int) -> str:

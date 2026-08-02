@@ -1,7 +1,11 @@
 material:
   fill_rgb: [255, 255, 255]
-  fill_alpha_glass: 0.26
+  fill_alpha_glass: 0.14
   fill_alpha_frosted: 0.55
+  # Below the glass alpha on purpose -- see tokens/liquid-glass.yaml. The
+  # lensed rim does some of the separating that tint would otherwise have to,
+  # so this material can spend less of it.
+  fill_alpha_liquid: 0.11
   # A white rim is invisible on light-mode pages (dashboards and the flat
   # --primary-background-color fallback used by Settings/Developer
   # Tools/History/Logbook/Media alike). Apple uses a dark hairline for the
@@ -14,15 +18,15 @@ material:
   # softens it, so it settles *above* nothing and instead flattens toward
   # paper white, leaving the card's own fill and its dark text as the only
   # things with real contrast on screen.
-  brightness_pct: 112
-  contrast_pct: 92
+  brightness_pct: 105
+  contrast_pct: 96
 
   # The specular edge -- same two colours as dark mode (see modes/dark.yaml),
   # different strengths. On a light background a black under-edge would read
   # as a hard drawn line rather than shadow, so light mode leans on the
   # highlight instead and keeps the shade faint.
   highlight_rgb: [255, 255, 255]
-  highlight_alpha: 0.60
+  highlight_alpha: 0.75
   shade_rgb: [0, 0, 0]
   shade_alpha: 0.10
 
