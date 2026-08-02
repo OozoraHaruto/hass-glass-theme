@@ -24,6 +24,12 @@ from typing import Any
 from glassbuild.emit import ENTRY_NAMES
 
 _VAR_RE = re.compile(r"var\(\s*--([a-zA-Z0-9_-]+)")
+# A var() call whose argument does *not* start with "--" -- malformed CSS
+# that HA/the browser silently drops at runtime, same failure class as a
+# dangling reference.
+_MALFORMED_VAR_RE = re.compile(r"var\(\s*(?!--)([a-zA-Z0-9_-]+)")
+
+_REQUIRED_MODE_KEYS = ("light", "dark")
 
 # Every one of these has been verified to exist as a real HA theme variable
 # consumed by the frontend. A required variable may legitimately be defined
@@ -64,17 +70,53 @@ HA_BUILTIN_VARIABLES: frozenset[str] = frozenset(
 )
 
 
-def _mode_payloads(entry: dict[str, Any]) -> dict[str, dict[str, Any]]:
-    """Return the entry's modes payloads, tolerating malformed shapes."""
-    modes = entry.get("modes")
-    if not isinstance(modes, dict):
+def _check_modes_shape(
+    name: str, entry: dict[str, Any], problems: list[str]
+) -> dict[str, dict[str, Any]]:
+    """Validate the shape of ``entry["modes"]``, if present, appending to ``problems``.
+
+    A flat entry (no ``modes`` key at all) is not required to have one --
+    that's a legitimate shape. But once ``modes`` is present, malformed
+    shapes are structural bugs, not something to silently tolerate: HA
+    applies nothing for a mode whose payload isn't a mapping, and a ``modes``
+    block missing ``light`` or ``dark`` entirely means that mode falls back
+    to whatever's at the top level (which may be nothing at all for the
+    keys that were meant to vary by mode). Every such shape is reported here
+    rather than filtered out.
+
+    Returns the subset of modes payloads that *are* dicts, for the rest of
+    validation to keep working against -- one malformed mode payload
+    shouldn't prevent checking the other, well-formed one.
+    """
+    if "modes" not in entry:
         return {}
-    return {
-        mode: payload for mode, payload in modes.items() if isinstance(payload, dict)
-    }
+
+    modes = entry["modes"]
+    if not isinstance(modes, dict):
+        problems.append(
+            f"{name}: 'modes' is a {type(modes).__name__}, expected a dict"
+        )
+        return {}
+
+    valid_payloads: dict[str, dict[str, Any]] = {}
+    for mode, payload in modes.items():
+        if not isinstance(payload, dict):
+            problems.append(
+                f"{name}: modes.{mode} is a {type(payload).__name__}, expected a dict"
+            )
+            continue
+        valid_payloads[mode] = payload
+
+    for required_mode in _REQUIRED_MODE_KEYS:
+        if required_mode not in modes:
+            problems.append(f"{name}: 'modes' is missing required key {required_mode!r}")
+
+    return valid_payloads
 
 
-def _flatten(entry: dict[str, Any]) -> dict[str, Any]:
+def _flatten(
+    entry: dict[str, Any], mode_payloads: dict[str, dict[str, Any]]
+) -> dict[str, Any]:
     """Union an entry's top level with both modes payloads into one namespace.
 
     Used only to answer "is this key defined somewhere in this entry?" --
@@ -82,18 +124,18 @@ def _flatten(entry: dict[str, Any]) -> dict[str, Any]:
     question, only membership does.
     """
     flat = {k: v for k, v in entry.items() if k != "modes"}
-    for payload in _mode_payloads(entry).values():
+    for payload in mode_payloads.values():
         flat.update(payload)
     return flat
 
 
-def _iter_locations(entry: dict[str, Any]):
+def _iter_locations(entry: dict[str, Any], mode_payloads: dict[str, dict[str, Any]]):
     """Yield (location, key, value) across the top level and both modes payloads."""
     for key, value in entry.items():
         if key == "modes":
             continue
         yield "top-level", key, value
-    for mode, payload in _mode_payloads(entry).items():
+    for mode, payload in mode_payloads.items():
         for key, value in payload.items():
             yield f"modes.{mode}", key, value
 
@@ -122,7 +164,8 @@ def validate(themes: Any) -> list[str]:
             continue
 
         entry = raw_entry
-        flat = _flatten(entry)
+        mode_payloads = _check_modes_shape(name, entry, problems)
+        flat = _flatten(entry, mode_payloads)
         is_lite = name.endswith("Lite")
 
         for required in sorted(REQUIRED_VARIABLES):
@@ -132,7 +175,7 @@ def validate(themes: Any) -> list[str]:
                     "(checked top level and both modes payloads)"
                 )
 
-        for location, key, value in _iter_locations(entry):
+        for location, key, value in _iter_locations(entry, mode_payloads):
             if not isinstance(key, str):
                 problems.append(f"{name} ({location}): non-string key {key!r}")
                 continue
@@ -162,6 +205,12 @@ def validate(themes: Any) -> list[str]:
                         f"{name} ({location}): {key!r} references undefined "
                         f"variable '--{reference}'"
                     )
+
+            for malformed in _MALFORMED_VAR_RE.findall(value):
+                problems.append(
+                    f"{name} ({location}): {key!r} has a malformed var() "
+                    f"reference {malformed!r} (missing leading '--')"
+                )
 
             if is_lite:
                 if "backdrop-filter" in key or "backdrop-filter" in value:
