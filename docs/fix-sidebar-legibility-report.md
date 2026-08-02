@@ -178,7 +178,7 @@ $ .venv/bin/python -m yamllint -c .yamllint.yml themes/glass.yaml tokens/base.ya
 (no output — clean)
 ```
 
-## Files changed
+## Files changed (round 1)
 
 - `glassbuild/variables.py` — `sidebar-background-color` now built from
   `palette["opaque_surface"]` at `LITE_FILL_ALPHA`; `sidebar-icon-color` now
@@ -190,3 +190,172 @@ $ .venv/bin/python -m yamllint -c .yamllint.yml themes/glass.yaml tokens/base.ya
   covering sidebar text/icon/selected-text/selected-icon contrast.
 - `themes/glass.yaml` — regenerated via `scripts/build_themes.py` (never
   hand-edited).
+
+---
+
+## Round 2 — retargeting the sidebar tests, raising the fill alpha
+
+The coordinator's own review of round 1 caught the mutation-test finding
+above and traced it to the test design, not the implementation: testing
+against `primary-background-color` can't model "arbitrary dashboard content
+bleeding through a too-transparent sidebar" — the actual bug — because that
+value always equals `opaque_surface`, which cancels out of the composite
+once the fill's base is also `opaque_surface`. Two changes were requested:
+retarget the tests to an adversarial backdrop (pure black and pure white,
+bounding every possible backdrop's luminance), and re-verify the fill alpha
+against that harder bar.
+
+### Independently re-swept the alpha (did not trust the coordinator's figures)
+
+Composited `opaque_surface @ alpha` over pure black and pure white, both
+modes, and measured the **accent** color (used for both
+`sidebar-selected-text-color` and `sidebar-selected-icon-color`) — the
+tightest of the four metrics:
+
+```
+alpha=0.72  accent: dark/black=5.04  dark/white=1.83  light/black=1.82  light/white=3.72
+alpha=0.90  accent: dark/black=4.81  dark/white=3.46  light/black=2.88  light/white=3.63
+alpha=0.94  accent: dark/black=4.76  dark/white=3.93  light/black=3.14  light/white=3.63
+alpha=1.00  accent: dark/black=4.67  dark/white=4.67  light/black=3.60  light/white=3.60
+```
+
+This matches the coordinator's figures closely (their 1.82/1.83 vs. my
+1.817/1.831; their 2.88 vs. my 2.882; their 3.14/3.93 vs. my 3.141/3.927) —
+**0.94 is confirmed as the lowest value, in 0.01 steps from their sweep,
+that clears the 3:1 floor on both extremes in both modes** (worst case
+3.141:1, light mode over black). Text and icon (`text_primary`) have huge
+margins at every alpha tested (worst 6.68:1 at 0.72), so alpha is driven
+entirely by the accent requirement.
+
+### Changes made
+
+1. **`glassbuild/materials.py`** — added `SIDEBAR_FILL_ALPHA = 0.94` next to
+   `LITE_FILL_ALPHA`, with a docstring recording the sweep above and why it's
+   a separate constant (Lite's card fill only has to carry body text; the
+   sidebar's fill also has to carry the accent, so the two are free to
+   diverge).
+2. **`glassbuild/variables.py`** — `sidebar_fill` now uses
+   `SIDEBAR_FILL_ALPHA` instead of `LITE_FILL_ALPHA`. Comment updated to
+   reference the new constant and explain the accent-driven floor.
+3. **`glassbuild/cardmod.py`** — `_SIDEBAR_TEMPLATE`'s docstring now states
+   plainly that the native fallback (0.94, near-opaque) costs most of the
+   glass look for users without card-mod, that this is the honest price of
+   legibility with no blur to soften bleed-through, and that users with
+   card-mod are unaffected — they still get the translucent glass fill via
+   this template, which stays legible because real blur is present.
+4. **`tests/test_contrast.py`** — all four sidebar tests now composite the
+   sidebar fill over `_ADVERSARIAL_BACKDROPS = [(0,0,0,1.0), (255,255,255,1.0)]`
+   (pure black, pure white) instead of `primary-background-color`, and assert
+   the threshold against **both** for all twelve entries in every applicable
+   mode (previously one backdrop; now two, so each test still runs 12 param
+   cases but each case now does two inner assertions).
+5. **`themes/glass.yaml`** — regenerated.
+
+No pinned `sidebar-background-color` value existed in `tests/test_variables.py`
+or elsewhere, so no other test needed updating.
+
+### Mutation evidence for the retargeted tests
+
+**Alpha reverted to 0.72 (`SIDEBAR_FILL_ALPHA = 0.72`), icon fix left in
+place** — fails, as predicted by the sweep:
+
+```
+$ .venv/bin/python -m pytest tests/test_contrast.py -q -k "sidebar_selected"
+...
+E   AssertionError: Frosted Glass Dark Lite (dark): sidebar selected icon on
+    the sidebar fill over (92, 92, 93) is 1.83:1, need 3.0:1
+...
+24 failed, 52 deselected in 0.11s
+```
+
+All 24 failures are in `sidebar_selected_text`/`sidebar_selected_icon`
+(12 entries × 2 tests); `sidebar_text`/`sidebar_icon` still pass at this
+alpha since text/icon have enormous margin. Restored to 0.94 and re-ran the
+full suite clean (228 passed) before continuing.
+
+**Icon reverted to `text_secondary`, alpha fix (0.94) left in place** — does
+**not** fail, and this is worth reporting honestly rather than silently
+declaring success:
+
+```
+$ .venv/bin/python -m pytest tests/test_contrast.py -q -k "sidebar_icon and not selected"
+............                                                             [100%]
+12 passed, 64 deselected in 0.03s
+```
+
+Measured directly: `text_secondary` on the 0.94-alpha sidebar fill over the
+adversarial extremes gives 3.11:1 (light/black, the worst case), 3.31:1
+(light/white), 5.99:1 (dark/black), 5.38:1 (dark/white) — all still clear
+the 3.0:1 floor, just barely in light mode. Raising the alpha to 0.94 to fix
+the accent (round 2's actual goal) had the side effect of making the fill
+nearly opaque, which incidentally rescues `text_secondary`'s worst case too
+(it only fails against a much lighter/more transparent fill, e.g. the old
+0.72). This is *not* the same failure as round 1's finding — the backdrop no
+longer degenerates, and the test genuinely isn't vacuous: reverting the icon
+to something worse than `text_secondary`, e.g. `text_disabled`, does fail
+(measured 1.94:1 light/black, 2.02:1 light/white). But the specific
+`text_secondary` regression from the original bug report no longer trips
+this particular assertion once the alpha is high enough — it's now the
+*fill alpha* test (via the accent) that carries the load of catching a
+weakened sidebar, and the icon test's job is to catch a badly-chosen icon
+*color*, which it still does.
+
+Restored `sidebar-icon-color` to `palette["text_primary"]` and confirmed the
+full suite passes clean before finishing.
+
+### Final numbers (round 2, both extremes, both modes, worst entry shown)
+
+```
+mode   backdrop  metric     worst ratio   entry
+dark   black     text/icon  17.38:1       Glass
+dark   white     text/icon  14.33:1       Glass
+light  black     text/icon  13.30:1       Glass
+light  white     text/icon  15.37:1       Glass
+dark   black     accent     4.76:1        Glass
+dark   white     accent     3.93:1        Glass
+light  black     accent     3.14:1        Glass   <- tightest margin overall
+light  white     accent     3.63:1        Glass
+```
+
+(All twelve entries produce identical numbers per mode now, since
+`sidebar-background-color`'s base color and alpha no longer vary by
+material/weight.)
+
+Sample fill values: `Glass` light = `rgba(242, 242, 247, 0.94)`,
+`Glass` dark = `rgba(28, 28, 30, 0.94)`.
+
+### Final verification (round 2)
+
+```
+$ .venv/bin/python -m pytest -q
+........................................................................ [ 31%]
+........................................................................ [ 63%]
+........................................................................ [ 94%]
+............                                                             [100%]
+228 passed in 0.97s
+
+$ .venv/bin/python scripts/build_themes.py --check
+/Volumes/Documents/code/hass-glass-theme/themes/glass.yaml is up to date (12 entries)
+
+$ .venv/bin/python -m yamllint -c .yamllint.yml themes/glass.yaml tokens/base.yaml \
+    tokens/glass.yaml tokens/frosted-glass.yaml tokens/modes/light.yaml \
+    tokens/modes/dark.yaml demo/dashboard.yaml
+(no output — clean, exit 0)
+
+$ git status --short
+ M glassbuild/cardmod.py
+ M glassbuild/materials.py
+ M glassbuild/variables.py
+ M tests/test_contrast.py
+ M themes/glass.yaml
+```
+
+### Files changed (round 2)
+
+- `glassbuild/materials.py` — added `SIDEBAR_FILL_ALPHA = 0.94`.
+- `glassbuild/variables.py` — sidebar fill now uses `SIDEBAR_FILL_ALPHA`.
+- `glassbuild/cardmod.py` — docstring expanded to state the near-opaque
+  tradeoff explicitly and why card-mod users are unaffected.
+- `tests/test_contrast.py` — sidebar tests retargeted to black/white
+  adversarial backdrops.
+- `themes/glass.yaml` — regenerated.

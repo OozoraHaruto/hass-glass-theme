@@ -8,6 +8,17 @@ from typing import Any
 from glassbuild.color import parse_rgba, rgba_str
 
 LITE_FILL_ALPHA = 0.72
+# The sidebar's own fill (see glassbuild/variables.py) needs a higher alpha
+# than Lite's card fill: it must keep the *accent* colour (used for the
+# selected nav item) above the 3:1 floor when composited over arbitrary
+# dashboard content, not just body/icon text. Swept against pure black and
+# pure white backdrops in both modes: 0.72 (LITE_FILL_ALPHA) drops the
+# accent as low as 1.82:1; 0.90 still fails (2.88:1, light-mode-over-black);
+# 0.94 is the lowest value that clears 3:1 everywhere (worst case 3.14:1).
+# Deliberately a separate constant from LITE_FILL_ALPHA -- the two answer
+# different questions (Lite's card fill only has to carry body text; the
+# sidebar's fill also has to carry the accent) and should be free to diverge.
+SIDEBAR_FILL_ALPHA = 0.94
 FULL_FILL_ALPHA_FLOOR = 0.10
 LIGHT_ALPHA_BONUS = 0.08
 

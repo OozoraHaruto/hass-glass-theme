@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import Any
 
 from glassbuild.color import parse_rgba, rgba_str
-from glassbuild.materials import LITE_FILL_ALPHA, Material
+from glassbuild.materials import SIDEBAR_FILL_ALPHA, Material
 
 
 def build_variables(
@@ -29,13 +29,15 @@ def build_variables(
     # own gradient like a card does. With no blur behind it (blur only exists
     # when card-mod is installed -- see cardmod.py), the card's low-alpha
     # glass fill lets that content show straight through, tanking sidebar
-    # text/icon contrast. So the sidebar gets its own fill: the same opaque
-    # base + alpha the Lite entries use (`LITE_FILL_ALPHA`), which stays
-    # legible with nothing behind it. Deliberately NOT full.fill (the card's
-    # white-based glass) at this alpha: in dark mode that would drop the
-    # selected-item accent below the 3:1 floor. Basing it on the opaque
-    # surface instead keeps dark mode dark and preserves accent contrast.
-    sidebar_fill = rgba_str(opaque_r, opaque_g, opaque_b, LITE_FILL_ALPHA)
+    # text/icon contrast. So the sidebar gets its own fill, based on the
+    # opaque surface rather than the card's white-based glass -- the latter
+    # drops the selected-item accent to ~1.99:1 in dark mode even at high
+    # alpha. It uses its own alpha, `SIDEBAR_FILL_ALPHA` (0.94), rather than
+    # reusing `LITE_FILL_ALPHA` (0.72): 0.72 is enough for body/icon text but
+    # lets the *accent* (the selected nav item) drop as low as ~1.82:1 when
+    # composited over a black or white worst case, below the 3:1 floor. See
+    # `SIDEBAR_FILL_ALPHA`'s docstring in materials.py for the sweep.
+    sidebar_fill = rgba_str(opaque_r, opaque_g, opaque_b, SIDEBAR_FILL_ALPHA)
 
     variables: dict[str, str] = {
         # ---- core palette -------------------------------------------------
