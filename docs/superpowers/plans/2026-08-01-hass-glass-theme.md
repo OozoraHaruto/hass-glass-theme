@@ -1,5 +1,17 @@
 # hass-glass-theme Implementation Plan
 
+> **Superseded — historical execution record only (amended 2026-08-02).** This plan is kept
+> as-is, task bodies unrewritten, as a record of what was actually done and in what order.
+> It was written before implementation and, in places, asserts things the shipped code
+> disproves — most notably the native `backdrop-filter` variable count (it says two; the
+> code sets seven) and the card-mod surface list (it names surfaces, such as menus,
+> tooltips, toasts, and the quick bar, that were never implemented and in at least one case
+> — `ha-toast` — cannot be). For the authoritative, corrected account of the design as
+> shipped, see
+> `docs/superpowers/specs/2026-08-01-hass-glass-theme-design.md` (revision 3), which carries
+> "Amended during execution" blockquotes correcting each such claim. Where this plan and
+> that spec disagree, the spec wins.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build a HACS-installable Home Assistant theme shipping twelve Apple-inspired glass entries generated from a single token source, validated by GitHub CI/CD.
@@ -108,7 +120,12 @@ __pycache__/
 .venv/
 venv/
 *.egg-info/
+.superpowers/
+actionlint
 ```
+
+`.superpowers/` holds build-process scratch and must stay ignored. `actionlint` is the
+binary Task 12 downloads for local workflow linting.
 
 `.yamllint.yml`:
 
@@ -529,7 +546,7 @@ palette:
 
 ```yaml
 material:
-  fill_rgb: [255, 255, 255]
+  fill_rgb: [90, 90, 94]
   fill_alpha_glass: 0.14
   fill_alpha_frosted: 0.45
   rim_rgb: [255, 255, 255]
@@ -550,7 +567,16 @@ palette:
   background_to: "#1B1620"
 ```
 
-Note on the dark Lite fill: Lite clamps alpha to 0.72 over a dark background, so `fill_rgb` of white would produce a near-white surface in dark mode. Task 4 handles this by using `opaque_surface` as the Lite fill base rather than `fill_rgb`.
+Note on the dark Lite fill: Lite clamps alpha to 0.72, so it uses `opaque_surface` as its fill
+base rather than `fill_rgb` (Task 4 handles this).
+
+**Amended during execution (2026-08-02).** Dark `fill_rgb` was originally specified as
+`[255, 255, 255]`. That is wrong: a white tint at frosted's 0.45 alpha composites to mid-grey
+(124, 124, 126) over the dark gradient, so white body text lands at 4.17:1 and fails the WCAG
+AA floor of 4.5:1 — Task 10's contrast suite caught it. Apple's dark-mode materials tint dark,
+not white. The value is now `[90, 90, 94]`, which clears the thresholds with headroom
+(primary 12.95:1, secondary 5.04:1) while keeping the two dark materials ~23 grey levels
+apart, so Glass and Frosted Glass stay visually distinct. The alphas are unchanged.
 
 - [ ] **Step 2: Write the failing test**
 

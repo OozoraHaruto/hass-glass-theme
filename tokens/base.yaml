@@ -1,0 +1,21 @@
+# Geometry, type, and motion. Shared by all twelve entries.
+radius:
+  card: 18px
+  dialog: 28px
+  control: 12px
+  pill: 980px
+
+shadow: "0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 32px rgba(0, 0, 0, 0.12)"
+
+font:
+  stack: >-
+    -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui,
+    "Segoe UI", Roboto, sans-serif
+  stack_code: >-
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace
+  tracking_headline: "-0.4px"
+  tracking_body: "-0.2px"
+
+motion:
+  duration: 300ms
+  easing: cubic-bezier(0.25, 0.1, 0.25, 1)
