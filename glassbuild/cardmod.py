@@ -64,6 +64,14 @@ dropping it: the more-info dialog's surface is already glassed by the native
 the original brief for this task) no longer exists anywhere in the current
 frontend source -- it does not appear in a single ``.ts`` file. It has been
 replaced by ``ha-tab-group``.
+
+On the ``.header.header.header`` selector in ``_ROOT_TEMPLATE``: the header's
+own backdrop-filter is native (``--app-header-backdrop-filter``, set in
+``glassbuild/variables.py``), so this rule only supplies what HA has no
+variable for -- fill, border, and type tracking. The selector is tripled to
+reach specificity (0,3,0), which beats hui-root's own ``.edit-mode .header``
+rule (0,2,0), so the glass fill survives edit mode regardless of style-tag
+order.
 """
 
 from __future__ import annotations
@@ -74,12 +82,6 @@ from glassbuild.materials import Material
 
 _ROOT_TEMPLATE = """\
 .: |
-  /* .header's own backdrop-filter is native (--app-header-backdrop-filter,
-     set in glassbuild/variables.py) -- this only supplies what HA has no
-     variable for: fill, border, and type tracking.
-     Selector is tripled to reach specificity (0,3,0), which beats hui-root's
-     own ".edit-mode .header" rule (0,2,0) so the glass fill survives edit
-     mode regardless of style-tag order. */
   .header.header.header {{
     background: {fill};
     border-bottom: 1px solid {rim};
