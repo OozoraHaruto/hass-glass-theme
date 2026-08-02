@@ -83,7 +83,7 @@ def test_full_entries_have_cardmod_keys(themes):
 
 def test_frosted_uses_its_own_blur(themes):
     assert "blur(40px)" in themes["Frosted Glass Dark"]["ha-card-backdrop-filter"]
-    assert "blur(8px)" in themes["Glass Dark"]["ha-card-backdrop-filter"]
+    assert "blur(28px)" in themes["Glass Dark"]["ha-card-backdrop-filter"]
 
 
 def test_lite_entries_have_no_backdrop_filter_anywhere(themes):

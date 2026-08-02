@@ -67,7 +67,12 @@ def build_variables(
         "ha-card-border-radius": radius["card"],
         "ha-card-border-width": "1px",
         "ha-card-border-color": full.rim,
-        "ha-card-box-shadow": merged["shadow"],
+        # The specular edge leads, then the drop shadow. Box shadows paint
+        # first-listed on top, so the inset edge has to come first or the
+        # drop shadow's spread washes it out at the corners. See
+        # `Material.edge` in glassbuild/materials.py for why the edge is a
+        # shadow pair rather than part of `ha-card-border-color`.
+        "ha-card-box-shadow": f"{full.edge}, {merged['shadow']}",
         # ---- dialogs: full material ----------------------------------------
         "ha-dialog-surface-background": full.fill,
         "ha-dialog-border-radius": radius["dialog"],

@@ -1,6 +1,6 @@
 material:
   fill_rgb: [255, 255, 255]
-  fill_alpha_glass: 0.10
+  fill_alpha_glass: 0.26
   fill_alpha_frosted: 0.55
   # A white rim is invisible on light-mode pages (dashboards and the flat
   # --primary-background-color fallback used by Settings/Developer
@@ -8,6 +8,23 @@ material:
   # light-mode material edge; this matches the palette's existing divider
   # hue (`rgba(60, 60, 67, ...)`) instead of inventing a new one.
   rim_rgb: [60, 60, 67]
+
+  # Luminance remap applied to the backdrop *after* the blur -- the mirror of
+  # dark mode's (see modes/dark.yaml). Light mode lifts the backdrop and
+  # softens it, so it settles *above* nothing and instead flattens toward
+  # paper white, leaving the card's own fill and its dark text as the only
+  # things with real contrast on screen.
+  brightness_pct: 112
+  contrast_pct: 92
+
+  # The specular edge -- same two colours as dark mode (see modes/dark.yaml),
+  # different strengths. On a light background a black under-edge would read
+  # as a hard drawn line rather than shadow, so light mode leans on the
+  # highlight instead and keeps the shade faint.
+  highlight_rgb: [255, 255, 255]
+  highlight_alpha: 0.60
+  shade_rgb: [0, 0, 0]
+  shade_alpha: 0.10
 
 palette:
   accent: "#007AFF"

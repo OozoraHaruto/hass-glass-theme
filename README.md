@@ -17,9 +17,16 @@ variant, each with a matching Lite twin:
 | Frosted Glass        | `Frosted Glass`     | `Frosted Glass Light`     | `Frosted Glass Dark`     |
 | Frosted Glass Lite  | `Frosted Glass Lite`| `Frosted Glass Light Lite`| `Frosted Glass Dark Lite`|
 
-- **Glass** is a light, subtle blur (`blur(8px)`) — closer to iOS's thin material.
+- **Glass** (`blur(28px)`) is Apple's *regular* Liquid Glass — translucent, but
+  wide enough to diffuse whatever is behind it into a colour field rather than
+  leaving it legible through the card.
 - **Frosted Glass** is a heavier blur (`blur(40px)`) — closer to macOS's thick
   material.
+- Both materials remap the backdrop's luminance after blurring it (dark mode
+  dims and hardens, light mode lifts and softens) and carry a directional
+  specular edge — a highlight along the top, shadow along the bottom — so a
+  card reads as a surface in front of the background rather than a hole
+  through to it.
 - **Auto** entries follow Home Assistant's light/dark setting; **Light**/**Dark**
   entries pin one mode regardless of the ambient setting.
 - **Lite** entries exist for the dropdown bug below and for underpowered wall

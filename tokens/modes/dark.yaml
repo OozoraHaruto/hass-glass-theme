@@ -1,8 +1,27 @@
 material:
   fill_rgb: [90, 90, 94]
-  fill_alpha_glass: 0.14
+  fill_alpha_glass: 0.30
   fill_alpha_frosted: 0.45
   rim_rgb: [255, 255, 255]
+
+  # Luminance remap applied to the backdrop *after* the blur. Dark mode pulls
+  # the backdrop down and hardens it, so whatever survives the blur settles
+  # below the card's own fill and the card reads as the nearer surface. This
+  # is the "more depth and separation" half of iOS 27's retune, and it is
+  # what buys legibility here without driving `fill_alpha_glass` up toward
+  # opaque.
+  brightness_pct: 60
+  contrast_pct: 110
+
+  # The specular edge. White on top, black underneath, in both modes -- a lit
+  # pane catches light on its upper edge and falls into shadow on its lower
+  # one regardless of the ambient appearance. Only the strengths flip: against
+  # a dark background the shade does more of the separating, so it carries the
+  # heavier alpha of the two here.
+  highlight_rgb: [255, 255, 255]
+  highlight_alpha: 0.28
+  shade_rgb: [0, 0, 0]
+  shade_alpha: 0.22
 
 palette:
   accent: "#0A84FF"

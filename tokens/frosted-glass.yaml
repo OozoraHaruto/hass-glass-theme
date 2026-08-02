@@ -2,5 +2,12 @@
 material:
   name: Frosted Glass
   blur_px: 40
-  saturate_pct: 150
+  saturate_pct: 120
   rim_alpha: 0.20
+  # A frosted pane scatters light instead of reflecting it, so its edges
+  # catch far less of a highlight than a clear one does. This scales both
+  # halves of the specular edge (highlight *and* shade) down together, which
+  # keeps the edge's light direction intact while softening it -- dropping
+  # only the highlight would read as a pane lit from below. The ratio
+  # deliberately tracks `rim_alpha`'s own glass-to-frosted ratio (0.20/0.45).
+  edge_scale: 0.55

@@ -21,10 +21,17 @@ MERGED = {
         "blur_px": 8,
         "saturate_pct": 180,
         "rim_alpha": 0.45,
+        "edge_scale": 1.0,
         "fill_rgb": [255, 255, 255],
         "fill_alpha_glass": 0.14,
         "fill_alpha_frosted": 0.45,
         "rim_rgb": [255, 255, 255],
+        "brightness_pct": 60,
+        "contrast_pct": 110,
+        "highlight_rgb": [255, 255, 255],
+        "highlight_alpha": 0.28,
+        "shade_rgb": [0, 0, 0],
+        "shade_alpha": 0.22,
     },
     "palette": {
         "accent": "#0A84FF",
@@ -76,15 +83,39 @@ def test_code_font_family_is_monospace_and_distinct_from_body():
 def test_card_uses_the_full_material():
     v = _vars()
     assert v["ha-card-background"] == "rgba(255, 255, 255, 0.14)"
-    assert v["ha-card-backdrop-filter"] == "blur(8px) saturate(180%)"
+    assert v["ha-card-backdrop-filter"] == (
+        "blur(8px) saturate(180%) brightness(60%) contrast(110%)"
+    )
     assert v["ha-card-border-radius"] == "18px"
     assert v["ha-card-border-color"] == "rgba(255, 255, 255, 0.45)"
-    assert v["ha-card-box-shadow"].startswith("0 1px 2px")
+
+
+def test_card_shadow_leads_with_the_specular_edge():
+    """The inset edge has to precede the drop shadow.
+
+    Box shadows paint first-to-last with the *first* on top, so an edge
+    listed after the drop shadow would be painted under it and lose its
+    crispness at the corners.
+    """
+    v = _vars()
+    assert v["ha-card-box-shadow"] == (
+        "inset 0 1px 0 0 rgba(255, 255, 255, 0.28), "
+        "inset 0 -1px 0 0 rgba(0, 0, 0, 0.22), "
+        "0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 32px rgba(0, 0, 0, 0.12)"
+    )
+
+
+def test_lite_cards_keep_the_specular_edge():
+    v = _vars(lite=True)
+    assert "ha-card-backdrop-filter" not in v
+    assert v["ha-card-box-shadow"].startswith("inset 0 1px 0 0")
 
 
 def test_dialog_uses_the_native_backdrop_variable():
     v = _vars()
-    assert v["ha-dialog-surface-backdrop-filter"] == "blur(8px) saturate(180%)"
+    assert v["ha-dialog-surface-backdrop-filter"] == (
+        "blur(8px) saturate(180%) brightness(60%) contrast(110%)"
+    )
     assert v["ha-dialog-border-radius"] == "28px"
 
 
@@ -127,8 +158,9 @@ def test_lite_omits_every_backdrop_filter_key():
 
 def test_full_material_includes_every_backdrop_filter_key():
     v = _vars(lite=False)
-    full_backdrop = "blur(8px) saturate(180%)"
-    scrim_backdrop = "blur(4px) saturate(180%)"  # light material: half blur
+    full_backdrop = "blur(8px) saturate(180%) brightness(60%) contrast(110%)"
+    # light material: half blur, same diffusion terms
+    scrim_backdrop = "blur(4px) saturate(180%) brightness(60%) contrast(110%)"
     assert v["ha-card-backdrop-filter"] == full_backdrop
     assert v["ha-dialog-surface-backdrop-filter"] == full_backdrop
     assert v["app-header-backdrop-filter"] == full_backdrop

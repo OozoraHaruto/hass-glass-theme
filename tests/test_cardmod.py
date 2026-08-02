@@ -5,12 +5,20 @@ import yaml
 from glassbuild.cardmod import build_cardmod
 from glassbuild.materials import Material
 
+EDGE = "inset 0 1px 0 0 rgba(255, 255, 255, 0.28), inset 0 -1px 0 0 rgba(0, 0, 0, 0.22)"
+
 FULL = Material(
     fill="rgba(255, 255, 255, 0.14)",
     rim="rgba(255, 255, 255, 0.45)",
-    backdrop="blur(8px) saturate(180%)",
+    edge=EDGE,
+    backdrop="blur(28px) saturate(140%) brightness(60%) contrast(110%)",
 )
-LITE = Material(fill="rgba(28, 28, 30, 0.72)", rim="rgba(255, 255, 255, 0.45)", backdrop=None)
+LITE = Material(
+    fill="rgba(28, 28, 30, 0.72)",
+    rim="rgba(255, 255, 255, 0.45)",
+    edge=EDGE,
+    backdrop=None,
+)
 
 MERGED = {
     "font": {
@@ -103,7 +111,7 @@ def test_sidebar_yaml_covers_the_sidebar():
 
 
 def test_sidebar_yaml_carries_the_backdrop_filter():
-    assert "blur(8px) saturate(180%)" in _block()["card-mod-sidebar-yaml"]
+    assert FULL.backdrop in _block()["card-mod-sidebar-yaml"]
 
 
 def test_letter_spacing_tracking_tokens_appear():

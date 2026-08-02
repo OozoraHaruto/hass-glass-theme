@@ -37,16 +37,69 @@ def test_merged_tokens_have_required_keys(tokens, material, mode):
 
 
 def test_tuning_table_values_match_the_spec(tokens):
-    assert tokens["materials"]["glass"]["material"]["blur_px"] == 8
-    assert tokens["materials"]["glass"]["material"]["saturate_pct"] == 180
+    assert tokens["materials"]["glass"]["material"]["blur_px"] == 28
+    assert tokens["materials"]["glass"]["material"]["saturate_pct"] == 140
     assert tokens["materials"]["glass"]["material"]["rim_alpha"] == 0.45
+    assert tokens["materials"]["glass"]["material"]["edge_scale"] == 1.0
     assert tokens["materials"]["frosted-glass"]["material"]["blur_px"] == 40
-    assert tokens["materials"]["frosted-glass"]["material"]["saturate_pct"] == 150
+    assert tokens["materials"]["frosted-glass"]["material"]["saturate_pct"] == 120
     assert tokens["materials"]["frosted-glass"]["material"]["rim_alpha"] == 0.20
-    assert tokens["modes"]["light"]["material"]["fill_alpha_glass"] == 0.10
+    assert tokens["materials"]["frosted-glass"]["material"]["edge_scale"] == 0.55
+    assert tokens["modes"]["light"]["material"]["fill_alpha_glass"] == 0.26
     assert tokens["modes"]["light"]["material"]["fill_alpha_frosted"] == 0.55
-    assert tokens["modes"]["dark"]["material"]["fill_alpha_glass"] == 0.14
+    assert tokens["modes"]["dark"]["material"]["fill_alpha_glass"] == 0.30
     assert tokens["modes"]["dark"]["material"]["fill_alpha_frosted"] == 0.45
+
+
+def test_glass_blur_is_wide_enough_to_diffuse_content(tokens):
+    """Apple's `.regular` glass diffuses the backdrop into a colour field.
+
+    At the old 8px the backdrop stayed legible *through* the card, which is
+    what "too glass" looks like. iOS 27's headline fix was more diffusion,
+    not more tint -- so this floor guards the diffusion, and the alphas below
+    stay free to move.
+    """
+    for material in MATERIALS:
+        blur = tokens["materials"][material]["material"]["blur_px"]
+        assert blur >= 24, f"{material} blurs at {blur}px, too little to diffuse"
+
+
+def test_saturation_never_amplifies_the_backdrop(tokens):
+    """Apple's materials compress chroma toward neutral; they don't boost it.
+
+    Anything much above 100% pulls the eye to what's *behind* the card rather
+    than what's on it -- the web-glassmorphism trope this theme is not.
+    """
+    for material in MATERIALS:
+        saturate = tokens["materials"][material]["material"]["saturate_pct"]
+        assert 100 <= saturate <= 140, f"{material} saturates at {saturate}%"
+
+
+@pytest.mark.parametrize("mode", MODES)
+def test_every_mode_supplies_the_diffusion_and_edge_tokens(tokens, mode):
+    material = tokens["modes"][mode]["material"]
+    for key in (
+        "brightness_pct",
+        "contrast_pct",
+        "highlight_rgb",
+        "highlight_alpha",
+        "shade_rgb",
+        "shade_alpha",
+    ):
+        assert key in material, f"{mode} mode is missing {key}"
+
+
+def test_dark_mode_dims_the_backdrop_and_light_mode_lifts_it(tokens):
+    """The luminance remap runs toward each mode's own base, not a shared one.
+
+    Dark mode pulls the backdrop down and hardens it; light mode lifts it and
+    softens it. Both land on a flatter field than they started from, which is
+    what keeps text legible at a low fill alpha.
+    """
+    dark = tokens["modes"]["dark"]["material"]
+    light = tokens["modes"]["light"]["material"]
+    assert dark["brightness_pct"] < 100 < light["brightness_pct"]
+    assert light["contrast_pct"] < 100 < dark["contrast_pct"]
 
 
 def test_base_tokens_match_the_spec(tokens):
@@ -90,6 +143,27 @@ def test_dark_mode_material_rgb_values_match_the_spec(tokens):
     material = tokens["modes"]["dark"]["material"]
     assert material["fill_rgb"] == [90, 90, 94]
     assert material["rim_rgb"] == [255, 255, 255]
+
+
+@pytest.mark.parametrize("mode", MODES)
+def test_the_specular_edge_is_white_over_black_in_both_modes(tokens, mode):
+    """A lit pane catches light on top and falls into shadow underneath.
+
+    That is true of a physical edge regardless of the ambient appearance, so
+    unlike `rim_rgb` -- which flips to a dark hairline in light mode because a
+    white *perimeter* is invisible there -- the highlight/shade pair keeps the
+    same two colours in both modes. Only the alphas differ.
+    """
+    material = tokens["modes"][mode]["material"]
+    assert material["highlight_rgb"] == [255, 255, 255]
+    assert material["shade_rgb"] == [0, 0, 0]
+
+
+def test_light_mode_leans_on_the_highlight_and_dark_mode_on_the_shade(tokens):
+    dark = tokens["modes"]["dark"]["material"]
+    light = tokens["modes"]["light"]["material"]
+    assert light["highlight_alpha"] > dark["highlight_alpha"]
+    assert dark["shade_alpha"] > light["shade_alpha"]
 
 
 def test_light_palette_matches_the_spec(tokens):
