@@ -1,5 +1,17 @@
 # hass-glass-theme Implementation Plan
 
+> **Superseded — historical execution record only (amended 2026-08-02).** This plan is kept
+> as-is, task bodies unrewritten, as a record of what was actually done and in what order.
+> It was written before implementation and, in places, asserts things the shipped code
+> disproves — most notably the native `backdrop-filter` variable count (it says two; the
+> code sets seven) and the card-mod surface list (it names surfaces, such as menus,
+> tooltips, toasts, and the quick bar, that were never implemented and in at least one case
+> — `ha-toast` — cannot be). For the authoritative, corrected account of the design as
+> shipped, see
+> `docs/superpowers/specs/2026-08-01-hass-glass-theme-design.md` (revision 3), which carries
+> "Amended during execution" blockquotes correcting each such claim. Where this plan and
+> that spec disagree, the spec wins.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build a HACS-installable Home Assistant theme shipping twelve Apple-inspired glass entries generated from a single token source, validated by GitHub CI/CD.

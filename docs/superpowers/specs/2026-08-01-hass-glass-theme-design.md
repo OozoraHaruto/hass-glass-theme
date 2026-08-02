@@ -1,8 +1,16 @@
 # hass-glass-theme — Design
 
 **Date:** 2026-08-01
-**Status:** Approved (design phase)
-**Revision:** 2 — the two open items from revision 1 were researched and resolved; findings
+**Status:** Implemented — see "Amended during execution" blockquotes throughout
+**Revision:** 3 — amended 2026-08-02, after implementation, to correct claims execution
+disproved: the native `backdrop-filter` variable count (two → seven), the card-mod surface
+list (narrowed to what actually shipped and is feasible), success criteria 3 and 5, and the
+background wording. This is the authoritative account of the design as shipped; the
+original rationale is kept and superseded in place via blockquotes rather than deleted, so
+the change history stays honest. The companion implementation plan
+(`docs/superpowers/plans/2026-08-01-hass-glass-theme.md`) is a historical execution record
+and was not similarly rewritten — this spec is authoritative where the two disagree.
+**Revision 2** — the two open items from revision 1 were researched and resolved; findings
 changed the layout, the card-mod story, and the entry count. See "Resolved research" below.
 
 ## Purpose
@@ -28,6 +36,25 @@ no card-mod involved:
 Consequence: a bare install with no card-mod gets **real blur on cards and dialogs**.
 card-mod is demoted from "required for any glass effect" to "required only for surfaces
 with no native hook" — header, sidebar, view tabs, menus, tooltips, toasts, quick bar.
+
+> **Amended during execution (2026-08-02).** This was wrong, discovered while building
+> `glassbuild/variables.py`. Home Assistant exposes **seven** native `backdrop-filter`
+> theme variables, not two, and this theme sets all seven (verified against
+> `glassbuild/variables.py`, which gates all seven on a single `if full.backdrop is not
+> None:` block):
+>
+> - `--ha-card-backdrop-filter` — cards
+> - `--ha-dialog-surface-backdrop-filter` — dialog surfaces, including the more-info dialog
+> - `--ha-dialog-scrim-backdrop-filter` — the dialog scrim (backdrop behind the dialog)
+> - `--dialog-backdrop-filter` — legacy alias of the scrim variable, set to the same value
+> - `--ha-bottom-sheet-surface-backdrop-filter` — bottom sheets (mobile-width dialogs)
+> - `--ha-bottom-sheet-scrim-backdrop-filter` — the bottom-sheet scrim
+> - `--app-header-backdrop-filter` — the dashboard header
+>
+> The consequence below is correspondingly larger: a bare install with no card-mod gets
+> real blur on cards, dialogs, both scrims, bottom sheets, **and the header**. card-mod's
+> job shrinks further than this section originally said — see "card-mod scope: corrected"
+> under UI surface coverage below for what's actually left for it to do.
 
 ### Both native variables break dropdown layering
 
@@ -72,6 +99,15 @@ ships its own background; this is load-bearing, not decorative.
 **Native theme variables cover cards and dialogs only.** Everything else — header, sidebar,
 tabs, menus, tooltips, toasts, quick bar — has no native hook and needs card-mod's
 `card-mod-theme` / `card-mod-root-yaml` CSS injection to receive a material.
+
+> **Amended during execution (2026-08-02).** Wrong on two counts. First, native coverage is
+> wider: it's cards, dialogs (both surface and scrim), bottom sheets (both surface and
+> scrim), **and the header** — seven variables total, not two (see the amendment above).
+> Second, of what's left, only the sidebar and the header's tab strip actually have a
+> card-mod hook that works; menus, tooltips, toasts, and the quick bar were never
+> implemented, and at least one of them (`ha-toast`) turned out not to be feasible at all —
+> it uses a hardcoded colour and is not themeable via card-mod or theme variables. See
+> "card-mod scope: corrected" under UI surface coverage below.
 
 ## Architecture
 
@@ -134,6 +170,15 @@ Each non-Lite entry applies its material in two layers:
    blocks extending the material to header, sidebar, tabs, menus, tooltips, toasts, and
    quick bar. Home Assistant ignores these keys when card-mod is absent.
 
+> **Amended during execution (2026-08-02).** The native layer is seven variables, not two —
+> it also covers both dialog scrims, both bottom-sheet variables, and the header (see the
+> amendments above). The card-mod layer is correspondingly narrower than described: it
+> extends the material to the **sidebar** (fill, blur, and border — there is no native
+> `--sidebar-backdrop-filter`) and to the header's **tab strip**, plus letter-spacing and
+> transition timing on both, since Home Assistant has no theme variable for either of those
+> anywhere. It does **not** reach menus, tooltips, toasts, or the quick bar — those were
+> never implemented; see "card-mod scope: corrected" under UI surface coverage.
+
 ### Lite entries
 
 Lite entries emit **no** `backdrop-filter` — neither native variable, and no card-mod blur
@@ -176,6 +221,15 @@ The theme supplies a layered CSS mesh gradient as the default `lovelace-backgrou
 CSS: no image files, no bandwidth cost, and it gives `backdrop-filter` something to blur.
 The README documents a one-line override for users who prefer their own wallpaper.
 
+> **Amended during execution (2026-08-02).** "Layered CSS mesh gradient" overstates what
+> shipped. It's a single three-stop `linear-gradient(160deg, background_from 0%,
+> background_via 52%, background_to 100%)` (see `glassbuild/variables.py`,
+> `lovelace-background`) — not a layered mesh (multiple overlapping radial/conic gradients
+> at different angles, the CSS technique the term "mesh gradient" refers to). The rest of
+> the rationale holds: it's still pure CSS, no image files, and it still gives
+> `backdrop-filter` something to blur. Also applies only to Lovelace dashboard views — see
+> the README's "Outside dashboards" section for pages that don't read it.
+
 ### Material tuning — the only axis on which the two materials differ
 
 | Property | Glass | Frosted Glass |
@@ -201,6 +255,34 @@ All `ha-card` cards and card headers; more-info dialogs; all `ha-dialog`s and th
 **Full material, card-mod required**
 App header and toolbar; sidebar and sidebar items; view tabs; badges; sections-view
 containers; overflow menus and dropdowns; quick-bar / search dialog; toasts; tooltips; FAB.
+
+> **Amended during execution (2026-08-02) — card-mod scope: corrected.** Both lists above
+> are wrong about what's native versus what needed card-mod, and the second list describes
+> work that was never implemented and, for at least one item, cannot be. Corrected:
+>
+> **Full material, native** (no card-mod required) — all `ha-card` cards and card headers;
+> more-info dialogs; all `ha-dialog`s and their headers, plus both dialog scrims; bottom
+> sheets, surface and scrim; **and the app header** (fill, blur, and text color — the
+> header's own backdrop-filter is native via `--app-header-backdrop-filter`).
+>
+> **card-mod required, and shipped** — only two surfaces, plus two cross-cutting style
+> properties Home Assistant has no theme variable for at all:
+> - The **sidebar**'s blur and border (its fill is native; there's no
+>   `--sidebar-backdrop-filter`, so card-mod supplies the blur itself).
+> - The header's **tab strip** background.
+> - **Letter-spacing** on the header and the sidebar's title/list items.
+> - **Transition duration/easing** on the header and sidebar.
+>
+> **Not themed, and why** — the original list named app header/toolbar (now native, see
+> above), view tabs (shipped, see above), badges, sections-view containers, overflow menus
+> and dropdowns, quick-bar/search dialog, toasts, tooltips, and the FAB. None of the
+> remaining eight (badges, sections-view containers, menus, dropdowns, quick bar, toasts,
+> tooltips, FAB) were implemented. They fall back to Home Assistant's default, unstyled
+> appearance. At least one is not a scoping choice but a hard limit: `ha-toast` renders with
+> a hardcoded color and exposes no theme variable or card-mod hook, so it cannot be glassed
+> by this theme regardless of effort spent. The others were simply out of scope for what
+> shipped — a future revision could pursue card-mod selectors for them, but none currently
+> exist in `glassbuild/cardmod.py`.
 
 **Light material** — derived from each material's full values as: blur at half the full
 radius (Glass `blur(4px)`, Frosted `blur(20px)`), fill alpha `+0.08` above the full-material
@@ -325,3 +407,22 @@ verification is a human step, and the demo dashboard exists to make that step fa
    by test.
 7. `ci.yml` passes on a clean checkout; `release.yml` produces an installable release.
 8. The repository installs via HACS as a custom repository.
+
+> **Amended during execution (2026-08-02).** Criteria 3 and 5 are unmet as originally
+> written and are rewritten below to describe what actually shipped, rather than left
+> standing as aspirational. Criteria 1, 2, 4, 6, 7, and 8 are unaffected and hold as
+> written — all are verified by the test suite or by CI directly.
+>
+> 3. With no card-mod installed, cards, dialogs (surface and scrim), bottom sheets
+>    (surface and scrim), and the header already show the material natively (criterion 2,
+>    extended — see the native-variable amendment above). With card-mod additionally
+>    installed, the sidebar and the header's tab strip also show the material, and the
+>    header/sidebar pick up tightened letter-spacing and themed transition timing. card-mod
+>    does **not** extend the material to menus, tooltips, toasts, or the quick bar — those
+>    were never implemented (`ha-toast` specifically cannot be, per the UI surface coverage
+>    amendment above).
+> 5. Every surface listed under "Full material, native" and "card-mod required, and
+>    shipped" in the corrected UI surface coverage section is themed. Surfaces listed under
+>    "Not themed, and why" fall back to Home Assistant's default appearance by design, not
+>    by omission discovered after the fact — this criterion no longer claims blanket
+>    coverage of every surface named in the original UI-surface-coverage table.
