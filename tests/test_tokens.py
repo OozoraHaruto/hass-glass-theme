@@ -2,8 +2,6 @@ import pytest
 
 from glassbuild.tokens import MATERIALS, MODES, load_tokens, merge
 
-REPO_ROOT_MARKER = "tokens"
-
 
 def test_material_and_mode_names():
     assert MATERIALS == ("glass", "frosted-glass")
