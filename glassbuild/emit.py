@@ -48,29 +48,36 @@ def _entry_names() -> tuple[str, ...]:
 ENTRY_NAMES: tuple[str, ...] = _entry_names()
 
 
-def _mode_payload(
-    tokens: dict[str, Any], material: str, mode: str, lite: bool, entry_name: str
-) -> dict[str, str]:
-    """Build one entry's flat payload: HA variables plus (if applicable) card-mod keys.
+def _build_variables_for_mode(
+    tokens: dict[str, Any], material: str, mode: str, lite: bool
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, str]]:
+    """Merge tokens and derive materials/variables once for a (material, mode, lite) triple.
 
-    ``entry_name`` only affects the ``card-mod-theme`` value inside the
-    card-mod block (see ``glassbuild/cardmod.py``) -- everything else is a
-    pure function of the merged tokens and derived materials, so it is safe
-    to call this twice with the same tokens/mode but different names (once
-    for a flat entry, once for the Auto entry's same-mode payload) and expect
-    every other key to come back byte-identical.
+    This is the entry-name-*independent* half of an entry's payload: the
+    merged tokens, the derived ``Material`` objects, and the flat HA
+    variables. It is computed exactly once per (material, mode, lite)
+    combination and its outputs are reused for both the flat entry and the
+    Auto entry's same-mode payload -- only ``build_cardmod``'s
+    ``card-mod-theme`` value differs between those two uses, so only that
+    call is repeated (see ``build_themes`` below).
     """
     merged = merge(tokens["base"], tokens["materials"][material], tokens["modes"][mode])
     materials = derive(merged, material, lite=lite)
     variables = build_variables(merged, materials)
-    cardmod = build_cardmod(entry_name, materials, merged)
-    return {**variables, **cardmod}
+    return merged, materials, variables
 
 
 def build_themes(root: Path) -> dict[str, dict[str, Any]]:
-    """Build the complete theme document: twelve entries keyed by display name."""
+    """Build the complete theme document: twelve entries keyed by display name.
+
+    Insertion order matches ``ENTRY_NAMES`` exactly -- entries are collected
+    into a scratch dict in whatever order is convenient to compute (Light,
+    Dark, then Auto per material/weight), then re-keyed into the final dict
+    by iterating ``ENTRY_NAMES``, so a caller that serialises this dict
+    without sorting still gets the canonical matrix order.
+    """
     tokens = load_tokens(root)
-    themes: dict[str, dict[str, Any]] = {}
+    built: dict[str, dict[str, Any]] = {}
 
     for material in MATERIALS:
         label = _LABEL[material]
@@ -78,22 +85,27 @@ def build_themes(root: Path) -> dict[str, dict[str, Any]]:
             suffix = " Lite" if lite else ""
             auto_name = f"{label}{suffix}"
 
-            auto_mode_payloads: dict[str, dict[str, str]] = {}
+            mode_payloads: dict[str, dict[str, str]] = {}
             for mode, mode_label in _MODE_LABEL.items():
-                flat_name = f"{label} {mode_label}{suffix}"
-                themes[flat_name] = _mode_payload(tokens, material, mode, lite, flat_name)
-                auto_mode_payloads[mode] = _mode_payload(
-                    tokens, material, mode, lite, auto_name
+                merged, materials, variables = _build_variables_for_mode(
+                    tokens, material, mode, lite
                 )
 
-            light_payload = auto_mode_payloads["light"]
-            dark_payload = auto_mode_payloads["dark"]
+                flat_name = f"{label} {mode_label}{suffix}"
+                flat_cardmod = build_cardmod(flat_name, materials, merged)
+                built[flat_name] = {**variables, **flat_cardmod}
+
+                auto_cardmod = build_cardmod(auto_name, materials, merged)
+                mode_payloads[mode] = {**variables, **auto_cardmod}
+
+            light_payload = mode_payloads["light"]
+            dark_payload = mode_payloads["dark"]
             shared = {
                 key: value
                 for key, value in light_payload.items()
                 if dark_payload.get(key) == value
             }
-            themes[auto_name] = {
+            built[auto_name] = {
                 **shared,
                 "modes": {
                     "light": {k: v for k, v in light_payload.items() if k not in shared},
@@ -101,4 +113,4 @@ def build_themes(root: Path) -> dict[str, dict[str, Any]]:
                 },
             }
 
-    return themes
+    return {name: built[name] for name in ENTRY_NAMES}
