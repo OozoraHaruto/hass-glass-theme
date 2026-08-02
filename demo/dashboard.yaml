@@ -1,0 +1,76 @@
+# Manual verification dashboard for the Glass / Frosted Glass themes.
+#
+# Copy this into a Lovelace view in raw configuration mode (or paste as a new
+# view) and step through all twelve entries -- in both light and dark, with
+# and without card-mod installed -- using the profile theme picker.
+#
+# What to look for on each card:
+#   - entities / tile / button: control glass (light material) vs. the
+#     dialog/card glass behind them. The "Entities and controls" card's
+#     input_select row is also the trigger for the frontend#20725 check
+#     below -- click it to open its dropdown.
+#   - markdown: body text and code-block contrast on the card fill.
+#   - history-graph / statistic: dense reading surfaces, which stay opaque
+#     by design (no blur) even on the full-glass entries.
+#   - picture-elements: present specifically because a picture-elements
+#     card creates its own backdrop-filter stacking context. This is the
+#     known frontend#20725 repro shape (confirmed against the upstream
+#     issue): a dropdown control elsewhere on the page -- here, the
+#     input_select row in the entities card above -- can render *behind*
+#     a picture-elements card instead of on top of it, making the open
+#     menu's items unclickable. Open the input_select dropdown on a
+#     non-Lite entry and check whether it is trapped behind this card. If
+#     it is, that is the documented upstream bug (closed "not planned");
+#     the remedy is switching to the matching Lite entry, not filing a new
+#     issue against this theme.
+#   - logbook: another dense reading surface, opaque by design.
+views:
+  - title: Glass Demo
+    type: sections
+    sections:
+      - type: grid
+        cards:
+          - type: entities
+            title: Entities and controls
+            entities:
+              - input_boolean.demo_toggle
+              - input_number.demo_slider
+              - input_select.demo_dropdown
+              - input_text.demo_text
+          - type: tile
+            entity: light.demo_light
+            features:
+              - type: light-brightness
+          - type: button
+            entity: script.demo_script
+      - type: grid
+        cards:
+          - type: markdown
+            title: Markdown and code
+            content: |
+              Body text on glass. Inline `code` and a block:
+
+              ```yaml
+              key: value
+              ```
+          - type: history-graph
+            entities:
+              - sensor.demo_temperature
+          - type: statistic
+            entity: sensor.demo_temperature
+            stat_type: mean
+      - type: grid
+        cards:
+          # This card's own backdrop-filter stacking context is the
+          # frontend#20725 trap -- see the comment at the top of this file.
+          - type: picture-elements
+            image: /local/demo-floorplan.png
+            elements:
+              - type: state-badge
+                entity: light.demo_light
+                style:
+                  top: 40%
+                  left: 40%
+          - type: logbook
+            entities:
+              - light.demo_light
