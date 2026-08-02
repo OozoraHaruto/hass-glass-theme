@@ -1,8 +1,9 @@
 """WCAG AA contrast checks for every entry.
 
 Text sits on the card fill, which sits on the dashboard gradient. The gradient
-is approximated by its darkest and lightest stops; body text must clear 4.5:1
-against both, so the check holds wherever on the gradient a card lands.
+is approximated by its three stops (start, middle, and end); body text must
+clear 4.5:1 against all three, so the check holds wherever on the gradient a
+card lands.
 """
 
 from pathlib import Path

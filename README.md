@@ -38,6 +38,15 @@ variant, each with a matching Lite twin:
 4. Open your user profile, scroll to **Theme**, and pick one of the twelve
    entries above.
 
+`hacs.json` sets a floor of Home Assistant **2024.5.0**, since that's roughly
+when `--ha-card-backdrop-filter` itself landed. A few of the other variables
+this theme sets (the bottom-sheet pair, the `ha-font-family-*` trio) landed
+in later releases than that floor — on a Home Assistant version close to
+2024.5.0 those specific variables simply no-op rather than error, so the
+theme degrades gracefully (missing a blur or falling back to the default
+font) instead of breaking. Running a current Home Assistant release avoids
+this entirely.
+
 ## card-mod is optional
 
 Home Assistant natively exposes seven `backdrop-filter` theme variables, and
@@ -55,18 +64,24 @@ bottom-sheet scrims, bottom sheets, and the dashboard header.
 for the small handful of surfaces Home Assistant has no theme variable for at
 all:
 
-- The **sidebar** — there's no native `--sidebar-backdrop-filter`, so
-  card-mod supplies its blur, fill, and border directly.
+- The **sidebar**'s blur and border — `sidebar-background-color` (the fill)
+  is already native and applies with or without card-mod, but there's no
+  native `--sidebar-backdrop-filter`, so the blur itself and the border are
+  card-mod's job.
 - The header's **tab strip** (and a couple of edit-mode-safe touch-ups to the
   header's own fill/border, so they survive Lovelace's edit mode).
 - **Letter-spacing**, on the header and the sidebar's title and list items —
   Home Assistant has no letter-spacing theme variable anywhere, so there's no
   native way to set it at all, with or without card-mod.
+- **Transition duration/easing** on the surfaces above, for the same reason:
+  no native theme variable for motion timing exists either.
 
-If you don't install card-mod, everything above still looks correct — you
-just get square-ish default sidebar/header type instead of the tightened
-tracking, and the sidebar is an opaque default surface instead of glass.
-Nothing breaks.
+If you don't install card-mod, everything above still looks correct except
+for two things: the sidebar is **translucent but unblurred** (it already has
+its glass-tinted fill natively, just without the blur sitting behind it,
+which can look a little washed out rather than opaque), and header/sidebar
+type uses default tracking instead of the tightened letter-spacing. Nothing
+breaks either way.
 
 ## Known issue: dropdowns
 
@@ -109,6 +124,13 @@ because of the blur sitting behind it; without that blur, the same low alpha
 would look muddy and be hard to read. Lite entries are a deliberately
 different, near-solid look built for legibility without blur — not a
 "disable blur" toggle on the full entries.
+
+**Lite entries emit no card-mod keys at all** — not even `card-mod-theme`.
+If you install card-mod and pick a Lite entry, you will not get sidebar
+glass or the tightened letter-spacing described above; card-mod has
+nothing to do for a Lite entry, since there's no blur anywhere for it to
+add. This is intentional, not a bug, but it can be a surprise if you're
+expecting card-mod's touch-ups on every entry uniformly.
 
 ## Accessibility
 

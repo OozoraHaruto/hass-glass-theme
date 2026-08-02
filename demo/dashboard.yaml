@@ -59,6 +59,10 @@ views:
           - type: statistic
             entity: sensor.demo_temperature
             stat_type: mean
+            period:
+              rolling_window:
+                duration:
+                  hours: 24
       - type: grid
         cards:
           # This card's own backdrop-filter stacking context is the
