@@ -53,13 +53,6 @@ def test_flat_entries_have_no_modes_block(themes, name):
     assert "modes" not in themes[name]
 
 
-def test_auto_light_payload_matches_the_flat_light_entry(themes):
-    auto_light = themes["Glass"]["modes"]["light"]
-    flat = {k: v for k, v in themes["Glass Light"].items() if k != "modes"}
-    for key, value in auto_light.items():
-        assert flat[key] == value, key
-
-
 def _flatten_entry(entry: dict) -> list[tuple[str, object]]:
     """All (key, value) pairs in an entry: its top level plus, for Auto
     entries, both of its nested ``modes`` payloads. Purity checks (no
@@ -93,15 +86,6 @@ def test_frosted_uses_its_own_blur(themes):
     assert "blur(8px)" in themes["Glass Dark"]["ha-card-backdrop-filter"]
 
 
-def test_auto_dark_payload_matches_the_flat_dark_entry(themes):
-    # Symmetric with the light-side check above: whichever entry the user
-    # picks, a given mode must render identically.
-    auto_dark = themes["Glass"]["modes"]["dark"]
-    flat = {k: v for k, v in themes["Glass Dark"].items() if k != "modes"}
-    for key, value in auto_dark.items():
-        assert flat[key] == value, key
-
-
 def test_lite_entries_have_no_backdrop_filter_anywhere(themes):
     # Load-bearing per the brief: a later task hard-fails the build if any
     # backdrop-filter reaches a Lite entry. Checks both key names AND values
@@ -119,12 +103,19 @@ def test_lite_entries_have_no_backdrop_filter_anywhere(themes):
 
 
 def test_auto_entries_match_ha_real_merge_algorithm_against_the_flat_entries(themes):
-    # Reviewer finding: the light/dark payload-matching tests above only
-    # iterate the `modes` payload, so a value hoisted to the top level (or
+    # Reviewer finding: this test replaces a since-deleted pair,
+    # `test_auto_light_payload_matches_the_flat_light_entry` and
+    # `test_auto_dark_payload_matches_the_flat_dark_entry`, which only
+    # iterated the `modes` payload, so a value hoisted to the top level (or
     # wrongly *not* hoisted) would never be checked -- that's exactly the
     # shape of bug the original dark-frozen card-mod implementation had, and
-    # it would have passed both of those tests. This test instead applies
-    # HA's actual runtime algorithm confirmed in
+    # it would have passed both of those tests. Deleted rather than kept
+    # side by side: everything they checked (Glass auto vs. Glass Light /
+    # Glass Dark, one direction only) is a strict subset of what this test
+    # checks (all four Auto/Lite pairs, both modes, full dict equality in
+    # both directions via HA's real merge algorithm), so keeping them added
+    # no coverage, only a slower, weaker duplicate to maintain. This test
+    # applies HA's actual runtime algorithm confirmed in
     # src/common/dom/apply_themes_on_element.ts:120-130 -- `{...base,
     # ...modes[mode]}` -- and asserts the result equals the corresponding
     # flat entry exactly.
