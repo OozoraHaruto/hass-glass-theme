@@ -1,5 +1,10 @@
-from glassbuild.materials import Material, derive
+from pathlib import Path
+
+from glassbuild.materials import derive
+from glassbuild.tokens import MATERIALS, MODES, load_tokens, merge
 from glassbuild.variables import build_variables
+
+ROOT = Path(__file__).resolve().parents[1]
 
 MERGED = {
     "radius": {"card": "18px", "dialog": "28px", "control": "12px", "pill": "980px"},
@@ -98,9 +103,35 @@ def test_lite_omits_every_backdrop_filter_key():
     v = _vars(lite=True)
     assert "ha-card-backdrop-filter" not in v
     assert "ha-dialog-surface-backdrop-filter" not in v
-    assert not [val for val in v.values() if "backdrop-filter" in val]
+    assert not [key for key in v if "backdrop-filter" in key]
+
+
+def test_full_material_includes_both_backdrop_filter_keys():
+    v = _vars(lite=False)
+    assert "ha-card-backdrop-filter" in v
+    assert "ha-dialog-surface-backdrop-filter" in v
 
 
 def test_lite_still_defines_the_card_background():
     v = _vars(lite=True)
     assert v["ha-card-background"] == "rgba(28, 28, 30, 0.72)"
+
+
+# 71 base keys + 2 conditional backdrop-filter keys (full material only).
+EXPECTED_FULL_KEY_COUNT = 73
+EXPECTED_LITE_KEY_COUNT = 71
+
+
+def test_real_tokens_produce_valid_variables_for_every_combination():
+    tokens = load_tokens(ROOT)
+    for material in MATERIALS:
+        for mode in MODES:
+            merged = merge(tokens["base"], tokens["materials"][material], tokens["modes"][mode])
+            for lite in (False, True):
+                v = build_variables(merged, derive(merged, material, lite=lite))
+                for key, value in v.items():
+                    assert isinstance(key, str), (material, mode, lite, key)
+                    assert isinstance(value, str), (material, mode, lite, key)
+                    assert not key.startswith("--"), (material, mode, lite, key)
+                expected = EXPECTED_LITE_KEY_COUNT if lite else EXPECTED_FULL_KEY_COUNT
+                assert len(v) == expected, (material, mode, lite, sorted(v))

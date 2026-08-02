@@ -19,7 +19,6 @@ def build_variables(
     palette = merged["palette"]
     radius = merged["radius"]
     font = merged["font"]
-    motion = merged["motion"]
     full = materials["full"]
     light = materials["light"]
 
@@ -57,7 +56,6 @@ def build_variables(
         # ---- dialogs: full material ----------------------------------------
         "ha-dialog-surface-background": full.fill,
         "ha-dialog-border-radius": radius["dialog"],
-        "ha-dialog-scrim-color": "rgba(0, 0, 0, 0.32)",
         "mdc-dialog-scrim-color": "rgba(0, 0, 0, 0.32)",
         # ---- header and sidebar --------------------------------------------
         "app-header-background-color": full.fill,
@@ -69,7 +67,6 @@ def build_variables(
         "sidebar-selected-text-color": palette["accent"],
         # ---- controls: light material --------------------------------------
         "input-fill-color": light.fill,
-        "input-ideal-fill-color": light.fill,
         "input-label-ink-color": palette["text_secondary"],
         "input-dropdown-icon-color": palette["text_secondary"],
         "mdc-text-field-fill-color": light.fill,
@@ -78,15 +75,13 @@ def build_variables(
         "mdc-theme-secondary": palette["accent"],
         "mdc-theme-surface": opaque,
         "mdc-theme-on-surface": palette["text_primary"],
-        "switch-checked-color": palette["accent"],
-        "switch-unchecked-color": palette["text_disabled"],
+        "ha-switch-checked-background-color": palette["accent"],
+        "ha-switch-background-color": palette["text_disabled"],
         "slider-color": palette["accent"],
         "slider-secondary-color": light.fill,
-        "paper-item-icon-color": palette["text_secondary"],
-        "paper-item-icon-active-color": palette["accent"],
-        "paper-listbox-background-color": opaque,
+        "icon-primary-color": palette["text_secondary"],
         "state-icon-color": palette["text_secondary"],
-        "state-icon-active-color": palette["warning"],
+        "state-icon-hover-color": palette["accent"],
         # ---- dense reading surfaces: opaque --------------------------------
         "table-row-background-color": opaque,
         "table-row-alternative-background-color": opaque,
@@ -100,17 +95,20 @@ def build_variables(
         "energy-battery-in-color": palette["scene"],
         "energy-battery-out-color": palette["success"],
         "history-unavailable-color": palette["text_disabled"],
-        # ---- scrollbars, type, motion ---------------------------------------
+        # ---- scrollbars and type ---------------------------------------------
         "scrollbar-thumb-color": palette["divider"],
-        "primary-font-family": font["stack"],
-        "paper-font-common-base_-_font-family": font["stack"],
-        "paper-font-body1_-_font-family": font["stack"],
-        "paper-font-headline_-_letter-spacing": font["tracking_headline"],
-        "paper-font-body1_-_letter-spacing": font["tracking_body"],
-        "ha-transition-duration": motion["duration"],
-        "ha-transition-easing": motion["easing"],
-        "control-border-radius": radius["control"],
-        "ha-chip-border-radius": radius["pill"],
+        "ha-font-family-body": font["stack"],
+        "ha-font-family-heading": font["stack"],
+        "ha-font-family-code": font["stack"],
+        # ---- controls: per-component border radius, all take radius.control -
+        "control-button-border-radius": radius["control"],
+        "control-slider-border-radius": radius["control"],
+        "control-select-border-radius": radius["control"],
+        "control-switch-border-radius": radius["control"],
+        "control-number-buttons-border-radius": radius["control"],
+        "control-select-menu-border-radius": radius["control"],
+        "control-select-button-border-radius": radius["control"],
+        "ha-assist-chip-container-shape": radius["pill"],
     }
 
     if full.backdrop is not None:
