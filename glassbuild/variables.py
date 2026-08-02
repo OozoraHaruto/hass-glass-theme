@@ -99,7 +99,7 @@ def build_variables(
         "scrollbar-thumb-color": palette["divider"],
         "ha-font-family-body": font["stack"],
         "ha-font-family-heading": font["stack"],
-        "ha-font-family-code": font["stack"],
+        "ha-font-family-code": font["stack_code"],
         # ---- controls: per-component border radius, all take radius.control -
         "control-button-border-radius": radius["control"],
         "control-slider-border-radius": radius["control"],

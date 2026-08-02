@@ -15,7 +15,7 @@ MODES: tuple[str, ...] = ("light", "dark")
 def _read(path: Path) -> dict[str, Any]:
     if not path.is_file():
         raise FileNotFoundError(f"missing token file: {path}")
-    return yaml.safe_load(path.read_text()) or {}
+    return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
 
 
 def load_tokens(root: Path) -> dict[str, Any]:

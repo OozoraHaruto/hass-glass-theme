@@ -11,6 +11,8 @@ font:
   stack: >-
     -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui,
     "Segoe UI", Roboto, sans-serif
+  stack_code: >-
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace
   tracking_headline: "-0.4px"
   tracking_body: "-0.2px"
 

@@ -12,8 +12,7 @@ Glass:
     sans-serif
   ha-font-family-heading: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI",
     Roboto, sans-serif
-  ha-font-family-code: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI", Roboto,
-    sans-serif
+  ha-font-family-code: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace
   control-button-border-radius: 12px
   control-slider-border-radius: 12px
   control-select-border-radius: 12px
@@ -232,8 +231,7 @@ Glass Light:
     sans-serif
   ha-font-family-heading: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI",
     Roboto, sans-serif
-  ha-font-family-code: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI", Roboto,
-    sans-serif
+  ha-font-family-code: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace
   control-button-border-radius: 12px
   control-slider-border-radius: 12px
   control-select-border-radius: 12px
@@ -328,8 +326,7 @@ Glass Dark:
     sans-serif
   ha-font-family-heading: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI",
     Roboto, sans-serif
-  ha-font-family-code: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI", Roboto,
-    sans-serif
+  ha-font-family-code: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace
   control-button-border-radius: 12px
   control-slider-border-radius: 12px
   control-select-border-radius: 12px
@@ -370,8 +367,7 @@ Glass Lite:
     sans-serif
   ha-font-family-heading: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI",
     Roboto, sans-serif
-  ha-font-family-code: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI", Roboto,
-    sans-serif
+  ha-font-family-code: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace
   control-button-border-radius: 12px
   control-slider-border-radius: 12px
   control-select-border-radius: 12px
@@ -556,8 +552,7 @@ Glass Light Lite:
     sans-serif
   ha-font-family-heading: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI",
     Roboto, sans-serif
-  ha-font-family-code: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI", Roboto,
-    sans-serif
+  ha-font-family-code: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace
   control-button-border-radius: 12px
   control-slider-border-radius: 12px
   control-select-border-radius: 12px
@@ -631,8 +626,7 @@ Glass Dark Lite:
     sans-serif
   ha-font-family-heading: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI",
     Roboto, sans-serif
-  ha-font-family-code: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI", Roboto,
-    sans-serif
+  ha-font-family-code: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace
   control-button-border-radius: 12px
   control-slider-border-radius: 12px
   control-select-border-radius: 12px
@@ -652,8 +646,7 @@ Frosted Glass:
     sans-serif
   ha-font-family-heading: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI",
     Roboto, sans-serif
-  ha-font-family-code: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI", Roboto,
-    sans-serif
+  ha-font-family-code: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace
   control-button-border-radius: 12px
   control-slider-border-radius: 12px
   control-select-border-radius: 12px
@@ -872,8 +865,7 @@ Frosted Glass Light:
     sans-serif
   ha-font-family-heading: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI",
     Roboto, sans-serif
-  ha-font-family-code: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI", Roboto,
-    sans-serif
+  ha-font-family-code: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace
   control-button-border-radius: 12px
   control-slider-border-radius: 12px
   control-select-border-radius: 12px
@@ -968,8 +960,7 @@ Frosted Glass Dark:
     sans-serif
   ha-font-family-heading: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI",
     Roboto, sans-serif
-  ha-font-family-code: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI", Roboto,
-    sans-serif
+  ha-font-family-code: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace
   control-button-border-radius: 12px
   control-slider-border-radius: 12px
   control-select-border-radius: 12px
@@ -1010,8 +1001,7 @@ Frosted Glass Lite:
     sans-serif
   ha-font-family-heading: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI",
     Roboto, sans-serif
-  ha-font-family-code: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI", Roboto,
-    sans-serif
+  ha-font-family-code: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace
   control-button-border-radius: 12px
   control-slider-border-radius: 12px
   control-select-border-radius: 12px
@@ -1196,8 +1186,7 @@ Frosted Glass Light Lite:
     sans-serif
   ha-font-family-heading: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI",
     Roboto, sans-serif
-  ha-font-family-code: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI", Roboto,
-    sans-serif
+  ha-font-family-code: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace
   control-button-border-radius: 12px
   control-slider-border-radius: 12px
   control-select-border-radius: 12px
@@ -1271,8 +1260,7 @@ Frosted Glass Dark Lite:
     sans-serif
   ha-font-family-heading: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI",
     Roboto, sans-serif
-  ha-font-family-code: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI", Roboto,
-    sans-serif
+  ha-font-family-code: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace
   control-button-border-radius: 12px
   control-slider-border-radius: 12px
   control-select-border-radius: 12px

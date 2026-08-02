@@ -11,6 +11,7 @@ MERGED = {
     "shadow": "0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 32px rgba(0, 0, 0, 0.12)",
     "font": {
         "stack": '-apple-system, system-ui, sans-serif',
+        "stack_code": "ui-monospace, SFMono-Regular, monospace",
         "tracking_headline": "-0.4px",
         "tracking_body": "-0.2px",
     },
@@ -63,6 +64,13 @@ def test_core_palette_is_mapped():
     assert v["accent-color"] == "#0A84FF"
     assert v["primary-text-color"] == "#FFFFFF"
     assert v["error-color"] == "#FF453A"
+
+
+def test_code_font_family_is_monospace_and_distinct_from_body():
+    v = _vars()
+    assert v["ha-font-family-code"] == "ui-monospace, SFMono-Regular, monospace"
+    assert v["ha-font-family-body"] == "-apple-system, system-ui, sans-serif"
+    assert v["ha-font-family-code"] != v["ha-font-family-body"]
 
 
 def test_card_uses_the_full_material():

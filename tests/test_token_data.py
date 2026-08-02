@@ -62,6 +62,9 @@ def test_base_tokens_match_the_spec(tokens):
         '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, '
         '"Segoe UI", Roboto, sans-serif'
     )
+    assert base["font"]["stack_code"] == (
+        'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace'
+    )
     assert base["font"]["tracking_headline"] == "-0.4px"
     assert base["font"]["tracking_body"] == "-0.2px"
     assert base["motion"]["duration"] == "300ms"
