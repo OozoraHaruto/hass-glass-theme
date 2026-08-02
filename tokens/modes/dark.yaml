@@ -1,7 +1,7 @@
 material:
   fill_rgb: [255, 255, 255]
   fill_alpha_glass: 0.14
-  fill_alpha_frosted: 0.45
+  fill_alpha_frosted: 0.14
   rim_rgb: [255, 255, 255]
 
 palette:

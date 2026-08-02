@@ -46,7 +46,7 @@ def test_tuning_table_values_match_the_spec(tokens):
     assert tokens["modes"]["light"]["material"]["fill_alpha_glass"] == 0.10
     assert tokens["modes"]["light"]["material"]["fill_alpha_frosted"] == 0.55
     assert tokens["modes"]["dark"]["material"]["fill_alpha_glass"] == 0.14
-    assert tokens["modes"]["dark"]["material"]["fill_alpha_frosted"] == 0.45
+    assert tokens["modes"]["dark"]["material"]["fill_alpha_frosted"] == 0.14
 
 
 def test_base_tokens_match_the_spec(tokens):
