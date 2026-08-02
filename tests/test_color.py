@@ -61,6 +61,13 @@ def test_relative_luminance_endpoints():
     assert relative_luminance((255, 255, 255)) == pytest.approx(1.0)
 
 
+def test_relative_luminance_midtone_uses_the_wcag_gamma_curve():
+    # A naive linear c/255 implementation would give 0.5 here; the WCAG
+    # formula's gamma curve gives ~0.21586. This pins the curve, not just
+    # the endpoints.
+    assert relative_luminance((128, 128, 128)) == pytest.approx(0.21586, abs=1e-5)
+
+
 def test_contrast_ratio_black_on_white_is_21():
     assert contrast_ratio((0, 0, 0), (255, 255, 255)) == pytest.approx(21.0, abs=0.01)
 
