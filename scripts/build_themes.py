@@ -74,7 +74,7 @@ def main(argv: list[str] | None = None) -> int:
         if not OUTPUT.is_file():
             print(f"{OUTPUT} does not exist; run the generator", file=sys.stderr)
             return 1
-        current = OUTPUT.read_text()
+        current = OUTPUT.read_text(encoding="utf-8")
         if current != rendered:
             print(f"{OUTPUT} is out of date with tokens/:", file=sys.stderr)
             diff = difflib.unified_diff(
@@ -89,7 +89,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT.write_text(rendered)
+    OUTPUT.write_text(rendered, encoding="utf-8")
     print(f"wrote {OUTPUT} ({len(themes)} entries)")
     return 0
 
