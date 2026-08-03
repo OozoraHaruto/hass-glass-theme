@@ -65,7 +65,7 @@ def select_fill_alpha(fill_rgb) -> float:
     The closed select box is a no-blur surface, so its fill's alpha is the
     *only* thing standing between the selected value's label and the
     dashboard content behind it. This returns the minimum alpha that holds,
-    in 0.01 steps -- the floor, not a passing value. A lower alpha would
+    in 0.001 steps -- the floor, not a passing value. A lower alpha would
     let the worst-case backdrop push the label below 4.5:1 (the dark RGB
     over white is the binding case today: it needs ~0.83 where the light RGB
     needs only ~0.52). Pure function of the RGB, so it self-corrects if the

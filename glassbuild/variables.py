@@ -11,7 +11,6 @@ from typing import Any
 
 from glassbuild.color import parse_rgba, rgba_str
 from glassbuild.materials import (
-    LITE_FILL_ALPHA,
     SIDEBAR_FILL_ALPHA,
     Material,
     select_fill_alpha,
