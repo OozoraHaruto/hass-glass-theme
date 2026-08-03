@@ -149,3 +149,48 @@ def test_full_alpha_below_the_floor_is_rejected():
     merged = {**MERGED, "material": {**MERGED["material"], "fill_alpha_glass": 0.05}}
     with pytest.raises(ValueError, match="below the 0.1 floor"):
         derive(merged, "glass", lite=False)
+
+
+# ---- the closed select box's no-blur legibility floor --------------------
+
+
+from glassbuild.color import composite, contrast_ratio, parse_rgba
+from glassbuild.materials import SELECT_CONTRAST_FLOOR, select_fill_alpha
+
+
+def test_select_fill_alpha_is_the_minimum_that_clears_the_floor():
+    """For each mode's fill RGB, the returned alpha is the lowest value at
+    which the mode's paired primary text clears SELECT_CONTRAST_FLOOR over
+    both adversarial backdrops -- and one step below it fails. Pins the
+    *definition* (no-blur legibility floor), not magic numbers, so a future
+    fill_rgb retune self-corrects instead of drifting past an asserted
+    constant."""
+    cases = {
+        "light": ([255, 255, 255], parse_rgba("#1C1C1E")),
+        "dark": ([90, 90, 94], parse_rgba("#FFFFFF")),
+    }
+    for mode, (rgb, text) in cases.items():
+        alpha = select_fill_alpha(rgb)
+        for backdrop in [(0, 0, 0, 1.0), (255, 255, 255, 1.0)]:
+            fill = (rgb[0], rgb[1], rgb[2], alpha)
+            surface = composite(fill, backdrop)
+            ratio = contrast_ratio(composite(text, surface)[:3], surface[:3])
+            assert ratio >= SELECT_CONTRAST_FLOOR, (
+                f"{mode}: alpha {alpha} drops to {ratio:.2f}:1 over "
+                f"{backdrop[:3]}, need {SELECT_CONTRAST_FLOOR}"
+            )
+        # One notch (0.01) below must fail for at least one backdrop --
+        # this is what proves alpha is the *minimum*, not just any passing value.
+        below = round(alpha - 0.01, 2)
+        if below > 0:
+            failed = []
+            for backdrop in [(0, 0, 0, 1.0), (255, 255, 255, 1.0)]:
+                fill = (rgb[0], rgb[1], rgb[2], below)
+                surface = composite(fill, backdrop)
+                ratio = contrast_ratio(composite(text, surface)[:3], surface[:3])
+                if ratio < SELECT_CONTRAST_FLOOR:
+                    failed.append((backdrop[:3], round(ratio, 2)))
+            assert failed, (
+                f"{mode}: alpha {below} (one below {alpha}) still clears the "
+                f"floor everywhere, so {alpha} is not the minimum"
+            )

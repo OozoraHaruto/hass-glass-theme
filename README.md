@@ -139,6 +139,13 @@ as "not planned":
 - [frontend#26113](https://github.com/home-assistant/frontend/issues/26113) —
   a dropdown opened from inside a more-info dialog can escape and render
   outside the dialog's bounds instead of staying inside it.
+- The **opened menu's** background cannot be frosted by this theme. Its fill
+  is locked to `--card-background-color` by a `:host` rule inside
+  `ha-dropdown`'s shadow root, so a theme variable cannot override it, and
+  the menu is a webawesome popup teleported to `<body>` — outside
+  `hui-root`, so `card-mod`'s root scope cannot reach it either. The opened
+  menu keeps Home Assistant's default surface. The **closed** dropdown box,
+  by contrast, is frosted-tinted via `mdc-select-fill-color`.
 
 **Remedy:** if either of these bites you, switch to the matching Lite entry
 (e.g. `Glass` → `Glass Lite`). Lite entries set no `backdrop-filter` anywhere,

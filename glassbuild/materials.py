@@ -29,7 +29,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from glassbuild.color import parse_rgba, rgba_str
+from glassbuild.color import composite, contrast_ratio, parse_rgba, rgba_str
 
 LITE_FILL_ALPHA = 0.72
 # The sidebar's own fill (see glassbuild/variables.py) needs a higher alpha
@@ -43,6 +43,56 @@ LITE_FILL_ALPHA = 0.72
 # different questions (Lite's card fill only has to carry body text; the
 # sidebar's fill also has to carry the accent) and should be free to diverge.
 SIDEBAR_FILL_ALPHA = 0.94
+# The contrast floor the closed select box's fill must clear on its own.
+# The select has no backdrop-filter behind it (Home Assistant exposes no
+# `--mdc-select-backdrop-filter`, and card-mod does not reach controls), so
+# whatever text sits on it -- the selected value's label, in
+# `primary-text-color` -- has to clear WCAG AA against arbitrary dashboard
+# content with nothing to blur the bleed-through. That puts it in the same
+# regime as the sidebar, whose own alpha is derived against these two
+# extremes (see SIDEBAR_FILL_ALPHA). Body text, so the floor is 4.5:1.
+SELECT_CONTRAST_FLOOR = 4.5
+# The two worst-case backdrops a control can float over: pure black and
+# pure white bound every real backdrop's luminance, so clearing the floor
+# against both is a falsifiable proxy for "legible over anything behind it".
+_SELECT_ADVERSARIAL_BACKDROPS = ((0, 0, 0, 1.0), (255, 255, 255, 1.0))
+
+
+def select_fill_alpha(fill_rgb) -> float:
+    """Lowest alpha at which ``fill_rgb`` keeps its mode's primary text above
+    ``SELECT_CONTRAST_FLOOR`` over both adversarial backdrops.
+
+    The closed select box is a no-blur surface, so its fill's alpha is the
+    *only* thing standing between the selected value's label and the
+    dashboard content behind it. This returns the minimum alpha that holds,
+    in 0.001 steps -- the floor, not a passing value. A lower alpha would
+    let the worst-case backdrop push the label below 4.5:1 (the dark RGB
+    over white is the binding case today: it needs ~0.83 where the light RGB
+    needs only ~0.52). Pure function of the RGB, so it self-corrects if the
+    mode's ``fill_rgb`` is ever retuned -- no per-mode constant to drift.
+
+    Text is paired by luminance: a light fill carries dark text, a dark fill
+    carries light text, matching how ``primary-text-color`` is set per mode
+    in tokens/modes/. This mirrors the contrast test in
+    tests/test_contrast.py rather than re-reading the palette, so the
+    function stays a pure function of ``fill_rgb`` with no mode argument.
+    """
+    r, g, b = (fill_rgb[0], fill_rgb[1], fill_rgb[2])
+    # Pair by fill luminance: light fill -> dark text, dark fill -> light text.
+    # threshold 384 = 1.5 * 256, mid-grey; light-mode fill_rgb (255,255,255)
+    # sums to 765, dark-mode (90,90,94) to 274.
+    text = parse_rgba("#1C1C1E") if (r + g + b) > 384 else parse_rgba("#FFFFFF")
+    for k in range(1000):
+        alpha = k / 1000.0
+        surface_fill = (r, g, b, alpha)
+        for backdrop in _SELECT_ADVERSARIAL_BACKDROPS:
+            surface = composite(surface_fill, backdrop)
+            ratio = contrast_ratio(composite(text, surface)[:3], surface[:3])
+            if ratio < SELECT_CONTRAST_FLOOR:
+                break
+        else:
+            return alpha
+    return 1.0
 FULL_FILL_ALPHA_FLOOR = 0.10
 LIGHT_ALPHA_BONUS = 0.08
 
