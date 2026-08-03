@@ -132,22 +132,38 @@ def test_controls_use_the_light_material():
     assert v["mdc-text-field-fill-color"] == "rgba(255, 255, 255, 0.22)"
 
 
-def test_select_fill_is_opaque_based_not_glass():
-    """The closed select box has no backdrop-filter behind it (Home Assistant
-    exposes no `--mdc-select-backdrop-filter`, and card-mod does not reach
-    controls), so it cannot borrow a card's blur to stay legible through a
-    low-alpha glass fill. Its fill therefore has to be opaque-surface-based at
-    the no-blur alpha (LITE_FILL_ALPHA), not the glass `light.fill` that the
-    text field still uses -- the same split the sidebar already makes.
+def test_select_fill_is_frosted_tinted():
+    """The closed select box's fill is the fixture's own fill_rgb at the
+    no-blur legibility-floor alpha (select_fill_alpha), not the opaque
+    surface, and not the glass light.fill the text field still uses.
 
-    Pinned on the opaque RGB (`1C1C1E` here, the dark-mode fixture), not on a
-    full rgba string, so a retune of the alpha constant only changes the
-    number that actually moved.
+    Expected values are *computed from the fixture's fill_rgb*, not
+    hard-coded, so this stays correct under any future fixture retune and
+    does not depend on whether MERGED pairs as a light or dark mode (the
+    hand-stitched MERGED fixture is a unit-shaped blob, not a real merged
+    token set -- see test_contrast.py for the real per-mode sweep).
     """
+    from glassbuild.materials import select_fill_alpha
+
     v = _vars()
-    assert v["mdc-select-fill-color"] == "rgba(28, 28, 30, 0.72)"
-    # Still distinct from the glass text-field fill, which kept its glass tint.
-    assert v["mdc-text-field-fill-color"] == "rgba(255, 255, 255, 0.22)"
+    fill_rgb = MERGED["material"]["fill_rgb"]  # the RGB the select fill must use
+    expected_alpha = select_fill_alpha(fill_rgb)
+    alpha_str = f"{expected_alpha:.3f}".rstrip("0").rstrip(".")
+    assert v["mdc-select-fill-color"] == (
+        f"rgba({fill_rgb[0]}, {fill_rgb[1]}, {fill_rgb[2]}, {alpha_str})"
+    )
+    # The text field stays on the glass light.fill: same RGB, the glass
+    # light alpha (fill_alpha_glass + LIGHT_ALPHA_BONUS = 0.14 + 0.08).
+    # So it shares the RGB with the select but at a different (lower) alpha,
+    # which is exactly the "frosted vs glass" split this change draws.
+    from glassbuild.materials import LIGHT_ALPHA_BONUS
+    light_alpha = round(
+        MERGED["material"]["fill_alpha_glass"] + LIGHT_ALPHA_BONUS, 3
+    )
+    light_str = f"{light_alpha:.3f}".rstrip("0").rstrip(".")
+    assert v["mdc-text-field-fill-color"] == (
+        f"rgba({fill_rgb[0]}, {fill_rgb[1]}, {fill_rgb[2]}, {light_str})"
+    )
     assert v["mdc-select-fill-color"] != v["mdc-text-field-fill-color"]
 
 
