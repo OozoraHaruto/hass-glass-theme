@@ -176,22 +176,21 @@ def test_sidebar_selected_icon_clears_large_text_minimum(themes, name):
             )
 
 
-# ---- dropdown (closed select box) ------------------------------------------
+# ---- dropdown (closed select box) + modern form fields ------------------
 #
-# The closed select box's fill is `mdc-select-fill-color`, and the text a user
-# reads on it is `primary-text-color` (the selected value's label). Unlike a
-# card, the select has *no* backdrop-filter behind it: Home Assistant exposes
-# no `--mdc-select-backdrop-filter` variable, and card-mod's scope reaches only
-# the header, sidebar, and tab strip -- not controls. So whatever fill the
-# select carries has to keep its label legible on its own, against the same
-# arbitrary dashboard content the sidebar sits over. That puts it in the same
-# adversarial-backdrop regime as the sidebar tests above, not the card tests
-# (which composite over the theme's own gradient because a card does land on
-# that gradient *and* has blur behind it). Weakening the select fill lets the
-# worst-case backdrop push the label below the 4.5:1 floor -- the failure the
-# user reported as "text behind it shows too clearly".
-def _select_surfaces(payload: dict[str, str]) -> list[tuple[int, int, int, float]]:
-    fill = parse_rgba(payload["mdc-select-fill-color"])
+# The modern ha-select's closed field paints from --ha-color-form-background
+# (ha-picker-field.ts:137), the same token modern text inputs, textareas, and
+# time inputs read. The selected value's label (primary-text-color) sits on it
+# with NO backdrop-filter behind it (no --mdc-select-backdrop-filter exists;
+# card-mod does not reach controls), so the fill alone must clear WCAG AA over
+# arbitrary dashboard content -- the same adversarial regime as the sidebar.
+# We guard the modern hook (ha-color-form-background) AND the legacy key
+# (mdc-select-fill-color, kept for older selects); both carry the frosted
+# value, so both must clear. mdc-select-fill-color is the legacy guard: it
+# proves the legacy alias chain still gets a legible fill, not that the modern
+# select reads it.
+def _fill_surfaces(payload: dict[str, str], key: str) -> list[tuple[int, int, int, float]]:
+    fill = parse_rgba(payload[key])
     return [composite(fill, backdrop) for backdrop in _ADVERSARIAL_BACKDROPS]
 
 
@@ -200,9 +199,35 @@ def test_select_value_text_clears_wcag_aa(themes, name):
     for mode in _mode_for(name):
         payload = _entry_payload(themes, name, mode)
         text = parse_rgba(payload["primary-text-color"])
-        for surface in _select_surfaces(payload):
+        # The modern hook the frontend actually consumes for the closed select.
+        for surface in _fill_surfaces(payload, "ha-color-form-background"):
             ratio = contrast_ratio(composite(text, surface)[:3], surface[:3])
             assert ratio >= BODY_MIN, (
-                f"{name} ({mode}): select value text on the select fill over "
-                f"{surface[:3]} is {ratio:.2f}:1, need {BODY_MIN}:1"
+                f"{name} ({mode}): select value text on ha-color-form-background "
+                f"over {surface[:3]} is {ratio:.2f}:1, need {BODY_MIN}:1"
+            )
+        # Legacy guard: older selects read mdc-select-fill-color; it must also
+        # be legible (it carries the same frosted value).
+        for surface in _fill_surfaces(payload, "mdc-select-fill-color"):
+            ratio = contrast_ratio(composite(text, surface)[:3], surface[:3])
+            assert ratio >= BODY_MIN, (
+                f"{name} ({mode}): legacy select fill over {surface[:3]} "
+                f"is {ratio:.2f}:1, need {BODY_MIN}:1"
+            )
+
+
+@pytest.mark.parametrize("name", ENTRY_NAMES)
+def test_modern_input_text_clears_wcag_aa(themes, name):
+    """ha-color-form-background also paints modern text inputs/textareas/time
+    inputs, so their entered text (primary-text-color) must clear AA over
+    arbitrary content -- the form layer is one shared token now.
+    """
+    for mode in _mode_for(name):
+        payload = _entry_payload(themes, name, mode)
+        text = parse_rgba(payload["primary-text-color"])
+        for surface in _fill_surfaces(payload, "ha-color-form-background"):
+            ratio = contrast_ratio(composite(text, surface)[:3], surface[:3])
+            assert ratio >= BODY_MIN, (
+                f"{name} ({mode}): input text on ha-color-form-background "
+                f"over {surface[:3]} is {ratio:.2f}:1, need {BODY_MIN}:1"
             )
