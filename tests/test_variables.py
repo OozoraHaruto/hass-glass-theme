@@ -127,15 +127,27 @@ def test_dense_surfaces_are_opaque():
 
 
 def test_controls_use_the_light_material():
+    """The glass light.fill survives on the slider's secondary track (it sits
+    over the card's blurred backdrop, so it can stay translucent), but the
+    form-field keys no longer use it -- they collapsed onto the frosted
+    select_fill (see test_legacy_form_fields_share_the_frosted_value). This
+    test pins the one place the glass fill did survive, so a future retarget
+    does not silently drop the light material from controls entirely.
+    """
     v = _vars()
-    assert v["input-fill-color"] == "rgba(255, 255, 255, 0.22)"
-    assert v["mdc-text-field-fill-color"] == "rgba(255, 255, 255, 0.22)"
+    assert v["slider-secondary-color"] == "rgba(255, 255, 255, 0.22)"
+    # Form fields are no longer glass -- they are the frosted value now.
+    assert v["input-fill-color"] != "rgba(255, 255, 255, 0.22)"
+    assert v["mdc-text-field-fill-color"] != "rgba(255, 255, 255, 0.22)"
 
 
 def test_select_fill_is_frosted_tinted():
     """The closed select box's fill is the fixture's own fill_rgb at the
     no-blur legibility-floor alpha (select_fill_alpha), not the opaque
-    surface, and not the glass light.fill the text field still uses.
+    surface. The form-field keys (input-fill-color, mdc-text-field-fill-color,
+    ha-color-form-background) now share that same frosted value -- the
+    glass-vs-frosted split moved to cards vs form fields, so the text field
+    no longer stays on the glass light.fill.
 
     Expected values are *computed from the fixture's fill_rgb*, not
     hard-coded, so this stays correct under any future fixture retune and
@@ -152,19 +164,81 @@ def test_select_fill_is_frosted_tinted():
     assert v["mdc-select-fill-color"] == (
         f"rgba({fill_rgb[0]}, {fill_rgb[1]}, {fill_rgb[2]}, {alpha_str})"
     )
-    # The text field stays on the glass light.fill: same RGB, the glass
-    # light alpha (fill_alpha_glass + LIGHT_ALPHA_BONUS = 0.14 + 0.08).
-    # So it shares the RGB with the select but at a different (lower) alpha,
-    # which is exactly the "frosted vs glass" split this change draws.
-    from glassbuild.materials import LIGHT_ALPHA_BONUS
-    light_alpha = round(
-        MERGED["material"]["fill_alpha_glass"] + LIGHT_ALPHA_BONUS, 3
+    # The form-field keys collapsed onto the one frosted value: the text field
+    # now carries the same no-blur legible fill as the select, not the glass
+    # light.fill it used before. The glass look survives on the card
+    # (ha-card-background) and slider-secondary, which still read light.fill.
+    assert v["mdc-text-field-fill-color"] == v["mdc-select-fill-color"]
+    assert v["input-fill-color"] == v["mdc-select-fill-color"]
+    assert v["ha-color-form-background"] == v["mdc-select-fill-color"]
+
+
+def test_modern_form_fields_are_frosted_via_the_real_hook():
+    """The modern ha-select (and modern text inputs/textareas/time inputs)
+    paint from --ha-color-form-background, NOT --mdc-select-fill-color. The
+    theme must emit that key with the frosted form-fill value, or the modern
+    dropdown renders Home Assistant's flat default and stays clear -- the bug
+    this change fixes. Verified against home-assistant/frontend dev:
+    ha-picker-field.ts:137 `background-color: var(--ha-color-form-background)`;
+    mdc-select-fill-color is consumed only by color.globals.ts (legacy default)
+    and ha-onboarding.ts (set to none), never by the modern select.
+    """
+    from glassbuild.materials import select_fill_alpha
+
+    v = _vars()
+    fill_rgb = MERGED["material"]["fill_rgb"]
+    expected = (
+        f"rgba({fill_rgb[0]}, {fill_rgb[1]}, {fill_rgb[2]}, "
+        f"{f'{select_fill_alpha(fill_rgb):.3f}'.rstrip('0').rstrip('.')})"
     )
-    light_str = f"{light_alpha:.3f}".rstrip("0").rstrip(".")
-    assert v["mdc-text-field-fill-color"] == (
-        f"rgba({fill_rgb[0]}, {fill_rgb[1]}, {fill_rgb[2]}, {light_str})"
+    assert v["ha-color-form-background"] == expected
+    # The modern hook carries the SAME frosted value as the legacy select key.
+    assert v["ha-color-form-background"] == v["mdc-select-fill-color"]
+
+
+def test_form_field_hover_is_lifted_and_disabled_clamps_to_resting():
+    """Hover lifts the fill alpha by LIGHT_ALPHA_BONUS (the codebase's existing
+    idiom, shared with the light-material bonus) so a hovered field reads
+    heavier, not flat. Disabled clamps back to resting -- the components dim
+    disabled fields with opacity: 0.5 (ha-picker-field.ts:131-133,
+    ha-input.ts:459, ha-textarea.ts:286), so the fill itself should not move.
+    """
+    from glassbuild.materials import LIGHT_ALPHA_BONUS, select_fill_alpha
+
+    v = _vars()
+    fill_rgb = MERGED["material"]["fill_rgb"]
+    rest = select_fill_alpha(fill_rgb)
+    hover = min(1.0, rest + LIGHT_ALPHA_BONUS)
+    fmt = lambda a: f"{a:.3f}".rstrip("0").rstrip(".")
+    assert v["ha-color-form-background-hover"] == (
+        f"rgba({fill_rgb[0]}, {fill_rgb[1]}, {fill_rgb[2]}, {fmt(hover)})"
     )
-    assert v["mdc-select-fill-color"] != v["mdc-text-field-fill-color"]
+    assert v["ha-color-form-background-disabled"] == (
+        f"rgba({fill_rgb[0]}, {fill_rgb[1]}, {fill_rgb[2]}, {fmt(rest)})"
+    )
+
+
+def test_legacy_form_fields_share_the_frosted_value():
+    """input-fill-color is the hub of HA's legacy alias chain (color.globals.ts
+    derives --table-header-background-color, --mdc-text-field-fill-color, and
+    --mdc-select-fill-color from var(--input-fill-color)), so retargeting it
+    frosts legacy MDC text fields, expansion panels, config-panel pickers, and
+    calendar/schedule headers. It and mdc-text-field-fill-color must carry the
+    frosted value, not the see-through glass light.fill (0.22/0.24) they use
+    today -- that was the original 'too transparent' complaint on surfaces the
+    user never named.
+    """
+    from glassbuild.materials import select_fill_alpha
+
+    v = _vars()
+    fill_rgb = MERGED["material"]["fill_rgb"]
+    expected = (
+        f"rgba({fill_rgb[0]}, {fill_rgb[1]}, {fill_rgb[2]}, "
+        f"{f'{select_fill_alpha(fill_rgb):.3f}'.rstrip('0').rstrip('.')})"
+    )
+    assert v["input-fill-color"] == expected
+    assert v["mdc-text-field-fill-color"] == expected
+    assert v["input-fill-color"] == v["ha-color-form-background"]
 
 
 def test_background_is_a_gradient():
@@ -210,9 +284,9 @@ def test_lite_still_defines_the_card_background():
     assert v["ha-card-background"] == "rgba(28, 28, 30, 0.72)"
 
 
-# 71 base keys + 7 conditional backdrop-filter keys (full material only).
-EXPECTED_FULL_KEY_COUNT = 78
-EXPECTED_LITE_KEY_COUNT = 71
+# 74 base keys + 7 conditional backdrop-filter keys (full material only).
+EXPECTED_FULL_KEY_COUNT = 81
+EXPECTED_LITE_KEY_COUNT = 74
 # ...plus the three --ha-glass-refraction-* keys (the alternative backdrop
 # chain, and the displacement scale and edge fraction the companion module
 # reads), for a full material whose tuning table carries a `refraction`

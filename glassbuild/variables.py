@@ -11,6 +11,7 @@ from typing import Any
 
 from glassbuild.color import parse_rgba, rgba_str
 from glassbuild.materials import (
+    LIGHT_ALPHA_BONUS,
     SIDEBAR_FILL_ALPHA,
     Material,
     select_fill_alpha,
@@ -60,6 +61,15 @@ def build_variables(
     select_fill = rgba_str(
         fill_rgb[0], fill_rgb[1], fill_rgb[2], select_fill_alpha(fill_rgb)
     )
+    # Hover lifts the fill alpha by LIGHT_ALPHA_BONUS -- the same idiom the light
+    # material uses -- so a hovered form field reads heavier, not flat. Disabled
+    # clamps to resting: the components dim disabled fields with opacity: 0.5
+    # (ha-picker-field, ha-input, ha-textarea), so the fill itself should not move.
+    form_fill_hover = rgba_str(
+        fill_rgb[0], fill_rgb[1], fill_rgb[2],
+        min(1.0, select_fill_alpha(fill_rgb) + LIGHT_ALPHA_BONUS),
+    )
+    form_fill_disabled = select_fill
 
     variables: dict[str, str] = {
         # ---- core palette -------------------------------------------------
@@ -108,11 +118,24 @@ def build_variables(
         "sidebar-selected-icon-color": palette["accent"],
         "sidebar-selected-text-color": palette["accent"],
         # ---- controls: light material --------------------------------------
-        "input-fill-color": light.fill,
+        # ---- form fields: frosted via the modern + legacy hooks ------------
+        # The modern ha-select paints from --ha-color-form-background
+        # (ha-picker-field.ts), not --mdc-select-fill-color -- so the modern hook is
+        # the one that actually frosts the dropdown. input-fill-color is the hub of
+        # HA's legacy alias chain (color.globals.ts derives the legacy text-field and
+        # table-header fills from it), so retargeting it frosts legacy MDC text
+        # fields, expansion panels, config pickers, and calendar/schedule headers too.
+        # All five collapse onto the one no-blur legible frosted value; mdc-select-fill
+        # stays for legacy selects (never broken). See the 2026-08-04 correction in
+        # docs/superpowers/specs/2026-08-02-frosted-select-design.md.
+        "input-fill-color": select_fill,
         "input-label-ink-color": palette["text_secondary"],
         "input-dropdown-icon-color": palette["text_secondary"],
-        "mdc-text-field-fill-color": light.fill,
+        "mdc-text-field-fill-color": select_fill,
         "mdc-select-fill-color": select_fill,
+        "ha-color-form-background": select_fill,
+        "ha-color-form-background-hover": form_fill_hover,
+        "ha-color-form-background-disabled": form_fill_disabled,
         "mdc-theme-primary": palette["accent"],
         "mdc-theme-secondary": palette["accent"],
         "mdc-theme-surface": opaque,
