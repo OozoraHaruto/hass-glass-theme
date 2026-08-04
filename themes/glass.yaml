@@ -51,11 +51,14 @@ Glass:
       sidebar-text-color: '#1C1C1E'
       sidebar-selected-icon-color: '#007AFF'
       sidebar-selected-text-color: '#007AFF'
-      input-fill-color: rgba(255, 255, 255, 0.22)
+      input-fill-color: rgba(255, 255, 255, 0.516)
       input-label-ink-color: '#3C3C4399'
       input-dropdown-icon-color: '#3C3C4399'
-      mdc-text-field-fill-color: rgba(255, 255, 255, 0.22)
+      mdc-text-field-fill-color: rgba(255, 255, 255, 0.516)
       mdc-select-fill-color: rgba(255, 255, 255, 0.516)
+      ha-color-form-background: rgba(255, 255, 255, 0.516)
+      ha-color-form-background-hover: rgba(255, 255, 255, 0.596)
+      ha-color-form-background-disabled: rgba(255, 255, 255, 0.516)
       mdc-theme-primary: '#007AFF'
       mdc-theme-secondary: '#007AFF'
       mdc-theme-surface: '#F2F2F7'
@@ -126,11 +129,14 @@ Glass:
       sidebar-text-color: '#FFFFFF'
       sidebar-selected-icon-color: '#0A84FF'
       sidebar-selected-text-color: '#0A84FF'
-      input-fill-color: rgba(90, 90, 94, 0.24)
+      input-fill-color: rgba(90, 90, 94, 0.828)
       input-label-ink-color: '#EBEBF599'
       input-dropdown-icon-color: '#EBEBF599'
-      mdc-text-field-fill-color: rgba(90, 90, 94, 0.24)
+      mdc-text-field-fill-color: rgba(90, 90, 94, 0.828)
       mdc-select-fill-color: rgba(90, 90, 94, 0.828)
+      ha-color-form-background: rgba(90, 90, 94, 0.828)
+      ha-color-form-background-hover: rgba(90, 90, 94, 0.908)
+      ha-color-form-background-disabled: rgba(90, 90, 94, 0.828)
       mdc-theme-primary: '#0A84FF'
       mdc-theme-secondary: '#0A84FF'
       mdc-theme-surface: '#1C1C1E'
@@ -205,11 +211,14 @@ Glass Light:
   sidebar-text-color: '#1C1C1E'
   sidebar-selected-icon-color: '#007AFF'
   sidebar-selected-text-color: '#007AFF'
-  input-fill-color: rgba(255, 255, 255, 0.22)
+  input-fill-color: rgba(255, 255, 255, 0.516)
   input-label-ink-color: '#3C3C4399'
   input-dropdown-icon-color: '#3C3C4399'
-  mdc-text-field-fill-color: rgba(255, 255, 255, 0.22)
+  mdc-text-field-fill-color: rgba(255, 255, 255, 0.516)
   mdc-select-fill-color: rgba(255, 255, 255, 0.516)
+  ha-color-form-background: rgba(255, 255, 255, 0.516)
+  ha-color-form-background-hover: rgba(255, 255, 255, 0.596)
+  ha-color-form-background-disabled: rgba(255, 255, 255, 0.516)
   mdc-theme-primary: '#007AFF'
   mdc-theme-secondary: '#007AFF'
   mdc-theme-surface: '#F2F2F7'
@@ -298,11 +307,14 @@ Glass Dark:
   sidebar-text-color: '#FFFFFF'
   sidebar-selected-icon-color: '#0A84FF'
   sidebar-selected-text-color: '#0A84FF'
-  input-fill-color: rgba(90, 90, 94, 0.24)
+  input-fill-color: rgba(90, 90, 94, 0.828)
   input-label-ink-color: '#EBEBF599'
   input-dropdown-icon-color: '#EBEBF599'
-  mdc-text-field-fill-color: rgba(90, 90, 94, 0.24)
+  mdc-text-field-fill-color: rgba(90, 90, 94, 0.828)
   mdc-select-fill-color: rgba(90, 90, 94, 0.828)
+  ha-color-form-background: rgba(90, 90, 94, 0.828)
+  ha-color-form-background-hover: rgba(90, 90, 94, 0.908)
+  ha-color-form-background-disabled: rgba(90, 90, 94, 0.828)
   mdc-theme-primary: '#0A84FF'
   mdc-theme-secondary: '#0A84FF'
   mdc-theme-surface: '#1C1C1E'
@@ -405,11 +417,14 @@ Glass Lite:
       sidebar-text-color: '#1C1C1E'
       sidebar-selected-icon-color: '#007AFF'
       sidebar-selected-text-color: '#007AFF'
-      input-fill-color: rgba(242, 242, 247, 0.8)
+      input-fill-color: rgba(255, 255, 255, 0.516)
       input-label-ink-color: '#3C3C4399'
       input-dropdown-icon-color: '#3C3C4399'
-      mdc-text-field-fill-color: rgba(242, 242, 247, 0.8)
+      mdc-text-field-fill-color: rgba(255, 255, 255, 0.516)
       mdc-select-fill-color: rgba(255, 255, 255, 0.516)
+      ha-color-form-background: rgba(255, 255, 255, 0.516)
+      ha-color-form-background-hover: rgba(255, 255, 255, 0.596)
+      ha-color-form-background-disabled: rgba(255, 255, 255, 0.516)
       mdc-theme-primary: '#007AFF'
       mdc-theme-secondary: '#007AFF'
       mdc-theme-surface: '#F2F2F7'
@@ -463,11 +478,14 @@ Glass Lite:
       sidebar-text-color: '#FFFFFF'
       sidebar-selected-icon-color: '#0A84FF'
       sidebar-selected-text-color: '#0A84FF'
-      input-fill-color: rgba(28, 28, 30, 0.8)
+      input-fill-color: rgba(90, 90, 94, 0.828)
       input-label-ink-color: '#EBEBF599'
       input-dropdown-icon-color: '#EBEBF599'
-      mdc-text-field-fill-color: rgba(28, 28, 30, 0.8)
+      mdc-text-field-fill-color: rgba(90, 90, 94, 0.828)
       mdc-select-fill-color: rgba(90, 90, 94, 0.828)
+      ha-color-form-background: rgba(90, 90, 94, 0.828)
+      ha-color-form-background-hover: rgba(90, 90, 94, 0.908)
+      ha-color-form-background-disabled: rgba(90, 90, 94, 0.828)
       mdc-theme-primary: '#0A84FF'
       mdc-theme-secondary: '#0A84FF'
       mdc-theme-surface: '#1C1C1E'
@@ -525,11 +543,14 @@ Glass Light Lite:
   sidebar-text-color: '#1C1C1E'
   sidebar-selected-icon-color: '#007AFF'
   sidebar-selected-text-color: '#007AFF'
-  input-fill-color: rgba(242, 242, 247, 0.8)
+  input-fill-color: rgba(255, 255, 255, 0.516)
   input-label-ink-color: '#3C3C4399'
   input-dropdown-icon-color: '#3C3C4399'
-  mdc-text-field-fill-color: rgba(242, 242, 247, 0.8)
+  mdc-text-field-fill-color: rgba(255, 255, 255, 0.516)
   mdc-select-fill-color: rgba(255, 255, 255, 0.516)
+  ha-color-form-background: rgba(255, 255, 255, 0.516)
+  ha-color-form-background-hover: rgba(255, 255, 255, 0.596)
+  ha-color-form-background-disabled: rgba(255, 255, 255, 0.516)
   mdc-theme-primary: '#007AFF'
   mdc-theme-secondary: '#007AFF'
   mdc-theme-surface: '#F2F2F7'
@@ -600,11 +621,14 @@ Glass Dark Lite:
   sidebar-text-color: '#FFFFFF'
   sidebar-selected-icon-color: '#0A84FF'
   sidebar-selected-text-color: '#0A84FF'
-  input-fill-color: rgba(28, 28, 30, 0.8)
+  input-fill-color: rgba(90, 90, 94, 0.828)
   input-label-ink-color: '#EBEBF599'
   input-dropdown-icon-color: '#EBEBF599'
-  mdc-text-field-fill-color: rgba(28, 28, 30, 0.8)
+  mdc-text-field-fill-color: rgba(90, 90, 94, 0.828)
   mdc-select-fill-color: rgba(90, 90, 94, 0.828)
+  ha-color-form-background: rgba(90, 90, 94, 0.828)
+  ha-color-form-background-hover: rgba(90, 90, 94, 0.908)
+  ha-color-form-background-disabled: rgba(90, 90, 94, 0.828)
   mdc-theme-primary: '#0A84FF'
   mdc-theme-secondary: '#0A84FF'
   mdc-theme-surface: '#1C1C1E'
@@ -691,11 +715,14 @@ Frosted Glass:
       sidebar-text-color: '#1C1C1E'
       sidebar-selected-icon-color: '#007AFF'
       sidebar-selected-text-color: '#007AFF'
-      input-fill-color: rgba(255, 255, 255, 0.63)
+      input-fill-color: rgba(255, 255, 255, 0.516)
       input-label-ink-color: '#3C3C4399'
       input-dropdown-icon-color: '#3C3C4399'
-      mdc-text-field-fill-color: rgba(255, 255, 255, 0.63)
+      mdc-text-field-fill-color: rgba(255, 255, 255, 0.516)
       mdc-select-fill-color: rgba(255, 255, 255, 0.516)
+      ha-color-form-background: rgba(255, 255, 255, 0.516)
+      ha-color-form-background-hover: rgba(255, 255, 255, 0.596)
+      ha-color-form-background-disabled: rgba(255, 255, 255, 0.516)
       mdc-theme-primary: '#007AFF'
       mdc-theme-secondary: '#007AFF'
       mdc-theme-surface: '#F2F2F7'
@@ -766,11 +793,14 @@ Frosted Glass:
       sidebar-text-color: '#FFFFFF'
       sidebar-selected-icon-color: '#0A84FF'
       sidebar-selected-text-color: '#0A84FF'
-      input-fill-color: rgba(90, 90, 94, 0.53)
+      input-fill-color: rgba(90, 90, 94, 0.828)
       input-label-ink-color: '#EBEBF599'
       input-dropdown-icon-color: '#EBEBF599'
-      mdc-text-field-fill-color: rgba(90, 90, 94, 0.53)
+      mdc-text-field-fill-color: rgba(90, 90, 94, 0.828)
       mdc-select-fill-color: rgba(90, 90, 94, 0.828)
+      ha-color-form-background: rgba(90, 90, 94, 0.828)
+      ha-color-form-background-hover: rgba(90, 90, 94, 0.908)
+      ha-color-form-background-disabled: rgba(90, 90, 94, 0.828)
       mdc-theme-primary: '#0A84FF'
       mdc-theme-secondary: '#0A84FF'
       mdc-theme-surface: '#1C1C1E'
@@ -845,11 +875,14 @@ Frosted Glass Light:
   sidebar-text-color: '#1C1C1E'
   sidebar-selected-icon-color: '#007AFF'
   sidebar-selected-text-color: '#007AFF'
-  input-fill-color: rgba(255, 255, 255, 0.63)
+  input-fill-color: rgba(255, 255, 255, 0.516)
   input-label-ink-color: '#3C3C4399'
   input-dropdown-icon-color: '#3C3C4399'
-  mdc-text-field-fill-color: rgba(255, 255, 255, 0.63)
+  mdc-text-field-fill-color: rgba(255, 255, 255, 0.516)
   mdc-select-fill-color: rgba(255, 255, 255, 0.516)
+  ha-color-form-background: rgba(255, 255, 255, 0.516)
+  ha-color-form-background-hover: rgba(255, 255, 255, 0.596)
+  ha-color-form-background-disabled: rgba(255, 255, 255, 0.516)
   mdc-theme-primary: '#007AFF'
   mdc-theme-secondary: '#007AFF'
   mdc-theme-surface: '#F2F2F7'
@@ -938,11 +971,14 @@ Frosted Glass Dark:
   sidebar-text-color: '#FFFFFF'
   sidebar-selected-icon-color: '#0A84FF'
   sidebar-selected-text-color: '#0A84FF'
-  input-fill-color: rgba(90, 90, 94, 0.53)
+  input-fill-color: rgba(90, 90, 94, 0.828)
   input-label-ink-color: '#EBEBF599'
   input-dropdown-icon-color: '#EBEBF599'
-  mdc-text-field-fill-color: rgba(90, 90, 94, 0.53)
+  mdc-text-field-fill-color: rgba(90, 90, 94, 0.828)
   mdc-select-fill-color: rgba(90, 90, 94, 0.828)
+  ha-color-form-background: rgba(90, 90, 94, 0.828)
+  ha-color-form-background-hover: rgba(90, 90, 94, 0.908)
+  ha-color-form-background-disabled: rgba(90, 90, 94, 0.828)
   mdc-theme-primary: '#0A84FF'
   mdc-theme-secondary: '#0A84FF'
   mdc-theme-surface: '#1C1C1E'
@@ -1045,11 +1081,14 @@ Frosted Glass Lite:
       sidebar-text-color: '#1C1C1E'
       sidebar-selected-icon-color: '#007AFF'
       sidebar-selected-text-color: '#007AFF'
-      input-fill-color: rgba(242, 242, 247, 0.8)
+      input-fill-color: rgba(255, 255, 255, 0.516)
       input-label-ink-color: '#3C3C4399'
       input-dropdown-icon-color: '#3C3C4399'
-      mdc-text-field-fill-color: rgba(242, 242, 247, 0.8)
+      mdc-text-field-fill-color: rgba(255, 255, 255, 0.516)
       mdc-select-fill-color: rgba(255, 255, 255, 0.516)
+      ha-color-form-background: rgba(255, 255, 255, 0.516)
+      ha-color-form-background-hover: rgba(255, 255, 255, 0.596)
+      ha-color-form-background-disabled: rgba(255, 255, 255, 0.516)
       mdc-theme-primary: '#007AFF'
       mdc-theme-secondary: '#007AFF'
       mdc-theme-surface: '#F2F2F7'
@@ -1103,11 +1142,14 @@ Frosted Glass Lite:
       sidebar-text-color: '#FFFFFF'
       sidebar-selected-icon-color: '#0A84FF'
       sidebar-selected-text-color: '#0A84FF'
-      input-fill-color: rgba(28, 28, 30, 0.8)
+      input-fill-color: rgba(90, 90, 94, 0.828)
       input-label-ink-color: '#EBEBF599'
       input-dropdown-icon-color: '#EBEBF599'
-      mdc-text-field-fill-color: rgba(28, 28, 30, 0.8)
+      mdc-text-field-fill-color: rgba(90, 90, 94, 0.828)
       mdc-select-fill-color: rgba(90, 90, 94, 0.828)
+      ha-color-form-background: rgba(90, 90, 94, 0.828)
+      ha-color-form-background-hover: rgba(90, 90, 94, 0.908)
+      ha-color-form-background-disabled: rgba(90, 90, 94, 0.828)
       mdc-theme-primary: '#0A84FF'
       mdc-theme-secondary: '#0A84FF'
       mdc-theme-surface: '#1C1C1E'
@@ -1165,11 +1207,14 @@ Frosted Glass Light Lite:
   sidebar-text-color: '#1C1C1E'
   sidebar-selected-icon-color: '#007AFF'
   sidebar-selected-text-color: '#007AFF'
-  input-fill-color: rgba(242, 242, 247, 0.8)
+  input-fill-color: rgba(255, 255, 255, 0.516)
   input-label-ink-color: '#3C3C4399'
   input-dropdown-icon-color: '#3C3C4399'
-  mdc-text-field-fill-color: rgba(242, 242, 247, 0.8)
+  mdc-text-field-fill-color: rgba(255, 255, 255, 0.516)
   mdc-select-fill-color: rgba(255, 255, 255, 0.516)
+  ha-color-form-background: rgba(255, 255, 255, 0.516)
+  ha-color-form-background-hover: rgba(255, 255, 255, 0.596)
+  ha-color-form-background-disabled: rgba(255, 255, 255, 0.516)
   mdc-theme-primary: '#007AFF'
   mdc-theme-secondary: '#007AFF'
   mdc-theme-surface: '#F2F2F7'
@@ -1240,11 +1285,14 @@ Frosted Glass Dark Lite:
   sidebar-text-color: '#FFFFFF'
   sidebar-selected-icon-color: '#0A84FF'
   sidebar-selected-text-color: '#0A84FF'
-  input-fill-color: rgba(28, 28, 30, 0.8)
+  input-fill-color: rgba(90, 90, 94, 0.828)
   input-label-ink-color: '#EBEBF599'
   input-dropdown-icon-color: '#EBEBF599'
-  mdc-text-field-fill-color: rgba(28, 28, 30, 0.8)
+  mdc-text-field-fill-color: rgba(90, 90, 94, 0.828)
   mdc-select-fill-color: rgba(90, 90, 94, 0.828)
+  ha-color-form-background: rgba(90, 90, 94, 0.828)
+  ha-color-form-background-hover: rgba(90, 90, 94, 0.908)
+  ha-color-form-background-disabled: rgba(90, 90, 94, 0.828)
   mdc-theme-primary: '#0A84FF'
   mdc-theme-secondary: '#0A84FF'
   mdc-theme-surface: '#1C1C1E'
@@ -1333,11 +1381,14 @@ Liquid Glass:
       sidebar-text-color: '#1C1C1E'
       sidebar-selected-icon-color: '#007AFF'
       sidebar-selected-text-color: '#007AFF'
-      input-fill-color: rgba(255, 255, 255, 0.19)
+      input-fill-color: rgba(255, 255, 255, 0.516)
       input-label-ink-color: '#3C3C4399'
       input-dropdown-icon-color: '#3C3C4399'
-      mdc-text-field-fill-color: rgba(255, 255, 255, 0.19)
+      mdc-text-field-fill-color: rgba(255, 255, 255, 0.516)
       mdc-select-fill-color: rgba(255, 255, 255, 0.516)
+      ha-color-form-background: rgba(255, 255, 255, 0.516)
+      ha-color-form-background-hover: rgba(255, 255, 255, 0.596)
+      ha-color-form-background-disabled: rgba(255, 255, 255, 0.516)
       mdc-theme-primary: '#007AFF'
       mdc-theme-secondary: '#007AFF'
       mdc-theme-surface: '#F2F2F7'
@@ -1410,11 +1461,14 @@ Liquid Glass:
       sidebar-text-color: '#FFFFFF'
       sidebar-selected-icon-color: '#0A84FF'
       sidebar-selected-text-color: '#0A84FF'
-      input-fill-color: rgba(90, 90, 94, 0.21)
+      input-fill-color: rgba(90, 90, 94, 0.828)
       input-label-ink-color: '#EBEBF599'
       input-dropdown-icon-color: '#EBEBF599'
-      mdc-text-field-fill-color: rgba(90, 90, 94, 0.21)
+      mdc-text-field-fill-color: rgba(90, 90, 94, 0.828)
       mdc-select-fill-color: rgba(90, 90, 94, 0.828)
+      ha-color-form-background: rgba(90, 90, 94, 0.828)
+      ha-color-form-background-hover: rgba(90, 90, 94, 0.908)
+      ha-color-form-background-disabled: rgba(90, 90, 94, 0.828)
       mdc-theme-primary: '#0A84FF'
       mdc-theme-secondary: '#0A84FF'
       mdc-theme-surface: '#1C1C1E'
@@ -1490,11 +1544,14 @@ Liquid Glass Light:
   sidebar-text-color: '#1C1C1E'
   sidebar-selected-icon-color: '#007AFF'
   sidebar-selected-text-color: '#007AFF'
-  input-fill-color: rgba(255, 255, 255, 0.19)
+  input-fill-color: rgba(255, 255, 255, 0.516)
   input-label-ink-color: '#3C3C4399'
   input-dropdown-icon-color: '#3C3C4399'
-  mdc-text-field-fill-color: rgba(255, 255, 255, 0.19)
+  mdc-text-field-fill-color: rgba(255, 255, 255, 0.516)
   mdc-select-fill-color: rgba(255, 255, 255, 0.516)
+  ha-color-form-background: rgba(255, 255, 255, 0.516)
+  ha-color-form-background-hover: rgba(255, 255, 255, 0.596)
+  ha-color-form-background-disabled: rgba(255, 255, 255, 0.516)
   mdc-theme-primary: '#007AFF'
   mdc-theme-secondary: '#007AFF'
   mdc-theme-surface: '#F2F2F7'
@@ -1586,11 +1643,14 @@ Liquid Glass Dark:
   sidebar-text-color: '#FFFFFF'
   sidebar-selected-icon-color: '#0A84FF'
   sidebar-selected-text-color: '#0A84FF'
-  input-fill-color: rgba(90, 90, 94, 0.21)
+  input-fill-color: rgba(90, 90, 94, 0.828)
   input-label-ink-color: '#EBEBF599'
   input-dropdown-icon-color: '#EBEBF599'
-  mdc-text-field-fill-color: rgba(90, 90, 94, 0.21)
+  mdc-text-field-fill-color: rgba(90, 90, 94, 0.828)
   mdc-select-fill-color: rgba(90, 90, 94, 0.828)
+  ha-color-form-background: rgba(90, 90, 94, 0.828)
+  ha-color-form-background-hover: rgba(90, 90, 94, 0.908)
+  ha-color-form-background-disabled: rgba(90, 90, 94, 0.828)
   mdc-theme-primary: '#0A84FF'
   mdc-theme-secondary: '#0A84FF'
   mdc-theme-surface: '#1C1C1E'
