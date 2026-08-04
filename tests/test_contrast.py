@@ -221,6 +221,11 @@ def test_modern_input_text_clears_wcag_aa(themes, name):
     """ha-color-form-background also paints modern text inputs/textareas/time
     inputs, so their entered text (primary-text-color) must clear AA over
     arbitrary content -- the form layer is one shared token now.
+
+    Deliberately re-covers the same surface/text as the select test above:
+    both read primary-text-color over ha-color-form-background. It cannot
+    fail when the select test passes -- it is kept for intent documentation
+    (the form layer is shared), not independent coverage.
     """
     for mode in _mode_for(name):
         payload = _entry_payload(themes, name, mode)

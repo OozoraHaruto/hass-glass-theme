@@ -161,8 +161,11 @@ legibility floor forcing it, not a tuning preference.
 - `backdrop-filter` on the closed box (would require card-mod reaching
   a control, which it does not; and even on the card, blur is the
   card's, not the box's own).
-- The text field and `input-fill-color` (kept on glass, as in
-  `6528272`).
+- The text field and `input-fill-color` — ~~kept on glass, as in
+  `6528272`~~. **Reversed 2026-08-04:** the modern frontend unifies every
+  form field under `--ha-color-form-background`, so `input-fill-color` and
+  `mdc-text-field-fill-color` were retargeted onto the frosted value alongside
+  the new hook. See "2026-08-04 correction" below.
 
 ## Manual verification
 
