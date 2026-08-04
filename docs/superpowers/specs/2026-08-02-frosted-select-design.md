@@ -131,10 +131,12 @@ legibility floor forcing it, not a tuning preference.
   value would either fail dark or over-opaque light.
 - `glassbuild/variables.py`: `select_fill` uses the mode's
   `material.fill_rgb` (the glass/frosted RGB) with the new per-mode
-  alpha, instead of `opaque_surface` + `LITE_FILL_ALPHA`. The
+  alpha, instead of `opaque_surface` + `LITE_FILL_ALPHA`. ~~The
   `input-fill-color` and `mdc-text-field-fill-color` mappings stay on
   `light.fill` (unchanged from `6528272` — the text field was not the
-  reported surface and keeps the glass look).
+  reported surface and keeps the glass look).~~ **Reversed 2026-08-04:**
+  those mappings were retargeted onto the frosted `select_fill` — see
+  "2026-08-04 correction" below.
 - `glassbuild/emit.py`: no change. `build_variables` already receives
   the merged per-mode tokens, so `fill_rgb` is mode-correct without
   threading a new parameter.
@@ -151,9 +153,12 @@ legibility floor forcing it, not a tuning preference.
   (added in `6528272`) is renamed and rewritten to
   `test_select_fill_is_frosted_tinted`: it pins the select fill to the
   frosted RGB and per-mode alpha (against the dark-mode fixture, which
-  is the heavier case) and still asserts it differs from the glass
-  `light.fill` the text field uses. The opaque-surface assertion is
-  removed — that is exactly what this change reverses.
+  is the heavier case). ~~and still asserts it differs from the glass
+  `light.fill` the text field uses.~~ **Reversed 2026-08-04:** the
+  text-field tokens no longer stay on `light.fill`, so that assertion
+  was inverted to assert the form-field keys now *equal* the select
+  fill. The opaque-surface assertion is removed — that is exactly what
+  this change reverses.
 
 ## Out of scope
 
