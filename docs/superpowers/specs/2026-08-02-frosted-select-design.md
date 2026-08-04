@@ -131,10 +131,12 @@ legibility floor forcing it, not a tuning preference.
   value would either fail dark or over-opaque light.
 - `glassbuild/variables.py`: `select_fill` uses the mode's
   `material.fill_rgb` (the glass/frosted RGB) with the new per-mode
-  alpha, instead of `opaque_surface` + `LITE_FILL_ALPHA`. The
+  alpha, instead of `opaque_surface` + `LITE_FILL_ALPHA`. ~~The
   `input-fill-color` and `mdc-text-field-fill-color` mappings stay on
   `light.fill` (unchanged from `6528272` — the text field was not the
-  reported surface and keeps the glass look).
+  reported surface and keeps the glass look).~~ **Reversed 2026-08-04:**
+  those mappings were retargeted onto the frosted `select_fill` — see
+  "2026-08-04 correction" below.
 - `glassbuild/emit.py`: no change. `build_variables` already receives
   the merged per-mode tokens, so `fill_rgb` is mode-correct without
   threading a new parameter.
@@ -151,9 +153,12 @@ legibility floor forcing it, not a tuning preference.
   (added in `6528272`) is renamed and rewritten to
   `test_select_fill_is_frosted_tinted`: it pins the select fill to the
   frosted RGB and per-mode alpha (against the dark-mode fixture, which
-  is the heavier case) and still asserts it differs from the glass
-  `light.fill` the text field uses. The opaque-surface assertion is
-  removed — that is exactly what this change reverses.
+  is the heavier case). ~~and still asserts it differs from the glass
+  `light.fill` the text field uses.~~ **Reversed 2026-08-04:** the
+  text-field tokens no longer stay on `light.fill`, so that assertion
+  was inverted to assert the form-field keys now *equal* the select
+  fill. The opaque-surface assertion is removed — that is exactly what
+  this change reverses.
 
 ## Out of scope
 
@@ -161,8 +166,11 @@ legibility floor forcing it, not a tuning preference.
 - `backdrop-filter` on the closed box (would require card-mod reaching
   a control, which it does not; and even on the card, blur is the
   card's, not the box's own).
-- The text field and `input-fill-color` (kept on glass, as in
-  `6528272`).
+- The text field and `input-fill-color` — ~~kept on glass, as in
+  `6528272`~~. **Reversed 2026-08-04:** the modern frontend unifies every
+  form field under `--ha-color-form-background`, so `input-fill-color` and
+  `mdc-text-field-fill-color` were retargeted onto the frosted value alongside
+  the new hook. See "2026-08-04 correction" below.
 
 ## Manual verification
 
@@ -172,3 +180,38 @@ it, steps through the entries light/dark, and confirms the closed box
 reads frosted (light) / a heavier near-opaque tint (dark) and that the
 selected value's label stays legible over a busy backdrop. The opened
 menu is expected to look unchanged (the documented unreachable case).
+
+## 2026-08-04 correction: the real closed-box hook
+
+The "Two surfaces" section above names `--mdc-select-fill-color` as the
+closed-box hook. That is wrong for the modern Home Assistant frontend. The
+modern `ha-select` paints its closed field from `--ha-color-form-background`
+(`ha-picker-field.ts:137`, `ha-combo-box-item { background-color:
+var(--ha-color-form-background) }`). `--mdc-select-fill-color` is consumed
+only by `color.globals.ts` (a legacy default) and `ha-onboarding.ts` (set to
+`none`) — never by the modern select. So the frosted `select_fill` this spec
+designed was emitted under an inert key, and the modern dropdown stayed clear
+— the bug reported as "for glass and liquid glass the select dropdown is
+still clear not frosted."
+
+The override path was verified against a cloned `home-assistant/frontend`
+`dev` branch: `themes-mixin` calls `applyThemesOnElement(document.documentElement,
+…)`, which turns each theme key into `--${key}` and sets it as an inline
+style on `<html>`; inline-on-`<html>` beats the `html { --ha-color-form-background: … }`
+default in `semantic.globals.ts`, and the custom property inherits down into
+`ha-picker-field`. No component redeclares the variable in its own `:host`
+— every hit is a `var()` consumer.
+
+The fix emits `ha-color-form-background` (plus `-hover` lifted by
+`LIGHT_ALPHA_BONUS` and `-disabled` clamped to resting) with the same frosted
+value, and retargets `input-fill-color` / `mdc-text-field-fill-color` onto it
+so the legacy alias chain (legacy text fields, expansion panels, config
+pickers, calendar/schedule headers via `--table-header-background-color`)
+frosts too. `ha-color-form-background` is a shared form-field token (selects,
+text inputs, textareas, time inputs, checkbox hover) — there is no
+select-only hook — so frosting it frosts the whole form layer, not just the
+dropdown. This reverses the earlier "only the dropdown" scope: that choice
+was made when text fields were assumed separately themed, but the modern
+frontend unifies every field under this one token, and the theme previously
+left it on Home Assistant's flat default. The opened-menu limit above stands
+unchanged.

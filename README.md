@@ -145,7 +145,15 @@ as "not planned":
   the menu is a webawesome popup teleported to `<body>` — outside
   `hui-root`, so `card-mod`'s root scope cannot reach it either. The opened
   menu keeps Home Assistant's default surface. The **closed** dropdown box,
-  by contrast, is frosted-tinted via `mdc-select-fill-color`.
+  by contrast, is frosted via `ha-color-form-background` — the token the
+  modern `ha-select` actually reads (`ha-picker-field`'s
+  `background-color: var(--ha-color-form-background)`). The older
+  `mdc-select-fill-color` is kept for legacy selects but is inert on the
+  modern dropdown. Because `ha-color-form-background` is a shared form-field
+  token, frosting it also frosts modern text inputs, textareas, and time
+  inputs; `input-fill-color`/`mdc-text-field-fill-color` are retargeted to the
+  same value so legacy text fields, expansion panels, and table headers
+  frost consistently.
 
 **Remedy:** if either of these bites you, switch to the matching Lite entry
 (e.g. `Glass` → `Glass Lite`). Lite entries set no `backdrop-filter` anywhere,
