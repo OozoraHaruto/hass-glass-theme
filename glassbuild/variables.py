@@ -55,8 +55,9 @@ def build_variables(
     # dark ~0.83 -- the dark RGB's luminance is too close to white to go as
     # low as light). That trades the opaque look from 6528272 for a frosted
     # pane: translucent in light, near-opaque in dark, legible in both. The
-    # glass light.fill stays on the text field below; that was not the
-    # reported surface and keeps the glass look.
+    # glass light.fill survives on the slider's secondary track below, not on
+    # the form fields -- those collapsed onto this same frosted value (see
+    # the form-fields mapping block and the 2026-08-04 spec correction).
     fill_rgb = merged["material"]["fill_rgb"]
     select_fill = rgba_str(
         fill_rgb[0], fill_rgb[1], fill_rgb[2], select_fill_alpha(fill_rgb)
