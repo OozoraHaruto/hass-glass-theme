@@ -172,3 +172,38 @@ it, steps through the entries light/dark, and confirms the closed box
 reads frosted (light) / a heavier near-opaque tint (dark) and that the
 selected value's label stays legible over a busy backdrop. The opened
 menu is expected to look unchanged (the documented unreachable case).
+
+## 2026-08-04 correction: the real closed-box hook
+
+The "Two surfaces" section above names `--mdc-select-fill-color` as the
+closed-box hook. That is wrong for the modern Home Assistant frontend. The
+modern `ha-select` paints its closed field from `--ha-color-form-background`
+(`ha-picker-field.ts:137`, `ha-combo-box-item { background-color:
+var(--ha-color-form-background) }`). `--mdc-select-fill-color` is consumed
+only by `color.globals.ts` (a legacy default) and `ha-onboarding.ts` (set to
+`none`) — never by the modern select. So the frosted `select_fill` this spec
+designed was emitted under an inert key, and the modern dropdown stayed clear
+— the bug reported as "for glass and liquid glass the select dropdown is
+still clear not frosted."
+
+The override path was verified against a cloned `home-assistant/frontend`
+`dev` branch: `themes-mixin` calls `applyThemesOnElement(document.documentElement,
+…)`, which turns each theme key into `--${key}` and sets it as an inline
+style on `<html>`; inline-on-`<html>` beats the `html { --ha-color-form-background: … }`
+default in `semantic.globals.ts`, and the custom property inherits down into
+`ha-picker-field`. No component redeclares the variable in its own `:host`
+— every hit is a `var()` consumer.
+
+The fix emits `ha-color-form-background` (plus `-hover` lifted by
+`LIGHT_ALPHA_BONUS` and `-disabled` clamped to resting) with the same frosted
+value, and retargets `input-fill-color` / `mdc-text-field-fill-color` onto it
+so the legacy alias chain (legacy text fields, expansion panels, config
+pickers, calendar/schedule headers via `--table-header-background-color`)
+frosts too. `ha-color-form-background` is a shared form-field token (selects,
+text inputs, textareas, time inputs, checkbox hover) — there is no
+select-only hook — so frosting it frosts the whole form layer, not just the
+dropdown. This reverses the earlier "only the dropdown" scope: that choice
+was made when text fields were assumed separately themed, but the modern
+frontend unifies every field under this one token, and the theme previously
+left it on Home Assistant's flat default. The opened-menu limit above stands
+unchanged.
