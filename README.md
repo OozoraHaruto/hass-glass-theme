@@ -139,25 +139,36 @@ as "not planned":
 - [frontend#26113](https://github.com/home-assistant/frontend/issues/26113) —
   a dropdown opened from inside a more-info dialog can escape and render
   outside the dialog's bounds instead of staying inside it.
-- The **opened menu's** background cannot be frosted by this theme. Its fill
-  is locked to `--card-background-color` by a `:host` rule inside
-  `ha-dropdown`'s shadow root, so a theme variable cannot override it, and
-  the menu is a webawesome popup teleported to `<body>` — outside
-  `hui-root`, so `card-mod`'s root scope cannot reach it either. The opened
-  menu keeps Home Assistant's default surface. The **closed** dropdown box,
-  by contrast, is frosted via `ha-color-form-background` — the token the
-  modern `ha-select` actually reads (`ha-picker-field`'s
-  `background-color: var(--ha-color-form-background)`). The older
-  `mdc-select-fill-color` is kept for legacy selects but is inert on the
-  modern dropdown. Because `ha-color-form-background` is a shared form-field
-  token, frosting it also frosts modern text inputs, textareas, and time
-  inputs; `input-fill-color`/`mdc-text-field-fill-color` are retargeted to the
-  same value so legacy text fields, expansion panels, and table headers
-  frost consistently.
+- Theme YAML alone cannot independently override the **opened menu's**
+  background. Its fill is locked to `--card-background-color` by a `:host`
+  rule inside `ha-dropdown`'s shadow root, and the menu is a webawesome popup
+  teleported to `<body>` — outside `hui-root`, so `card-mod`'s root scope
+  cannot reach it either. The optional host-level `www/glass-dropdown.js`
+  workaround gives opened menus the Frosted Glass fill when a Glass or Liquid
+  Glass entry is active. It changes fill only: it adds no blur or filter and
+  does not fix frontend#20725 or frontend#26113. Frosted Glass already uses
+  the desired fill and needs no override. The **closed** dropdown box is
+  frosted via `ha-color-form-background` — the token the modern `ha-select`
+  reads. Because that is a shared form-field token, modern text inputs,
+  textareas, and time inputs use the same fill; legacy fields use the aligned
+  `input-fill-color` and `mdc-text-field-fill-color` tokens.
 
-**Remedy:** if either of these bites you, switch to the matching Lite entry
-(e.g. `Glass` → `Glass Lite`). Lite entries set no `backdrop-filter` anywhere,
-so they don't create the stacking context that traps the dropdown.
+To install the optional opened-menu fill workaround:
+
+1. Copy `www/glass-dropdown.js` from this repo to `<config>/www/glass-dropdown.js`.
+2. Add to `configuration.yaml`:
+   ```yaml
+   frontend:
+     extra_module_url:
+       - /local/glass-dropdown.js
+   ```
+3. Restart Home Assistant. If the old cached module remains, perform a hard
+   browser refresh.
+
+**Remedy for frontend#20725:** switch to the matching Lite entry (e.g. `Glass`
+→ `Glass Lite`). Lite entries set no `backdrop-filter` anywhere, so they don't
+create the stacking context that traps the dropdown. The optional module does
+not replace this workaround.
 
 `demo/dashboard.yaml` includes a picture-elements card next to an
 `input_select` dropdown specifically to reproduce the frontend#20725 shape —
@@ -207,13 +218,16 @@ CSS rather than markup. Neither can put an element in the document. Hence
 `www/glass-refraction.js`:
 
 1. Copy `www/glass-refraction.js` from this repo to `<config>/www/glass-refraction.js`.
-2. Add to `configuration.yaml`:
+2. Add to `configuration.yaml` (the optional dropdown workaround can be
+   registered alongside it):
    ```yaml
    frontend:
      extra_module_url:
        - /local/glass-refraction.js
+       - /local/glass-dropdown.js
    ```
-3. Restart Home Assistant and pick a **Liquid Glass** entry.
+3. Restart Home Assistant and pick a **Liquid Glass** entry. If a copied
+   module remains cached, perform a hard browser refresh.
 
 **Skipping this is a supported configuration.** The Liquid Glass entries ship
 an ordinary blur chain of their own and the module only ever *upgrades* it, by

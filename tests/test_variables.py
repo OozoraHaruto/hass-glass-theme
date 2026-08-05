@@ -1,5 +1,8 @@
 from pathlib import Path
 
+import pytest
+
+from glassbuild.color import rgba_str
 from glassbuild.materials import derive
 from glassbuild.tokens import MATERIALS, MODES, load_tokens, merge
 from glassbuild.variables import build_variables
@@ -10,7 +13,7 @@ MERGED = {
     "radius": {"card": "18px", "dialog": "28px", "control": "12px", "pill": "980px"},
     "shadow": "0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 32px rgba(0, 0, 0, 0.12)",
     "font": {
-        "stack": '-apple-system, system-ui, sans-serif',
+        "stack": "-apple-system, system-ui, sans-serif",
         "stack_code": "ui-monospace, SFMono-Regular, monospace",
         "tracking_headline": "-0.4px",
         "tracking_body": "-0.2px",
@@ -284,6 +287,29 @@ def test_lite_still_defines_the_card_background():
     assert v["ha-card-background"] == "rgba(28, 28, 30, 0.72)"
 
 
+@pytest.mark.parametrize("material", ["glass", "liquid-glass"])
+@pytest.mark.parametrize("mode", ["light", "dark"])
+@pytest.mark.parametrize("lite", [False, True])
+def test_glass_materials_publish_the_frosted_dropdown_surface(material, mode, lite):
+    tokens = load_tokens(ROOT)
+    merged = merge(tokens["base"], tokens["materials"][material], tokens["modes"][mode])
+    variables = build_variables(merged, derive(merged, material, lite=lite))
+    r, g, b = merged["material"]["fill_rgb"]
+    expected = rgba_str(r, g, b, merged["material"]["fill_alpha_frosted"])
+    assert variables["ha-glass-dropdown-surface"] == expected
+
+
+@pytest.mark.parametrize("mode", ["light", "dark"])
+@pytest.mark.parametrize("lite", [False, True])
+def test_frosted_glass_does_not_publish_a_dropdown_override(mode, lite):
+    tokens = load_tokens(ROOT)
+    merged = merge(
+        tokens["base"], tokens["materials"]["frosted-glass"], tokens["modes"][mode]
+    )
+    variables = build_variables(merged, derive(merged, "frosted-glass", lite=lite))
+    assert "ha-glass-dropdown-surface" not in variables
+
+
 # 74 base keys + 7 conditional backdrop-filter keys (full material only).
 EXPECTED_FULL_KEY_COUNT = 81
 EXPECTED_LITE_KEY_COUNT = 74
@@ -295,13 +321,16 @@ EXPECTED_LITE_KEY_COUNT = 74
 # block adds exactly these keys, and only on full") rather than on today's
 # roster of materials.
 EXPECTED_REFRACTION_KEY_COUNT = 3
+EXPECTED_DROPDOWN_SURFACE_KEY_COUNT = 1
 
 
 def test_real_tokens_produce_valid_variables_for_every_combination():
     tokens = load_tokens(ROOT)
     for material in MATERIALS:
         for mode in MODES:
-            merged = merge(tokens["base"], tokens["materials"][material], tokens["modes"][mode])
+            merged = merge(
+                tokens["base"], tokens["materials"][material], tokens["modes"][mode]
+            )
             for lite in (False, True):
                 v = build_variables(merged, derive(merged, material, lite=lite))
                 for key, value in v.items():
@@ -309,13 +338,20 @@ def test_real_tokens_produce_valid_variables_for_every_combination():
                     assert isinstance(value, str), (material, mode, lite, key)
                     assert not key.startswith("--"), (material, mode, lite, key)
                 refracts = "refraction" in merged["material"]
+                eligible = merged["material"]["name"] in {"Glass", "Liquid Glass"}
+                dropdown_surface_count = (
+                    EXPECTED_DROPDOWN_SURFACE_KEY_COUNT if eligible else 0
+                )
                 if lite:
-                    expected = EXPECTED_LITE_KEY_COUNT
+                    expected = EXPECTED_LITE_KEY_COUNT + dropdown_surface_count
                 else:
-                    expected = EXPECTED_FULL_KEY_COUNT + (
-                        EXPECTED_REFRACTION_KEY_COUNT if refracts else 0
+                    expected = (
+                        EXPECTED_FULL_KEY_COUNT
+                        + (EXPECTED_REFRACTION_KEY_COUNT if refracts else 0)
+                        + dropdown_surface_count
                     )
                 assert len(v) == expected, (material, mode, lite, sorted(v))
+                assert ("ha-glass-dropdown-surface" in v) == eligible
                 # Lite has no backdrop-filter at all, so there is nothing for
                 # a displacement to run in front of -- the refraction
                 # variable must not survive the lite gate even for a material

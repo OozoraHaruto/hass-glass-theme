@@ -205,3 +205,42 @@ def test_non_refractive_entries_have_no_refraction_variable(themes):
 
 def test_liquid_glass_auto_entry_still_has_both_modes(themes):
     assert set(themes["Liquid Glass"]["modes"]) == {"light", "dark"}
+
+
+def _applied_mode(entry: dict, mode: str) -> dict:
+    base = {key: value for key, value in entry.items() if key != "modes"}
+    return {**base, **entry.get("modes", {}).get(mode, {})}
+
+
+@pytest.mark.parametrize("prefix", ["Glass", "Liquid Glass"])
+@pytest.mark.parametrize("mode", ["light", "dark"])
+def test_glass_entries_publish_frosted_opened_dropdown_surface(themes, prefix, mode):
+    entry = themes[prefix]
+    applied = _applied_mode(entry, mode)
+    frosted = _applied_mode(themes["Frosted Glass"], mode)
+    assert applied["ha-glass-dropdown-surface"] == frosted["card-background-color"]
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "Frosted Glass",
+        "Frosted Glass Light",
+        "Frosted Glass Dark",
+        "Frosted Glass Lite",
+        "Frosted Glass Light Lite",
+        "Frosted Glass Dark Lite",
+    ],
+)
+def test_frosted_entries_need_no_opened_dropdown_override(themes, name):
+    assert all(
+        key != "ha-glass-dropdown-surface"
+        for key, _value in _flatten_entry(themes[name])
+    )
+
+
+@pytest.mark.parametrize("mode", ["light", "dark"])
+def test_glass_lite_dropdown_still_uses_the_frosted_fill(themes, mode):
+    glass_lite = _applied_mode(themes["Glass Lite"], mode)
+    frosted = _applied_mode(themes["Frosted Glass"], mode)
+    assert glass_lite["ha-glass-dropdown-surface"] == frosted["card-background-color"]

@@ -82,6 +82,7 @@ Glass:
       energy-battery-out-color: '#34C759'
       history-unavailable-color: '#3C3C4361'
       scrollbar-thumb-color: rgba(60, 60, 67, 0.18)
+      ha-glass-dropdown-surface: rgba(255, 255, 255, 0.55)
       ha-card-backdrop-filter: blur(20px) saturate(140%) brightness(105%) contrast(96%)
       ha-dialog-surface-backdrop-filter: blur(20px) saturate(140%) brightness(105%) contrast(96%)
       app-header-backdrop-filter: blur(20px) saturate(140%) brightness(105%) contrast(96%)
@@ -160,6 +161,7 @@ Glass:
       energy-battery-out-color: '#30D158'
       history-unavailable-color: '#EBEBF561'
       scrollbar-thumb-color: rgba(84, 84, 88, 0.65)
+      ha-glass-dropdown-surface: rgba(90, 90, 94, 0.45)
       ha-card-backdrop-filter: blur(20px) saturate(140%) brightness(85%) contrast(106%)
       ha-dialog-surface-backdrop-filter: blur(20px) saturate(140%) brightness(85%) contrast(106%)
       app-header-backdrop-filter: blur(20px) saturate(140%) brightness(85%) contrast(106%)
@@ -255,6 +257,7 @@ Glass Light:
   control-select-menu-border-radius: 12px
   control-select-button-border-radius: 12px
   ha-assist-chip-container-shape: 980px
+  ha-glass-dropdown-surface: rgba(255, 255, 255, 0.55)
   ha-card-backdrop-filter: blur(20px) saturate(140%) brightness(105%) contrast(96%)
   ha-dialog-surface-backdrop-filter: blur(20px) saturate(140%) brightness(105%) contrast(96%)
   app-header-backdrop-filter: blur(20px) saturate(140%) brightness(105%) contrast(96%)
@@ -351,6 +354,7 @@ Glass Dark:
   control-select-menu-border-radius: 12px
   control-select-button-border-radius: 12px
   ha-assist-chip-container-shape: 980px
+  ha-glass-dropdown-surface: rgba(90, 90, 94, 0.45)
   ha-card-backdrop-filter: blur(20px) saturate(140%) brightness(85%) contrast(106%)
   ha-dialog-surface-backdrop-filter: blur(20px) saturate(140%) brightness(85%) contrast(106%)
   app-header-backdrop-filter: blur(20px) saturate(140%) brightness(85%) contrast(106%)
@@ -448,6 +452,7 @@ Glass Lite:
       energy-battery-out-color: '#34C759'
       history-unavailable-color: '#3C3C4361'
       scrollbar-thumb-color: rgba(60, 60, 67, 0.18)
+      ha-glass-dropdown-surface: rgba(255, 255, 255, 0.55)
     dark:
       primary-color: '#0A84FF'
       accent-color: '#0A84FF'
@@ -509,6 +514,7 @@ Glass Lite:
       energy-battery-out-color: '#30D158'
       history-unavailable-color: '#EBEBF561'
       scrollbar-thumb-color: rgba(84, 84, 88, 0.65)
+      ha-glass-dropdown-surface: rgba(90, 90, 94, 0.45)
 Glass Light Lite:
   primary-color: '#007AFF'
   accent-color: '#007AFF'
@@ -587,6 +593,7 @@ Glass Light Lite:
   control-select-menu-border-radius: 12px
   control-select-button-border-radius: 12px
   ha-assist-chip-container-shape: 980px
+  ha-glass-dropdown-surface: rgba(255, 255, 255, 0.55)
 Glass Dark Lite:
   primary-color: '#0A84FF'
   accent-color: '#0A84FF'
@@ -665,6 +672,7 @@ Glass Dark Lite:
   control-select-menu-border-radius: 12px
   control-select-button-border-radius: 12px
   ha-assist-chip-container-shape: 980px
+  ha-glass-dropdown-surface: rgba(90, 90, 94, 0.45)
 Frosted Glass:
   ha-card-border-radius: 18px
   ha-card-border-width: 1px
@@ -1412,6 +1420,7 @@ Liquid Glass:
       energy-battery-out-color: '#34C759'
       history-unavailable-color: '#3C3C4361'
       scrollbar-thumb-color: rgba(60, 60, 67, 0.18)
+      ha-glass-dropdown-surface: rgba(255, 255, 255, 0.55)
       ha-card-backdrop-filter: blur(18px) saturate(140%) brightness(105%) contrast(96%)
       ha-dialog-surface-backdrop-filter: blur(18px) saturate(140%) brightness(105%) contrast(96%)
       app-header-backdrop-filter: blur(18px) saturate(140%) brightness(105%) contrast(96%)
@@ -1492,6 +1501,7 @@ Liquid Glass:
       energy-battery-out-color: '#30D158'
       history-unavailable-color: '#EBEBF561'
       scrollbar-thumb-color: rgba(84, 84, 88, 0.65)
+      ha-glass-dropdown-surface: rgba(90, 90, 94, 0.45)
       ha-card-backdrop-filter: blur(18px) saturate(140%) brightness(85%) contrast(106%)
       ha-dialog-surface-backdrop-filter: blur(18px) saturate(140%) brightness(85%) contrast(106%)
       app-header-backdrop-filter: blur(18px) saturate(140%) brightness(85%) contrast(106%)
@@ -1588,6 +1598,7 @@ Liquid Glass Light:
   control-select-menu-border-radius: 12px
   control-select-button-border-radius: 12px
   ha-assist-chip-container-shape: 980px
+  ha-glass-dropdown-surface: rgba(255, 255, 255, 0.55)
   ha-card-backdrop-filter: blur(18px) saturate(140%) brightness(105%) contrast(96%)
   ha-dialog-surface-backdrop-filter: blur(18px) saturate(140%) brightness(105%) contrast(96%)
   app-header-backdrop-filter: blur(18px) saturate(140%) brightness(105%) contrast(96%)
@@ -1687,6 +1698,7 @@ Liquid Glass Dark:
   control-select-menu-border-radius: 12px
   control-select-button-border-radius: 12px
   ha-assist-chip-container-shape: 980px
+  ha-glass-dropdown-surface: rgba(90, 90, 94, 0.45)
   ha-card-backdrop-filter: blur(18px) saturate(140%) brightness(85%) contrast(106%)
   ha-dialog-surface-backdrop-filter: blur(18px) saturate(140%) brightness(85%) contrast(106%)
   app-header-backdrop-filter: blur(18px) saturate(140%) brightness(85%) contrast(106%)

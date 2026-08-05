@@ -67,10 +67,18 @@ def build_variables(
     # clamps to resting: the components dim disabled fields with opacity: 0.5
     # (ha-picker-field, ha-input, ha-textarea), so the fill itself should not move.
     form_fill_hover = rgba_str(
-        fill_rgb[0], fill_rgb[1], fill_rgb[2],
+        fill_rgb[0],
+        fill_rgb[1],
+        fill_rgb[2],
         min(1.0, select_fill_alpha(fill_rgb) + LIGHT_ALPHA_BONUS),
     )
     form_fill_disabled = select_fill
+    frosted_dropdown_fill = rgba_str(
+        fill_rgb[0],
+        fill_rgb[1],
+        fill_rgb[2],
+        merged["material"]["fill_alpha_frosted"],
+    )
 
     variables: dict[str, str] = {
         # ---- core palette -------------------------------------------------
@@ -176,6 +184,9 @@ def build_variables(
         "control-select-button-border-radius": radius["control"],
         "ha-assist-chip-container-shape": radius["pill"],
     }
+
+    if merged["material"]["name"] in {"Glass", "Liquid Glass"}:
+        variables["ha-glass-dropdown-surface"] = frosted_dropdown_fill
 
     if full.backdrop is not None:
         # `light` shares the same lite-gating as `full` (see
