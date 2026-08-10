@@ -56,6 +56,12 @@ variant, each with a matching Lite twin:
 4. Open your user profile, scroll to **Theme**, and pick one of the fifteen
    entries above.
 
+For manual installation from a release archive:
+
+1. Extract `themes/glass.yaml` to `<config>/themes/glass.yaml`.
+2. Extract `www/glass-dropdown.js` to `<config>/www/glass-dropdown.js` if you want the optional opened-menu frosted fill described below.
+3. Configure theme loading and the optional module as shown in the relevant sections, then restart Home Assistant.
+
 `hacs.json` sets a floor of Home Assistant **2024.5.0**, since that's roughly
 when `--ha-card-backdrop-filter` itself landed. A few of the other variables
 this theme sets (the bottom-sheet pair, the `ha-font-family-*` trio) landed
@@ -153,9 +159,9 @@ as "not planned":
   textareas, and time inputs use the same fill; legacy fields use the aligned
   `input-fill-color` and `mdc-text-field-fill-color` tokens.
 
-To install the optional opened-menu fill workaround:
+Release archives include the optional module at `www/glass-dropdown.js`. To enable the opened-menu fill workaround:
 
-1. Copy `www/glass-dropdown.js` from this repo to `<config>/www/glass-dropdown.js`.
+1. Copy the archive's `www/glass-dropdown.js` to `<config>/www/glass-dropdown.js` if it is not already there.
 2. Add to `configuration.yaml`:
    ```yaml
    frontend:
