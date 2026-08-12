@@ -67,6 +67,13 @@ def test_committed_file_parses_and_has_every_entry():
     assert len(document) == len(ENTRY_NAMES) == 15
 
 
+def test_committed_file_scopes_the_opened_dropdown_surface():
+    document = yaml.safe_load((ROOT / "themes" / "glass.yaml").read_text(encoding="utf-8"))
+    assert "ha-glass-dropdown-surface" in document["Glass Light"]
+    assert "ha-glass-dropdown-surface" in document["Liquid Glass Dark"]
+    assert "ha-glass-dropdown-surface" not in document["Frosted Glass Light"]
+
+
 def test_committed_file_entry_order_matches_entry_names():
     # sort_keys=False is deliberate (see render()): ENTRY_NAMES order must
     # survive into the emitted YAML so the HA theme picker lists entries in

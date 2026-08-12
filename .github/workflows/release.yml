@@ -24,10 +24,8 @@ jobs:
           python scripts/build_themes.py --check
           python -m pytest -q
 
-      - name: Package the themes
-        run: |
-          mkdir -p dist
-          zip -j dist/hass-glass-theme.zip themes/glass.yaml
+      - name: Package the theme and optional modules
+        run: python scripts/package_release.py
 
       - name: Publish the release
         uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65  # v2
