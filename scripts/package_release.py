@@ -8,7 +8,11 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = ROOT / "dist" / "hass-glass-theme.zip"
-ARCHIVE_PATHS = (Path("themes/glass.yaml"), Path("www/glass-dropdown.js"))
+ARCHIVE_PATHS = (
+    Path("themes/glass.yaml"),
+    Path("www/glass-dropdown.js"),
+    Path("www/glass-refraction.js"),
+)
 
 
 def build_archive(output: Path, root: Path = ROOT) -> Path:

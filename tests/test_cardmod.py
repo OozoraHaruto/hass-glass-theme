@@ -7,11 +7,17 @@ from glassbuild.materials import Material
 
 EDGE = "inset 0 1px 0 0 rgba(255, 255, 255, 0.28), inset 0 -1px 0 0 rgba(0, 0, 0, 0.22)"
 
-FULL = Material(
+CLEAR = Material(
     fill="rgba(255, 255, 255, 0.14)",
     rim="rgba(255, 255, 255, 0.45)",
     edge=EDGE,
-    backdrop="blur(28px) saturate(140%) brightness(60%) contrast(110%)",
+    backdrop=None,
+)
+FROSTED = Material(
+    fill="rgba(255, 255, 255, 0.55)",
+    rim="rgba(255, 255, 255, 0.2)",
+    edge=EDGE,
+    backdrop="blur(40px) saturate(120%) brightness(105%) contrast(96%)",
 )
 LITE = Material(
     fill="rgba(28, 28, 30, 0.72)",
@@ -30,9 +36,14 @@ MERGED = {
 }
 
 
-def _block(entry_name: str = "Glass", lite: bool = False) -> dict[str, str]:
-    materials = {"full": LITE, "light": LITE} if lite else {"full": FULL, "light": FULL}
-    return build_cardmod(entry_name, materials, MERGED)
+def _block(
+    entry_name: str = "Glass",
+    *,
+    material: Material = CLEAR,
+    lite: bool = False,
+) -> dict[str, str]:
+    materials = {"full": material, "light": material}
+    return build_cardmod(entry_name, materials, MERGED, lite=lite)
 
 
 def _rule_body(css: str, selector: str) -> str:
@@ -49,9 +60,24 @@ def _rule_body(css: str, selector: str) -> str:
 
 
 def test_lite_produces_no_cardmod_keys():
-    # Load-bearing: a later task hard-fails the build if any backdrop-filter
-    # reaches a Lite entry, and Lite must not carry any card-mod key at all.
-    assert _block("Glass Lite", lite=True) == {}
+    assert _block("Glass Lite", material=LITE, lite=True) == {}
+
+
+def test_clear_full_entry_keeps_cardmod_without_backdrop_filter():
+    block = _block("Glass")
+    assert block["card-mod-theme"] == "Glass"
+    assert "backdrop-filter" not in block["card-mod-root-yaml"]
+    assert "backdrop-filter" not in block["card-mod-sidebar-yaml"]
+    assert "background: rgba(255, 255, 255, 0.14)" in block["card-mod-sidebar-yaml"]
+    assert (
+        "border-right: 1px solid rgba(255, 255, 255, 0.45)"
+        in block["card-mod-sidebar-yaml"]
+    )
+
+
+def test_frosted_sidebar_keeps_the_backdrop_filter():
+    block = _block("Frosted Glass", material=FROSTED)
+    assert FROSTED.backdrop in block["card-mod-sidebar-yaml"]
 
 
 def test_theme_name_is_echoed():
@@ -110,8 +136,8 @@ def test_sidebar_yaml_covers_the_sidebar():
         assert selector in css
 
 
-def test_sidebar_yaml_carries_the_backdrop_filter():
-    assert FULL.backdrop in _block()["card-mod-sidebar-yaml"]
+def test_clear_sidebar_yaml_omits_the_backdrop_filter():
+    assert "backdrop-filter" not in _block()["card-mod-sidebar-yaml"]
 
 
 def test_letter_spacing_tracking_tokens_appear():

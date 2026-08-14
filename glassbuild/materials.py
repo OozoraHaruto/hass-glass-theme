@@ -1,21 +1,13 @@
 """Derivation of full, light, and lite material values from the tuning table.
 
-A material is three things, and each answers a different question:
+Every material has a translucent fill and an edge that distinguishes the
+surface from its backdrop. Backdrop filtering is an opt-in capability used by
+Frosted Glass; clear Glass and Liquid Glass surfaces retain backdrop detail.
 
-- the **backdrop filter**, which decides how much of what is behind the
-  surface survives to be seen through it;
-- the **fill**, which tints whatever survived;
-- the **edge**, which tells the eye the surface is in front of that backdrop
-  rather than a hole cut through to it.
-
-The backdrop filter runs blur first, then a chroma and luminance remap
-(``saturate``/``brightness``/``contrast``). Order is not cosmetic: blurring
-first turns the backdrop into a smooth field and the remap then flattens that
-field toward the mode's base, so nothing behind the surface keeps enough
-local contrast to compete with text sitting on it. Doing the work here is
-what lets ``fill_alpha_glass`` stay low -- the alternative, raising the fill
-until the backdrop stops showing through, buys the same legibility by
-throwing away the translucency the theme exists for.
+For backdrop-capable materials, the filter runs blur first, then a chroma and
+luminance remap (``saturate``/``brightness``/``contrast``). Blurring first
+turns the backdrop into a smooth field before the remap flattens it toward the
+mode's base.
 
 The edge is emitted as a pair of inset box-shadows rather than a border,
 because a border can only be one colour on all four sides and a real lit edge
@@ -93,13 +85,15 @@ def select_fill_alpha(fill_rgb) -> float:
         else:
             return alpha
     return 1.0
+
+
 FULL_FILL_ALPHA_FLOOR = 0.10
 LIGHT_ALPHA_BONUS = 0.08
 
 
 @dataclass(frozen=True)
 class Material:
-    """One rendered material: its fill, its rim, its edge, and its backdrop."""
+    """A rendered fill and edge with an optional backdrop filter."""
 
     fill: str
     rim: str
@@ -146,16 +140,15 @@ def _edge(spec: dict[str, Any]) -> str:
     return f"inset 0 1px 0 0 {highlight}, inset 0 -1px 0 0 {shade}"
 
 
-def derive(merged: dict[str, Any], material_key: str, lite: bool) -> dict[str, Material]:
+def derive(
+    merged: dict[str, Any], material_key: str, lite: bool
+) -> dict[str, Material]:
     """Build the full and light materials for one material/mode combination."""
     spec = merged["material"]
-    blur = int(spec["blur_px"])
     rim_r, rim_g, rim_b = spec["rim_rgb"]
     rim = rgba_str(rim_r, rim_g, rim_b, float(spec["rim_alpha"]))
-    # The edge is a box-shadow, not a backdrop-filter, so Lite gets it too --
-    # Lite drops the backdrop for the compositing cost on weak GPUs, and an
-    # inset shadow costs none of that.
     edge = _edge(spec)
+    uses_backdrop = bool(spec["surface_backdrop"]) and not lite
 
     if lite:
         base_r, base_g, base_b, _ = parse_rgba(merged["palette"]["opaque_surface"])
@@ -170,18 +163,24 @@ def derive(merged: dict[str, Any], material_key: str, lite: bool) -> dict[str, M
             )
 
     light_alpha = min(1.0, full_alpha + LIGHT_ALPHA_BONUS)
+    full_backdrop = None
+    light_backdrop = None
+    if uses_backdrop:
+        blur = int(spec["blur_px"])
+        full_backdrop = _backdrop(spec, blur)
+        light_backdrop = _backdrop(spec, blur // 2)
 
     return {
         "full": Material(
             fill=rgba_str(base_r, base_g, base_b, full_alpha),
             rim=rim,
             edge=edge,
-            backdrop=None if lite else _backdrop(spec, blur),
+            backdrop=full_backdrop,
         ),
         "light": Material(
             fill=rgba_str(base_r, base_g, base_b, light_alpha),
             rim=rim,
             edge=edge,
-            backdrop=None if lite else _backdrop(spec, blur // 2),
+            backdrop=light_backdrop,
         ),
     }

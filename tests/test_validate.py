@@ -246,13 +246,15 @@ def test_backdrop_filter_key_at_top_level_of_lite_entry_is_reported(themes):
     assert any("Glass Dark Lite" in p and "backdrop-filter" in p for p in problems)
 
 
-def test_backdrop_filter_substring_in_modes_light_value_of_lite_entry_is_reported(themes):
+def test_backdrop_filter_substring_in_modes_light_value_of_lite_entry_is_reported(
+    themes,
+):
     # "Glass Lite" is the Auto-weight Lite entry -- it has a modes block
     # even though it carries no card-mod content in the real document.
     broken = _copy(themes)
-    broken["Glass Lite"]["modes"]["light"]["some-injected-key"] = (
-        "not a real value but mentions backdrop-filter"
-    )
+    broken["Glass Lite"]["modes"]["light"][
+        "some-injected-key"
+    ] = "not a real value but mentions backdrop-filter"
     problems = validate(broken)
     assert any("Glass Lite" in p and "backdrop-filter" in p for p in problems)
 
@@ -281,9 +283,7 @@ def test_cardmod_key_at_top_level_of_lite_entry_is_reported(themes):
     # riding along for free.
     broken["Glass Lite"]["card-mod-root-yaml"] = "x: harmless\n"
     problems = validate(broken)
-    assert any(
-        "Glass Lite" in p and "card-mod key" in p for p in problems
-    )
+    assert any("Glass Lite" in p and "card-mod key" in p for p in problems)
 
 
 def test_cardmod_key_in_modes_light_of_lite_entry_is_reported(themes):
@@ -310,13 +310,11 @@ def test_backdrop_filter_and_blur_and_cardmod_are_independent_checks(themes):
 
 
 def test_non_lite_entries_are_not_penalised_for_backdrop_filter_or_card_mod(themes):
-    # Sanity check: the real document's full-weight entries legitimately
-    # contain backdrop-filter, blur(), and card-mod keys -- validate() must
-    # not flag any of that on non-Lite entries.
     assert validate(themes) == []
-    full_entry = themes["Glass Dark"]
-    assert "ha-card-backdrop-filter" in full_entry
-    assert "blur(" in full_entry["ha-card-backdrop-filter"]
+    frosted_entry = themes["Frosted Glass Dark"]
+    assert "ha-card-backdrop-filter" in frosted_entry
+    assert "blur(" in frosted_entry["ha-card-backdrop-filter"]
+    assert "card-mod-theme" in themes["Glass Dark"]
 
 
 # ---------------------------------------------------------------------------
@@ -337,9 +335,7 @@ def test_modes_value_that_is_not_a_dict_is_reported(themes):
     broken = _copy(themes)
     broken["Glass"]["modes"] = "oops"
     problems = validate(broken)
-    assert any(
-        "Glass" in p and "'modes'" in p and "dict" in p for p in problems
-    )
+    assert any("Glass" in p and "'modes'" in p and "dict" in p for p in problems)
 
 
 def test_modes_value_that_is_a_list_on_an_otherwise_flat_entry_is_reported(themes):
@@ -350,36 +346,28 @@ def test_modes_value_that_is_a_list_on_an_otherwise_flat_entry_is_reported(theme
     broken = _copy(themes)
     broken["Glass Dark"]["modes"] = ["junk"]
     problems = validate(broken)
-    assert any(
-        "Glass Dark" in p and "'modes'" in p and "list" in p for p in problems
-    )
+    assert any("Glass Dark" in p and "'modes'" in p and "list" in p for p in problems)
 
 
 def test_modes_payload_that_is_not_a_dict_is_reported(themes):
     broken = _copy(themes)
     broken["Glass"]["modes"]["light"] = "oops"
     problems = validate(broken)
-    assert any(
-        "Glass" in p and "modes.light" in p and "dict" in p for p in problems
-    )
+    assert any("Glass" in p and "modes.light" in p and "dict" in p for p in problems)
 
 
 def test_modes_missing_light_key_entirely_is_reported(themes):
     broken = _copy(themes)
     del broken["Glass"]["modes"]["light"]
     problems = validate(broken)
-    assert any(
-        "Glass" in p and "modes" in p and "'light'" in p for p in problems
-    )
+    assert any("Glass" in p and "modes" in p and "'light'" in p for p in problems)
 
 
 def test_modes_missing_dark_key_entirely_is_reported(themes):
     broken = _copy(themes)
     del broken["Glass"]["modes"]["dark"]
     problems = validate(broken)
-    assert any(
-        "Glass" in p and "modes" in p and "'dark'" in p for p in problems
-    )
+    assert any("Glass" in p and "modes" in p and "'dark'" in p for p in problems)
 
 
 def test_a_malformed_mode_payload_does_not_prevent_checking_the_other_mode(themes):

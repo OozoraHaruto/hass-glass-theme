@@ -21,6 +21,7 @@ MERGED = {
     "motion": {"duration": "300ms", "easing": "cubic-bezier(0.25, 0.1, 0.25, 1)"},
     "material": {
         "name": "Glass",
+        "surface_backdrop": False,
         "blur_px": 8,
         "saturate_pct": 180,
         "rim_alpha": 0.45,
@@ -83,12 +84,10 @@ def test_code_font_family_is_monospace_and_distinct_from_body():
     assert v["ha-font-family-code"] != v["ha-font-family-body"]
 
 
-def test_card_uses_the_full_material():
+def test_clear_card_uses_the_low_opacity_full_material_without_blur():
     v = _vars()
     assert v["ha-card-background"] == "rgba(255, 255, 255, 0.14)"
-    assert v["ha-card-backdrop-filter"] == (
-        "blur(8px) saturate(180%) brightness(60%) contrast(110%)"
-    )
+    assert "ha-card-backdrop-filter" not in v
     assert v["ha-card-border-radius"] == "18px"
     assert v["ha-card-border-color"] == "rgba(255, 255, 255, 0.45)"
 
@@ -114,11 +113,9 @@ def test_lite_cards_keep_the_specular_edge():
     assert v["ha-card-box-shadow"].startswith("inset 0 1px 0 0")
 
 
-def test_dialog_uses_the_native_backdrop_variable():
+def test_clear_dialog_omits_the_native_backdrop_variable():
     v = _vars()
-    assert v["ha-dialog-surface-backdrop-filter"] == (
-        "blur(8px) saturate(180%) brightness(60%) contrast(110%)"
-    )
+    assert "ha-dialog-surface-backdrop-filter" not in v
     assert v["ha-dialog-border-radius"] == "28px"
 
 
@@ -268,18 +265,31 @@ def test_lite_omits_every_backdrop_filter_key():
     assert not [key for key in v if "backdrop-filter" in key]
 
 
-def test_full_material_includes_every_backdrop_filter_key():
-    v = _vars(lite=False)
-    full_backdrop = "blur(8px) saturate(180%) brightness(60%) contrast(110%)"
-    # light material: half blur, same diffusion terms
-    scrim_backdrop = "blur(4px) saturate(180%) brightness(60%) contrast(110%)"
-    assert v["ha-card-backdrop-filter"] == full_backdrop
-    assert v["ha-dialog-surface-backdrop-filter"] == full_backdrop
-    assert v["app-header-backdrop-filter"] == full_backdrop
-    assert v["ha-bottom-sheet-surface-backdrop-filter"] == full_backdrop
-    assert v["ha-dialog-scrim-backdrop-filter"] == scrim_backdrop
-    assert v["dialog-backdrop-filter"] == scrim_backdrop
-    assert v["ha-bottom-sheet-scrim-backdrop-filter"] == scrim_backdrop
+@pytest.mark.parametrize("material", ["glass", "liquid-glass"])
+@pytest.mark.parametrize("mode", ["light", "dark"])
+def test_clear_materials_omit_every_backdrop_filter_key(material, mode):
+    tokens = load_tokens(ROOT)
+    merged = merge(tokens["base"], tokens["materials"][material], tokens["modes"][mode])
+    variables = build_variables(merged, derive(merged, material, lite=False))
+    for key in _BACKDROP_FILTER_KEYS:
+        assert key not in variables, (material, mode, key)
+    assert not [key for key in variables if "backdrop-filter" in key]
+
+
+@pytest.mark.parametrize("mode", ["light", "dark"])
+def test_frosted_material_includes_every_backdrop_filter_key(mode):
+    tokens = load_tokens(ROOT)
+    merged = merge(
+        tokens["base"],
+        tokens["materials"]["frosted-glass"],
+        tokens["modes"][mode],
+    )
+    variables = build_variables(
+        merged,
+        derive(merged, "frosted-glass", lite=False),
+    )
+    for key in _BACKDROP_FILTER_KEYS:
+        assert key in variables, (mode, key)
 
 
 def test_lite_still_defines_the_card_background():
@@ -310,17 +320,8 @@ def test_frosted_glass_does_not_publish_a_dropdown_override(mode, lite):
     assert "ha-glass-dropdown-surface" not in variables
 
 
-# 74 base keys + 7 conditional backdrop-filter keys (full material only).
-EXPECTED_FULL_KEY_COUNT = 81
-EXPECTED_LITE_KEY_COUNT = 74
-# ...plus the three --ha-glass-refraction-* keys (the alternative backdrop
-# chain, and the displacement scale and edge fraction the companion module
-# reads), for a full material whose tuning table carries a `refraction`
-# block. Counted from the same token data the build reads rather than from a
-# list of material names, so this stays a check on the *rule* ("a refraction
-# block adds exactly these keys, and only on full") rather than on today's
-# roster of materials.
-EXPECTED_REFRACTION_KEY_COUNT = 3
+EXPECTED_BASE_KEY_COUNT = 74
+EXPECTED_BACKDROP_FILTER_KEY_COUNT = 7
 EXPECTED_DROPDOWN_SURFACE_KEY_COUNT = 1
 
 
@@ -337,23 +338,23 @@ def test_real_tokens_produce_valid_variables_for_every_combination():
                     assert isinstance(key, str), (material, mode, lite, key)
                     assert isinstance(value, str), (material, mode, lite, key)
                     assert not key.startswith("--"), (material, mode, lite, key)
-                refracts = "refraction" in merged["material"]
                 eligible = merged["material"]["name"] in {"Glass", "Liquid Glass"}
+                uses_backdrop = (
+                    bool(merged["material"]["surface_backdrop"]) and not lite
+                )
                 dropdown_surface_count = (
                     EXPECTED_DROPDOWN_SURFACE_KEY_COUNT if eligible else 0
                 )
-                if lite:
-                    expected = EXPECTED_LITE_KEY_COUNT + dropdown_surface_count
-                else:
-                    expected = (
-                        EXPECTED_FULL_KEY_COUNT
-                        + (EXPECTED_REFRACTION_KEY_COUNT if refracts else 0)
-                        + dropdown_surface_count
-                    )
+                backdrop_filter_count = (
+                    EXPECTED_BACKDROP_FILTER_KEY_COUNT if uses_backdrop else 0
+                )
+                expected = (
+                    EXPECTED_BASE_KEY_COUNT
+                    + dropdown_surface_count
+                    + backdrop_filter_count
+                )
                 assert len(v) == expected, (material, mode, lite, sorted(v))
                 assert ("ha-glass-dropdown-surface" in v) == eligible
-                # Lite has no backdrop-filter at all, so there is nothing for
-                # a displacement to run in front of -- the refraction
-                # variable must not survive the lite gate even for a material
-                # that declares one.
-                assert ("ha-glass-refraction-backdrop" in v) == (refracts and not lite)
+                assert "ha-glass-refraction-backdrop" not in v
+                assert "ha-glass-refraction-scale" not in v
+                assert "ha-glass-refraction-edge" not in v

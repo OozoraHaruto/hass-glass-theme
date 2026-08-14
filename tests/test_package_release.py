@@ -12,10 +12,14 @@ def test_build_archive_preserves_required_paths_and_contents(tmp_path):
     result = build_archive(output)
 
     assert result == output
+    expected_paths = (
+        "themes/glass.yaml",
+        "www/glass-dropdown.js",
+        "www/glass-refraction.js",
+    )
+    assert tuple(path.as_posix() for path in ARCHIVE_PATHS) == expected_paths
     with ZipFile(output) as archive:
-        assert tuple(archive.namelist()) == tuple(
-            path.as_posix() for path in ARCHIVE_PATHS
-        )
+        assert tuple(archive.namelist()) == expected_paths
         for relative_path in ARCHIVE_PATHS:
             assert (
                 archive.read(relative_path.as_posix())

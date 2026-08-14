@@ -1,6 +1,7 @@
 # Diffuse material: heavy blur, low transparency, soft rim.
 material:
   name: Frosted Glass
+  surface_backdrop: true
   blur_px: 40
   saturate_pct: 120
   rim_alpha: 0.20

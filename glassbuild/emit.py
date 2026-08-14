@@ -44,12 +44,9 @@ _MODE_LABEL = {"light": "Light", "dark": "Dark"}
 
 # Materials that span the mode axis but not the weight axis.
 #
-# Lite exists to drop `backdrop-filter` entirely on weak GPUs, and a
-# refractive material is *only* a backdrop-filter -- its displacement, blur,
-# and remap all live there. "Liquid Glass Lite" would therefore be an opaque
-# card with none of the three, identical to "Glass Lite" in everything but a
-# name promising the one thing it cannot do. Better to not offer the entry
-# than to offer a lie; users on hardware that needs Lite want "Glass Lite".
+# The existing Glass Lite family is the single near-opaque fallback, and the
+# approved picker matrix remains unchanged. Liquid Glass therefore has no
+# separate Lite variants.
 _NO_LITE: frozenset[str] = frozenset({"liquid-glass"})
 
 
@@ -93,7 +90,7 @@ def _build_variables_for_mode(
 
 
 def build_themes(root: Path) -> dict[str, dict[str, Any]]:
-    """Build the complete theme document: twelve entries keyed by display name.
+    """Build the complete theme document: fifteen entries keyed by display name.
 
     Insertion order matches ``ENTRY_NAMES`` exactly -- entries are collected
     into a scratch dict in whatever order is convenient to compute (Light,
@@ -117,10 +114,10 @@ def build_themes(root: Path) -> dict[str, dict[str, Any]]:
                 )
 
                 flat_name = f"{label} {mode_label}{suffix}"
-                flat_cardmod = build_cardmod(flat_name, materials, merged)
+                flat_cardmod = build_cardmod(flat_name, materials, merged, lite=lite)
                 built[flat_name] = {**variables, **flat_cardmod}
 
-                auto_cardmod = build_cardmod(auto_name, materials, merged)
+                auto_cardmod = build_cardmod(auto_name, materials, merged, lite=lite)
                 mode_payloads[mode] = {**variables, **auto_cardmod}
 
             light_payload = mode_payloads["light"]
@@ -133,7 +130,9 @@ def build_themes(root: Path) -> dict[str, dict[str, Any]]:
             built[auto_name] = {
                 **shared,
                 "modes": {
-                    "light": {k: v for k, v in light_payload.items() if k not in shared},
+                    "light": {
+                        k: v for k, v in light_payload.items() if k not in shared
+                    },
                     "dark": {k: v for k, v in dark_payload.items() if k not in shared},
                 },
             }

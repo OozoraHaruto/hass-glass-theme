@@ -6,17 +6,12 @@ material:
   fill_alpha_liquid: 0.13
   rim_rgb: [255, 255, 255]
 
-  # Luminance remap applied to the backdrop *after* the blur. Dark mode pulls
-  # the backdrop down and hardens it, so whatever survives the blur settles
-  # below the card's own fill and the card reads as the nearer surface. This
-  # is the "more depth and separation" half of iOS 27's retune, and it is
-  # what buys legibility here without driving `fill_alpha_glass` up toward
-  # opaque.
+  # Shared Frosted Glass luminance tuning, applied after its blur. Dark mode
+  # pulls down and hardens that backdrop so the card reads as the nearer
+  # surface. Clear Glass and Liquid Glass surfaces do not consume this remap.
   #
-  # 85, not the 60 this once was: a dim that hard crushes the backdrop toward
-  # black, which is a scattering operation in all but name and reads as milk
-  # rather than depth. The remap should settle what is behind the card, not
-  # erase it -- there has to be something left back there to see through to.
+  # 85, not the 60 this once was: the remap should settle what is behind the
+  # frosted card, not erase it.
   brightness_pct: 85
   contrast_pct: 106
 

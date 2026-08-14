@@ -1,37 +1,11 @@
-# Regular material: wide blur, neutral chroma, bright specular rim.
+# Clear material: low-opacity fill with strong edge separation.
 #
-# This is Apple's `.regular` glass, not `.clear`. The distinction matters:
-# `.clear` is gated behind three conditions -- the element sits over
-# media-rich content, that content tolerates a dimming layer, and the content
-# *on* the glass is bold and bright. Cards, dialogs, headers, and sidebars
-# meet none of them, and an earlier tuning of this file (blur 8, saturate 180,
-# fill alpha 0.10/0.14) was `.clear` in all but name: the backdrop stayed
-# legible straight through the card.
-#
-# `blur_px` is the lever that fixes that -- but only up to a point, and
-# overshooting it is its own failure. Apple distinguishes *lensing*, which
-# bends and concentrates light, from *blur*, which scatters it; scattering is
-# precisely what frosted glass does. At 8px the backdrop kept its shapes and
-# the eye refocused past the card. At 28, paired with a heavy dim and a 0.30
-# fill, it stopped being glass at all and read as frost. 20px sits where
-# detail stops resolving but the backdrop still reads as a place rather than
-# a milky field.
-#
-# The transparency, then, is not bought back by weakening the diffusion --
-# it comes from the fill alphas staying low (0.14/0.16, see tokens/modes/)
-# and from the specular edge being brighter than the body. A clear body with
-# light concentrated at its rim is what separates glass from frost when
-# there is no real refraction to do the job; the material that does have it
-# is tokens/liquid-glass.yaml.
-#
-# `saturate_pct` drops from the 180 it used to be: boosting the backdrop's
-# chroma pulls attention to what is *behind* the card. Apple's materials
-# compress chroma toward neutral. 140 is the ceiling enforced by
-# tests/test_token_data.py.
+# Current generated cards do not blur or refract their backdrop. The low fill
+# alphas in tokens/modes/ preserve transparency, while the bright rim and
+# directional specular edge keep the pane visually distinct from its content.
 material:
   name: Glass
-  blur_px: 20
-  saturate_pct: 140
+  surface_backdrop: false
   rim_alpha: 0.45
   # Full-strength specular edge -- see `edge_scale` in frosted-glass.yaml for
   # why a diffuse material wants less of it.

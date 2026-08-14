@@ -34,19 +34,25 @@ def test_merged_tokens_have_required_keys(tokens, material, mode):
     )
     assert merged["radius"]["card"] == "18px"
     assert merged["material"]["name"] == MATERIAL_NAMES[material]
-    assert isinstance(merged["material"]["blur_px"], int)
-    assert isinstance(merged["material"]["saturate_pct"], int)
+    assert isinstance(merged["material"]["surface_backdrop"], bool)
+    if merged["material"]["surface_backdrop"]:
+        assert isinstance(merged["material"]["blur_px"], int)
+        assert isinstance(merged["material"]["saturate_pct"], int)
     for key in ("accent", "text_primary", "opaque_surface", "background_from"):
         assert key in merged["palette"]
 
 
+def test_only_frosted_glass_enables_surface_backdrops(tokens):
+    assert tokens["materials"]["glass"]["material"]["surface_backdrop"] is False
+    assert tokens["materials"]["liquid-glass"]["material"]["surface_backdrop"] is False
+    assert tokens["materials"]["frosted-glass"]["material"]["surface_backdrop"] is True
+
+
 def test_tuning_table_values_match_the_spec(tokens):
-    assert tokens["materials"]["glass"]["material"]["blur_px"] == 20
-    assert tokens["materials"]["glass"]["material"]["saturate_pct"] == 140
     assert tokens["materials"]["glass"]["material"]["rim_alpha"] == 0.45
     assert tokens["materials"]["glass"]["material"]["edge_scale"] == 1.0
-    assert tokens["materials"]["frosted-glass"]["material"]["blur_px"] == 40
-    assert tokens["materials"]["frosted-glass"]["material"]["saturate_pct"] == 120
+    assert tokens["materials"]["liquid-glass"]["material"]["rim_alpha"] == 0.55
+    assert tokens["materials"]["liquid-glass"]["material"]["edge_scale"] == 1.2
     assert tokens["materials"]["frosted-glass"]["material"]["rim_alpha"] == 0.20
     assert tokens["materials"]["frosted-glass"]["material"]["edge_scale"] == 0.55
     assert tokens["modes"]["light"]["material"]["fill_alpha_glass"] == 0.14
@@ -55,42 +61,15 @@ def test_tuning_table_values_match_the_spec(tokens):
     assert tokens["modes"]["dark"]["material"]["fill_alpha_frosted"] == 0.45
 
 
-def test_glass_blur_is_wide_enough_to_diffuse_content(tokens):
-    """Enough diffusion to destroy detail behind the card -- and no more.
-
-    At the original 8px the backdrop kept its shapes and stayed legible
-    straight through the card. But blur is a *scattering* operation, and
-    scattering is what frosted glass does: pushed far enough it flattens the
-    backdrop into a milky field no amount of low tint can rescue. 16px is the
-    floor where detail reliably stops resolving; the ceiling is a judgement
-    call left to the tuning table rather than pinned here.
-    """
-    for material in MATERIALS:
-        blur = tokens["materials"][material]["material"]["blur_px"]
-        assert blur >= 16, f"{material} blurs at {blur}px, too little to diffuse"
-
-
-def test_saturation_never_amplifies_the_backdrop(tokens):
-    """Apple's materials compress chroma toward neutral; they don't boost it.
-
-    Anything much above 100% pulls the eye to what's *behind* the card rather
-    than what's on it -- the web-glassmorphism trope this theme is not.
-    """
-    for material in MATERIALS:
-        saturate = tokens["materials"][material]["material"]["saturate_pct"]
-        assert 100 <= saturate <= 140, f"{material} saturates at {saturate}%"
+def test_frosted_blur_is_wide_enough_to_diffuse_content(tokens):
+    material = tokens["materials"]["frosted-glass"]["material"]
+    assert material["blur_px"] == 40
+    assert material["saturate_pct"] == 120
 
 
 @pytest.mark.parametrize("mode", MODES)
 def test_glass_stays_transparent_enough_to_read_as_glass(tokens, mode):
-    """The tint ceiling is what stops Glass sliding back into Frosted.
-
-    Legibility on this material is bought by diffusion -- the blur and the
-    luminance remap -- not by tint. Reaching for the fill alpha to fix a
-    legibility complaint is the wrong lever, and doing exactly that (0.30
-    dark / 0.26 light) produced a material indistinguishable from frosted.
-    Apple made the same mistake in iOS 26 beta 3 and reverted it in beta 4.
-    """
+    """The tint ceiling keeps clear Glass visually distinct from Frosted."""
     alpha = tokens["modes"][mode]["material"]["fill_alpha_glass"]
     assert alpha <= 0.18, f"{mode} glass tints at {alpha}, frosted territory"
 
@@ -124,12 +103,7 @@ def test_the_rim_outshines_the_body(tokens, mode):
 
 
 def test_dark_mode_dims_the_backdrop_without_smothering_it(tokens):
-    """A hard dim is a scattering operation in disguise.
-
-    brightness(60%) crushed everything behind the card toward black, which
-    reads as milk rather than as depth however low the fill alpha goes. The
-    remap should settle the backdrop *behind* the surface, not erase it.
-    """
+    """Frosted tuning settles the backdrop without erasing it."""
     assert tokens["modes"]["dark"]["material"]["brightness_pct"] >= 75
 
 
@@ -264,44 +238,20 @@ def test_liquid_glass_is_the_third_material(tokens):
 
 
 def test_liquid_glass_declares_a_refraction_block(tokens):
-    """The block is what makes this material *refractive* rather than named so.
-
-    ``glassbuild/variables.py`` gates the extra refraction variable on the
-    presence of this block, not on the material's name -- so a material that
-    grows one becomes refractive and a material that loses one stops being,
-    with no name matching anywhere in the build.
-    """
+    """Compatibility metadata retains the companion module's structure."""
     refraction = tokens["materials"]["liquid-glass"]["material"]["refraction"]
     assert refraction["filter_id"] == "glass-refraction"
     assert isinstance(refraction["scale"], int)
     assert refraction["scale"] > 0
 
 
-def test_only_liquid_glass_refracts(tokens):
+def test_only_liquid_glass_declares_refraction_metadata(tokens):
     for material in ("glass", "frosted-glass"):
         assert "refraction" not in tokens["materials"][material]["material"]
 
 
 @pytest.mark.parametrize("mode", MODES)
 def test_liquid_glass_is_the_clearest_of_the_three(tokens, mode):
-    """Its whole reason to exist is being clearer than Glass.
-
-    It can afford to be: the lensed rim concentrates light where a flat
-    material has to spend tint to separate itself from its backdrop. If this
-    ever inverts, the entry is just Glass with extra install steps.
-    """
+    """Its lower tint and stronger edge distinguish it from clear Glass."""
     material = tokens["modes"][mode]["material"]
     assert material["fill_alpha_liquid"] < material["fill_alpha_glass"]
-
-
-@pytest.mark.parametrize("mode", MODES)
-def test_liquid_glass_still_blurs_enough_to_stand_alone(tokens, mode):
-    """The refraction is an upgrade, not a load-bearing part of legibility.
-
-    Most installs will never load the companion module, so the entry has to
-    be a usable material on blur alone. That is why ``blur_px`` here sits
-    near Glass's rather than near zero: a genuinely clear pane plus no
-    displacement is an unreadable card, not a transparent one.
-    """
-    blur = tokens["materials"]["liquid-glass"]["material"]["blur_px"]
-    assert blur >= 16

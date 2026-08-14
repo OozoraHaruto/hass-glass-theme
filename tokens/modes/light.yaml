@@ -3,8 +3,8 @@ material:
   fill_alpha_glass: 0.14
   fill_alpha_frosted: 0.55
   # Below the glass alpha on purpose -- see tokens/liquid-glass.yaml. The
-  # lensed rim does some of the separating that tint would otherwise have to,
-  # so this material can spend less of it.
+  # stronger rim and edge provide separation, so this clear material can use
+  # less tint.
   fill_alpha_liquid: 0.11
   # A white rim is invisible on light-mode pages (dashboards and the flat
   # --primary-background-color fallback used by Settings/Developer
@@ -13,11 +13,9 @@ material:
   # hue (`rgba(60, 60, 67, ...)`) instead of inventing a new one.
   rim_rgb: [60, 60, 67]
 
-  # Luminance remap applied to the backdrop *after* the blur -- the mirror of
-  # dark mode's (see modes/dark.yaml). Light mode lifts the backdrop and
-  # softens it, so it settles *above* nothing and instead flattens toward
-  # paper white, leaving the card's own fill and its dark text as the only
-  # things with real contrast on screen.
+  # Shared Frosted Glass luminance tuning, applied after its blur. Light mode
+  # lifts and softens that backdrop toward paper white. Clear Glass and Liquid
+  # Glass surfaces do not consume this remap.
   brightness_pct: 105
   contrast_pct: 96
 

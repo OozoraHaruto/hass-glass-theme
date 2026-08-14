@@ -83,23 +83,14 @@ Glass:
       history-unavailable-color: '#3C3C4361'
       scrollbar-thumb-color: rgba(60, 60, 67, 0.18)
       ha-glass-dropdown-surface: rgba(255, 255, 255, 0.55)
-      ha-card-backdrop-filter: blur(20px) saturate(140%) brightness(105%) contrast(96%)
-      ha-dialog-surface-backdrop-filter: blur(20px) saturate(140%) brightness(105%) contrast(96%)
-      app-header-backdrop-filter: blur(20px) saturate(140%) brightness(105%) contrast(96%)
-      ha-bottom-sheet-surface-backdrop-filter: blur(20px) saturate(140%) brightness(105%) contrast(96%)
-      ha-dialog-scrim-backdrop-filter: blur(10px) saturate(140%) brightness(105%) contrast(96%)
-      dialog-backdrop-filter: blur(10px) saturate(140%) brightness(105%) contrast(96%)
-      ha-bottom-sheet-scrim-backdrop-filter: blur(10px) saturate(140%) brightness(105%) contrast(96%)
       card-mod-root-yaml: ".: |\n  .header.header.header {\n    background: rgba(255, 255, 255, 0.14);\n\
         \    border-bottom: 1px solid rgba(60, 60, 67, 0.45);\n    letter-spacing: -0.4px;\n    transition:\
         \ background 300ms cubic-bezier(0.25, 0.1, 0.25, 1);\n  }\n  ha-tab-group {\n    letter-spacing:\
         \ -0.2px;\n  }\n"
-      card-mod-sidebar-yaml: ".: |\n  :host {\n    backdrop-filter: blur(20px) saturate(140%) brightness(105%)\
-        \ contrast(96%);\n    -webkit-backdrop-filter: blur(20px) saturate(140%) brightness(105%) contrast(96%);\n\
-        \    background: rgba(255, 255, 255, 0.14);\n    border-right: 1px solid rgba(60, 60, 67, 0.45);\n\
-        \    transition: background 300ms cubic-bezier(0.25, 0.1, 0.25, 1), backdrop-filter 300ms cubic-bezier(0.25,\
-        \ 0.1, 0.25, 1);\n  }\n  .title {\n    letter-spacing: -0.4px;\n  }\n  ha-list-item-button {\n\
-        \    letter-spacing: -0.2px;\n  }\n"
+      card-mod-sidebar-yaml: ".: |\n  :host {\n    background: rgba(255, 255, 255, 0.14);\n    border-right:\
+        \ 1px solid rgba(60, 60, 67, 0.45);\n    transition: background 300ms cubic-bezier(0.25, 0.1,\
+        \ 0.25, 1);\n  }\n  .title {\n    letter-spacing: -0.4px;\n  }\n  ha-list-item-button {\n    letter-spacing:\
+        \ -0.2px;\n  }\n"
     dark:
       primary-color: '#0A84FF'
       accent-color: '#0A84FF'
@@ -162,23 +153,14 @@ Glass:
       history-unavailable-color: '#EBEBF561'
       scrollbar-thumb-color: rgba(84, 84, 88, 0.65)
       ha-glass-dropdown-surface: rgba(90, 90, 94, 0.45)
-      ha-card-backdrop-filter: blur(20px) saturate(140%) brightness(85%) contrast(106%)
-      ha-dialog-surface-backdrop-filter: blur(20px) saturate(140%) brightness(85%) contrast(106%)
-      app-header-backdrop-filter: blur(20px) saturate(140%) brightness(85%) contrast(106%)
-      ha-bottom-sheet-surface-backdrop-filter: blur(20px) saturate(140%) brightness(85%) contrast(106%)
-      ha-dialog-scrim-backdrop-filter: blur(10px) saturate(140%) brightness(85%) contrast(106%)
-      dialog-backdrop-filter: blur(10px) saturate(140%) brightness(85%) contrast(106%)
-      ha-bottom-sheet-scrim-backdrop-filter: blur(10px) saturate(140%) brightness(85%) contrast(106%)
       card-mod-root-yaml: ".: |\n  .header.header.header {\n    background: rgba(90, 90, 94, 0.16);\n\
         \    border-bottom: 1px solid rgba(255, 255, 255, 0.45);\n    letter-spacing: -0.4px;\n    transition:\
         \ background 300ms cubic-bezier(0.25, 0.1, 0.25, 1);\n  }\n  ha-tab-group {\n    letter-spacing:\
         \ -0.2px;\n  }\n"
-      card-mod-sidebar-yaml: ".: |\n  :host {\n    backdrop-filter: blur(20px) saturate(140%) brightness(85%)\
-        \ contrast(106%);\n    -webkit-backdrop-filter: blur(20px) saturate(140%) brightness(85%) contrast(106%);\n\
-        \    background: rgba(90, 90, 94, 0.16);\n    border-right: 1px solid rgba(255, 255, 255, 0.45);\n\
-        \    transition: background 300ms cubic-bezier(0.25, 0.1, 0.25, 1), backdrop-filter 300ms cubic-bezier(0.25,\
-        \ 0.1, 0.25, 1);\n  }\n  .title {\n    letter-spacing: -0.4px;\n  }\n  ha-list-item-button {\n\
-        \    letter-spacing: -0.2px;\n  }\n"
+      card-mod-sidebar-yaml: ".: |\n  :host {\n    background: rgba(90, 90, 94, 0.16);\n    border-right:\
+        \ 1px solid rgba(255, 255, 255, 0.45);\n    transition: background 300ms cubic-bezier(0.25, 0.1,\
+        \ 0.25, 1);\n  }\n  .title {\n    letter-spacing: -0.4px;\n  }\n  ha-list-item-button {\n    letter-spacing:\
+        \ -0.2px;\n  }\n"
 Glass Light:
   primary-color: '#007AFF'
   accent-color: '#007AFF'
@@ -258,24 +240,15 @@ Glass Light:
   control-select-button-border-radius: 12px
   ha-assist-chip-container-shape: 980px
   ha-glass-dropdown-surface: rgba(255, 255, 255, 0.55)
-  ha-card-backdrop-filter: blur(20px) saturate(140%) brightness(105%) contrast(96%)
-  ha-dialog-surface-backdrop-filter: blur(20px) saturate(140%) brightness(105%) contrast(96%)
-  app-header-backdrop-filter: blur(20px) saturate(140%) brightness(105%) contrast(96%)
-  ha-bottom-sheet-surface-backdrop-filter: blur(20px) saturate(140%) brightness(105%) contrast(96%)
-  ha-dialog-scrim-backdrop-filter: blur(10px) saturate(140%) brightness(105%) contrast(96%)
-  dialog-backdrop-filter: blur(10px) saturate(140%) brightness(105%) contrast(96%)
-  ha-bottom-sheet-scrim-backdrop-filter: blur(10px) saturate(140%) brightness(105%) contrast(96%)
   card-mod-theme: Glass Light
   card-mod-root-yaml: ".: |\n  .header.header.header {\n    background: rgba(255, 255, 255, 0.14);\n \
     \   border-bottom: 1px solid rgba(60, 60, 67, 0.45);\n    letter-spacing: -0.4px;\n    transition:\
     \ background 300ms cubic-bezier(0.25, 0.1, 0.25, 1);\n  }\n  ha-tab-group {\n    letter-spacing: -0.2px;\n\
     \  }\n"
-  card-mod-sidebar-yaml: ".: |\n  :host {\n    backdrop-filter: blur(20px) saturate(140%) brightness(105%)\
-    \ contrast(96%);\n    -webkit-backdrop-filter: blur(20px) saturate(140%) brightness(105%) contrast(96%);\n\
-    \    background: rgba(255, 255, 255, 0.14);\n    border-right: 1px solid rgba(60, 60, 67, 0.45);\n\
-    \    transition: background 300ms cubic-bezier(0.25, 0.1, 0.25, 1), backdrop-filter 300ms cubic-bezier(0.25,\
-    \ 0.1, 0.25, 1);\n  }\n  .title {\n    letter-spacing: -0.4px;\n  }\n  ha-list-item-button {\n   \
-    \ letter-spacing: -0.2px;\n  }\n"
+  card-mod-sidebar-yaml: ".: |\n  :host {\n    background: rgba(255, 255, 255, 0.14);\n    border-right:\
+    \ 1px solid rgba(60, 60, 67, 0.45);\n    transition: background 300ms cubic-bezier(0.25, 0.1, 0.25,\
+    \ 1);\n  }\n  .title {\n    letter-spacing: -0.4px;\n  }\n  ha-list-item-button {\n    letter-spacing:\
+    \ -0.2px;\n  }\n"
 Glass Dark:
   primary-color: '#0A84FF'
   accent-color: '#0A84FF'
@@ -355,23 +328,14 @@ Glass Dark:
   control-select-button-border-radius: 12px
   ha-assist-chip-container-shape: 980px
   ha-glass-dropdown-surface: rgba(90, 90, 94, 0.45)
-  ha-card-backdrop-filter: blur(20px) saturate(140%) brightness(85%) contrast(106%)
-  ha-dialog-surface-backdrop-filter: blur(20px) saturate(140%) brightness(85%) contrast(106%)
-  app-header-backdrop-filter: blur(20px) saturate(140%) brightness(85%) contrast(106%)
-  ha-bottom-sheet-surface-backdrop-filter: blur(20px) saturate(140%) brightness(85%) contrast(106%)
-  ha-dialog-scrim-backdrop-filter: blur(10px) saturate(140%) brightness(85%) contrast(106%)
-  dialog-backdrop-filter: blur(10px) saturate(140%) brightness(85%) contrast(106%)
-  ha-bottom-sheet-scrim-backdrop-filter: blur(10px) saturate(140%) brightness(85%) contrast(106%)
   card-mod-theme: Glass Dark
   card-mod-root-yaml: ".: |\n  .header.header.header {\n    background: rgba(90, 90, 94, 0.16);\n    border-bottom:\
     \ 1px solid rgba(255, 255, 255, 0.45);\n    letter-spacing: -0.4px;\n    transition: background 300ms\
     \ cubic-bezier(0.25, 0.1, 0.25, 1);\n  }\n  ha-tab-group {\n    letter-spacing: -0.2px;\n  }\n"
-  card-mod-sidebar-yaml: ".: |\n  :host {\n    backdrop-filter: blur(20px) saturate(140%) brightness(85%)\
-    \ contrast(106%);\n    -webkit-backdrop-filter: blur(20px) saturate(140%) brightness(85%) contrast(106%);\n\
-    \    background: rgba(90, 90, 94, 0.16);\n    border-right: 1px solid rgba(255, 255, 255, 0.45);\n\
-    \    transition: background 300ms cubic-bezier(0.25, 0.1, 0.25, 1), backdrop-filter 300ms cubic-bezier(0.25,\
-    \ 0.1, 0.25, 1);\n  }\n  .title {\n    letter-spacing: -0.4px;\n  }\n  ha-list-item-button {\n   \
-    \ letter-spacing: -0.2px;\n  }\n"
+  card-mod-sidebar-yaml: ".: |\n  :host {\n    background: rgba(90, 90, 94, 0.16);\n    border-right:\
+    \ 1px solid rgba(255, 255, 255, 0.45);\n    transition: background 300ms cubic-bezier(0.25, 0.1, 0.25,\
+    \ 1);\n  }\n  .title {\n    letter-spacing: -0.4px;\n  }\n  ha-list-item-button {\n    letter-spacing:\
+    \ -0.2px;\n  }\n"
 Glass Lite:
   ha-card-border-radius: 18px
   ha-card-border-width: 1px
@@ -1355,8 +1319,6 @@ Liquid Glass:
   control-select-menu-border-radius: 12px
   control-select-button-border-radius: 12px
   ha-assist-chip-container-shape: 980px
-  ha-glass-refraction-scale: '14'
-  ha-glass-refraction-edge: '0.18'
   card-mod-theme: Liquid Glass
   modes:
     light:
@@ -1421,25 +1383,14 @@ Liquid Glass:
       history-unavailable-color: '#3C3C4361'
       scrollbar-thumb-color: rgba(60, 60, 67, 0.18)
       ha-glass-dropdown-surface: rgba(255, 255, 255, 0.55)
-      ha-card-backdrop-filter: blur(18px) saturate(140%) brightness(105%) contrast(96%)
-      ha-dialog-surface-backdrop-filter: blur(18px) saturate(140%) brightness(105%) contrast(96%)
-      app-header-backdrop-filter: blur(18px) saturate(140%) brightness(105%) contrast(96%)
-      ha-bottom-sheet-surface-backdrop-filter: blur(18px) saturate(140%) brightness(105%) contrast(96%)
-      ha-dialog-scrim-backdrop-filter: blur(9px) saturate(140%) brightness(105%) contrast(96%)
-      dialog-backdrop-filter: blur(9px) saturate(140%) brightness(105%) contrast(96%)
-      ha-bottom-sheet-scrim-backdrop-filter: blur(9px) saturate(140%) brightness(105%) contrast(96%)
-      ha-glass-refraction-backdrop: url(#glass-refraction) blur(18px) saturate(140%) brightness(105%)
-        contrast(96%)
       card-mod-root-yaml: ".: |\n  .header.header.header {\n    background: rgba(255, 255, 255, 0.11);\n\
         \    border-bottom: 1px solid rgba(60, 60, 67, 0.55);\n    letter-spacing: -0.4px;\n    transition:\
         \ background 300ms cubic-bezier(0.25, 0.1, 0.25, 1);\n  }\n  ha-tab-group {\n    letter-spacing:\
         \ -0.2px;\n  }\n"
-      card-mod-sidebar-yaml: ".: |\n  :host {\n    backdrop-filter: blur(18px) saturate(140%) brightness(105%)\
-        \ contrast(96%);\n    -webkit-backdrop-filter: blur(18px) saturate(140%) brightness(105%) contrast(96%);\n\
-        \    background: rgba(255, 255, 255, 0.11);\n    border-right: 1px solid rgba(60, 60, 67, 0.55);\n\
-        \    transition: background 300ms cubic-bezier(0.25, 0.1, 0.25, 1), backdrop-filter 300ms cubic-bezier(0.25,\
-        \ 0.1, 0.25, 1);\n  }\n  .title {\n    letter-spacing: -0.4px;\n  }\n  ha-list-item-button {\n\
-        \    letter-spacing: -0.2px;\n  }\n"
+      card-mod-sidebar-yaml: ".: |\n  :host {\n    background: rgba(255, 255, 255, 0.11);\n    border-right:\
+        \ 1px solid rgba(60, 60, 67, 0.55);\n    transition: background 300ms cubic-bezier(0.25, 0.1,\
+        \ 0.25, 1);\n  }\n  .title {\n    letter-spacing: -0.4px;\n  }\n  ha-list-item-button {\n    letter-spacing:\
+        \ -0.2px;\n  }\n"
     dark:
       primary-color: '#0A84FF'
       accent-color: '#0A84FF'
@@ -1502,24 +1453,14 @@ Liquid Glass:
       history-unavailable-color: '#EBEBF561'
       scrollbar-thumb-color: rgba(84, 84, 88, 0.65)
       ha-glass-dropdown-surface: rgba(90, 90, 94, 0.45)
-      ha-card-backdrop-filter: blur(18px) saturate(140%) brightness(85%) contrast(106%)
-      ha-dialog-surface-backdrop-filter: blur(18px) saturate(140%) brightness(85%) contrast(106%)
-      app-header-backdrop-filter: blur(18px) saturate(140%) brightness(85%) contrast(106%)
-      ha-bottom-sheet-surface-backdrop-filter: blur(18px) saturate(140%) brightness(85%) contrast(106%)
-      ha-dialog-scrim-backdrop-filter: blur(9px) saturate(140%) brightness(85%) contrast(106%)
-      dialog-backdrop-filter: blur(9px) saturate(140%) brightness(85%) contrast(106%)
-      ha-bottom-sheet-scrim-backdrop-filter: blur(9px) saturate(140%) brightness(85%) contrast(106%)
-      ha-glass-refraction-backdrop: url(#glass-refraction) blur(18px) saturate(140%) brightness(85%) contrast(106%)
       card-mod-root-yaml: ".: |\n  .header.header.header {\n    background: rgba(90, 90, 94, 0.13);\n\
         \    border-bottom: 1px solid rgba(255, 255, 255, 0.55);\n    letter-spacing: -0.4px;\n    transition:\
         \ background 300ms cubic-bezier(0.25, 0.1, 0.25, 1);\n  }\n  ha-tab-group {\n    letter-spacing:\
         \ -0.2px;\n  }\n"
-      card-mod-sidebar-yaml: ".: |\n  :host {\n    backdrop-filter: blur(18px) saturate(140%) brightness(85%)\
-        \ contrast(106%);\n    -webkit-backdrop-filter: blur(18px) saturate(140%) brightness(85%) contrast(106%);\n\
-        \    background: rgba(90, 90, 94, 0.13);\n    border-right: 1px solid rgba(255, 255, 255, 0.55);\n\
-        \    transition: background 300ms cubic-bezier(0.25, 0.1, 0.25, 1), backdrop-filter 300ms cubic-bezier(0.25,\
-        \ 0.1, 0.25, 1);\n  }\n  .title {\n    letter-spacing: -0.4px;\n  }\n  ha-list-item-button {\n\
-        \    letter-spacing: -0.2px;\n  }\n"
+      card-mod-sidebar-yaml: ".: |\n  :host {\n    background: rgba(90, 90, 94, 0.13);\n    border-right:\
+        \ 1px solid rgba(255, 255, 255, 0.55);\n    transition: background 300ms cubic-bezier(0.25, 0.1,\
+        \ 0.25, 1);\n  }\n  .title {\n    letter-spacing: -0.4px;\n  }\n  ha-list-item-button {\n    letter-spacing:\
+        \ -0.2px;\n  }\n"
 Liquid Glass Light:
   primary-color: '#007AFF'
   accent-color: '#007AFF'
@@ -1599,27 +1540,15 @@ Liquid Glass Light:
   control-select-button-border-radius: 12px
   ha-assist-chip-container-shape: 980px
   ha-glass-dropdown-surface: rgba(255, 255, 255, 0.55)
-  ha-card-backdrop-filter: blur(18px) saturate(140%) brightness(105%) contrast(96%)
-  ha-dialog-surface-backdrop-filter: blur(18px) saturate(140%) brightness(105%) contrast(96%)
-  app-header-backdrop-filter: blur(18px) saturate(140%) brightness(105%) contrast(96%)
-  ha-bottom-sheet-surface-backdrop-filter: blur(18px) saturate(140%) brightness(105%) contrast(96%)
-  ha-dialog-scrim-backdrop-filter: blur(9px) saturate(140%) brightness(105%) contrast(96%)
-  dialog-backdrop-filter: blur(9px) saturate(140%) brightness(105%) contrast(96%)
-  ha-bottom-sheet-scrim-backdrop-filter: blur(9px) saturate(140%) brightness(105%) contrast(96%)
-  ha-glass-refraction-backdrop: url(#glass-refraction) blur(18px) saturate(140%) brightness(105%) contrast(96%)
-  ha-glass-refraction-scale: '14'
-  ha-glass-refraction-edge: '0.18'
   card-mod-theme: Liquid Glass Light
   card-mod-root-yaml: ".: |\n  .header.header.header {\n    background: rgba(255, 255, 255, 0.11);\n \
     \   border-bottom: 1px solid rgba(60, 60, 67, 0.55);\n    letter-spacing: -0.4px;\n    transition:\
     \ background 300ms cubic-bezier(0.25, 0.1, 0.25, 1);\n  }\n  ha-tab-group {\n    letter-spacing: -0.2px;\n\
     \  }\n"
-  card-mod-sidebar-yaml: ".: |\n  :host {\n    backdrop-filter: blur(18px) saturate(140%) brightness(105%)\
-    \ contrast(96%);\n    -webkit-backdrop-filter: blur(18px) saturate(140%) brightness(105%) contrast(96%);\n\
-    \    background: rgba(255, 255, 255, 0.11);\n    border-right: 1px solid rgba(60, 60, 67, 0.55);\n\
-    \    transition: background 300ms cubic-bezier(0.25, 0.1, 0.25, 1), backdrop-filter 300ms cubic-bezier(0.25,\
-    \ 0.1, 0.25, 1);\n  }\n  .title {\n    letter-spacing: -0.4px;\n  }\n  ha-list-item-button {\n   \
-    \ letter-spacing: -0.2px;\n  }\n"
+  card-mod-sidebar-yaml: ".: |\n  :host {\n    background: rgba(255, 255, 255, 0.11);\n    border-right:\
+    \ 1px solid rgba(60, 60, 67, 0.55);\n    transition: background 300ms cubic-bezier(0.25, 0.1, 0.25,\
+    \ 1);\n  }\n  .title {\n    letter-spacing: -0.4px;\n  }\n  ha-list-item-button {\n    letter-spacing:\
+    \ -0.2px;\n  }\n"
 Liquid Glass Dark:
   primary-color: '#0A84FF'
   accent-color: '#0A84FF'
@@ -1699,23 +1628,11 @@ Liquid Glass Dark:
   control-select-button-border-radius: 12px
   ha-assist-chip-container-shape: 980px
   ha-glass-dropdown-surface: rgba(90, 90, 94, 0.45)
-  ha-card-backdrop-filter: blur(18px) saturate(140%) brightness(85%) contrast(106%)
-  ha-dialog-surface-backdrop-filter: blur(18px) saturate(140%) brightness(85%) contrast(106%)
-  app-header-backdrop-filter: blur(18px) saturate(140%) brightness(85%) contrast(106%)
-  ha-bottom-sheet-surface-backdrop-filter: blur(18px) saturate(140%) brightness(85%) contrast(106%)
-  ha-dialog-scrim-backdrop-filter: blur(9px) saturate(140%) brightness(85%) contrast(106%)
-  dialog-backdrop-filter: blur(9px) saturate(140%) brightness(85%) contrast(106%)
-  ha-bottom-sheet-scrim-backdrop-filter: blur(9px) saturate(140%) brightness(85%) contrast(106%)
-  ha-glass-refraction-backdrop: url(#glass-refraction) blur(18px) saturate(140%) brightness(85%) contrast(106%)
-  ha-glass-refraction-scale: '14'
-  ha-glass-refraction-edge: '0.18'
   card-mod-theme: Liquid Glass Dark
   card-mod-root-yaml: ".: |\n  .header.header.header {\n    background: rgba(90, 90, 94, 0.13);\n    border-bottom:\
     \ 1px solid rgba(255, 255, 255, 0.55);\n    letter-spacing: -0.4px;\n    transition: background 300ms\
     \ cubic-bezier(0.25, 0.1, 0.25, 1);\n  }\n  ha-tab-group {\n    letter-spacing: -0.2px;\n  }\n"
-  card-mod-sidebar-yaml: ".: |\n  :host {\n    backdrop-filter: blur(18px) saturate(140%) brightness(85%)\
-    \ contrast(106%);\n    -webkit-backdrop-filter: blur(18px) saturate(140%) brightness(85%) contrast(106%);\n\
-    \    background: rgba(90, 90, 94, 0.13);\n    border-right: 1px solid rgba(255, 255, 255, 0.55);\n\
-    \    transition: background 300ms cubic-bezier(0.25, 0.1, 0.25, 1), backdrop-filter 300ms cubic-bezier(0.25,\
-    \ 0.1, 0.25, 1);\n  }\n  .title {\n    letter-spacing: -0.4px;\n  }\n  ha-list-item-button {\n   \
-    \ letter-spacing: -0.2px;\n  }\n"
+  card-mod-sidebar-yaml: ".: |\n  :host {\n    background: rgba(90, 90, 94, 0.13);\n    border-right:\
+    \ 1px solid rgba(255, 255, 255, 0.55);\n    transition: background 300ms cubic-bezier(0.25, 0.1, 0.25,\
+    \ 1);\n  }\n  .title {\n    letter-spacing: -0.4px;\n  }\n  ha-list-item-button {\n    letter-spacing:\
+    \ -0.2px;\n  }\n"

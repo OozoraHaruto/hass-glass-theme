@@ -85,9 +85,51 @@ def test_full_entries_have_cardmod_keys(themes):
     assert themes["Frosted Glass Dark"]["card-mod-theme"] == "Frosted Glass Dark"
 
 
-def test_frosted_uses_its_own_blur(themes):
+_CLEAR_ENTRIES = (
+    "Glass",
+    "Glass Light",
+    "Glass Dark",
+    "Liquid Glass",
+    "Liquid Glass Light",
+    "Liquid Glass Dark",
+)
+
+
+def test_clear_entries_keep_low_opacity_card_fills(themes):
+    assert _applied_mode(themes["Glass"], "light")["ha-card-background"] == (
+        "rgba(255, 255, 255, 0.14)"
+    )
+    assert _applied_mode(themes["Glass"], "dark")["ha-card-background"] == (
+        "rgba(90, 90, 94, 0.16)"
+    )
+    assert _applied_mode(themes["Liquid Glass"], "light")["ha-card-background"] == (
+        "rgba(255, 255, 255, 0.11)"
+    )
+    assert _applied_mode(themes["Liquid Glass"], "dark")["ha-card-background"] == (
+        "rgba(90, 90, 94, 0.13)"
+    )
+
+
+@pytest.mark.parametrize("name", _CLEAR_ENTRIES)
+def test_clear_entries_have_no_backdrop_filter_anywhere(themes, name):
+    for key, value in _flatten_entry(themes[name]):
+        assert "backdrop-filter" not in key, (name, key)
+        assert "backdrop-filter" not in str(value), (name, key, value)
+        assert "blur(" not in str(value), (name, key, value)
+
+
+def test_frosted_keeps_its_existing_blur(themes):
     assert "blur(40px)" in themes["Frosted Glass Dark"]["ha-card-backdrop-filter"]
-    assert "blur(20px)" in themes["Glass Dark"]["ha-card-backdrop-filter"]
+
+
+@pytest.mark.parametrize(
+    "name", ["Liquid Glass", "Liquid Glass Light", "Liquid Glass Dark"]
+)
+def test_current_liquid_entries_do_not_publish_refraction_variables(themes, name):
+    values = dict(_flatten_entry(themes[name]))
+    assert "ha-glass-refraction-backdrop" not in values
+    assert "ha-glass-refraction-scale" not in values
+    assert "ha-glass-refraction-edge" not in values
 
 
 def test_lite_entries_have_no_backdrop_filter_anywhere(themes):
@@ -148,13 +190,11 @@ def test_auto_entries_match_ha_real_merge_algorithm_against_the_flat_entries(the
 
 
 def test_liquid_glass_adds_three_entries_and_no_lite_variants():
-    """Lite strips backdrop-filter entirely, which is where refraction lives.
+    """The approved picker matrix uses Glass Lite as its sole opaque fallback.
 
-    A "Liquid Glass Lite" would be a card with no blur, no displacement, and
-    an opaque fill -- indistinguishable from "Glass Lite" but carrying a name
-    that promises the one thing it cannot do. So this material is the first
-    to opt out of the weight axis, and ``_entry_names`` has to model that
-    rather than assuming every material spans the full matrix.
+    Liquid Glass therefore opts out of the weight axis, and ``_entry_names``
+    has to model that rather than assuming every material spans the full
+    matrix.
     """
     liquid = [n for n in ENTRY_NAMES if n.startswith("Liquid Glass")]
     assert liquid == ["Liquid Glass", "Liquid Glass Light", "Liquid Glass Dark"]
@@ -163,26 +203,6 @@ def test_liquid_glass_adds_three_entries_and_no_lite_variants():
 
 def test_the_matrix_is_fifteen_entries():
     assert len(ENTRY_NAMES) == 15
-
-
-@pytest.mark.parametrize(
-    "name", ["Liquid Glass", "Liquid Glass Light", "Liquid Glass Dark"]
-)
-def test_liquid_entries_carry_the_refraction_backdrop(themes, name):
-    """The upgraded chain ships in the theme; the module only switches to it.
-
-    Putting the whole chain here rather than assembling it in JavaScript
-    means the module never has to know this material's blur radius or
-    luminance remap -- it reassigns one variable to another and every tuning
-    decision stays in tokens/.
-    """
-    entry = themes[name]
-    values = dict(entry)
-    for payload in entry.get("modes", {}).values():
-        values.update(payload)
-    upgraded = values["ha-glass-refraction-backdrop"]
-    assert upgraded.startswith("url(#glass-refraction) ")
-    assert "blur(" in upgraded
 
 
 def test_non_refractive_entries_have_no_refraction_variable(themes):

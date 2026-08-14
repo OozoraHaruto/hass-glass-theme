@@ -1,54 +1,26 @@
-# Refractive material: the one that actually bends light.
+# Clear material: the lowest-opacity fill with the strongest edge separation.
 #
-# Apple draws a hard line between *lensing* -- bending and concentrating
-# light -- and *blur*, which only scatters it. Every other material in this
-# repo can only scatter, because CSS gives no way to refract: `backdrop-filter`
-# has `blur()` but nothing that displaces a pixel. That limitation is the
-# reason tokens/glass.yaml leans on a bright specular rim instead. A rim
-# hotter than the body is the refraction-free *signal* for glass; this file
-# is the material that doesn't need the substitute.
-#
-# It gets there through an SVG `feDisplacementMap`, which a `backdrop-filter`
-# can only reach through a same-document `url(#id)` fragment -- and a theme is
-# a YAML variable map, so it cannot put that element in the page. The
-# `<filter>` ships in www/glass-refraction.js instead, and this is the only
-# material whose full appearance depends on a file outside themes/.
-#
-# Which forces one rule on every value below: **this material must be worth
-# using with the module absent.** Most installs will never add it, and for
-# them these numbers are the whole material. So `blur_px` sits at 18 -- just
-# under Glass, not near zero. A genuinely clear pane with nothing displacing
-# behind it is an unreadable card, not a transparent one; the refraction is
-# an upgrade layered onto a material that already stands up, never the thing
-# holding it up.
-#
-# What the lens does buy is tint. `fill_alpha_liquid` (tokens/modes/) sits
-# below `fill_alpha_glass` in both modes, because concentrating light at the
-# rim separates the surface from its backdrop where a flat material has to
-# spend opacity to do the same job.
+# Current generated entries do not publish backdrop blur or refraction
+# activation variables. The stronger rim and edge distinguish this material
+# while preserving more backdrop visibility than Glass.
 material:
   name: Liquid Glass
-  blur_px: 18
-  saturate_pct: 140
+  surface_backdrop: false
 
   # Hotter rim and a scaled-up specular edge, in that order of importance.
   # Both survive when the module is absent, which is the point: they are what
   # keeps this entry recognisably *not* Glass on the majority of installs.
   # `edge_scale` is the inverse of frosted-glass.yaml's reasoning -- a diffuse
-  # material wants less edge, a refractive one wants more.
+  # material wants less edge, while this clear material wants more.
   rim_alpha: 0.55
   edge_scale: 1.2
 
-  # Consumed by glassbuild/variables.py, which emits
-  # `--ha-glass-refraction-backdrop` for any material carrying this block.
-  # The gate is the block's *presence*, not the material's name, so nothing
-  # in the build matches on "liquid-glass" as a string.
+  # Compatibility metadata for www/glass-refraction.js. Current generated
+  # entries retain this structure but do not publish its activation variables.
   refraction:
     # Must match the `<filter id=...>` in www/glass-refraction.js. Nothing
-    # else connects the two files, and a mismatch is silent: an unresolved
-    # `url(#id)` invalidates the entire filter chain rather than just its own
-    # term, so the cards lose their blur as well. tests/test_refraction.py
-    # pins the pair together.
+    # else connects the two files, and a mismatch is silent.
+    # tests/test_refraction.py pins the pair together.
     filter_id: glass-refraction
 
     # `feDisplacementMap` scale, in px at the map's full deflection. Large

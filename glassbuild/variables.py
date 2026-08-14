@@ -189,9 +189,10 @@ def build_variables(
         variables["ha-glass-dropdown-surface"] = frosted_dropdown_fill
 
     if full.backdrop is not None:
-        # `light` shares the same lite-gating as `full` (see
-        # glassbuild/materials.py derive()): both are None together, so one
-        # conditional safely covers all seven keys below.
+        # Only backdrop-capable full materials reach this branch. Clear Glass,
+        # Liquid Glass, and every Lite entry omit all seven native backdrop
+        # variables. `light` shares the same capability gate as `full`, so both
+        # values are either present or None together.
         #
         # Scrims (--ha-dialog-scrim-backdrop-filter, --dialog-backdrop-filter,
         # --ha-bottom-sheet-scrim-backdrop-filter) deliberately get the
@@ -207,10 +208,10 @@ def build_variables(
 
         refraction = merged["material"].get("refraction")
         if refraction:
-            # An *alternative* chain, not a replacement: nothing in the theme
-            # reads this variable. www/glass-refraction.js repoints the four
-            # surface variables above at it once it has put the matching
-            # `<filter>` in the document, and leaves them alone otherwise.
+            # Compatibility metadata nested under this backdrop gate can only
+            # activate a backdrop-capable material. Current Liquid Glass is
+            # clear, so generated entries publish none of these three source
+            # variables; older YAML can still activate www/glass-refraction.js.
             #
             # Shipping the whole chain here rather than assembling it in
             # JavaScript keeps every tuning decision in tokens/ -- the module
