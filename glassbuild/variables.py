@@ -156,6 +156,8 @@ def build_variables(
         "icon-primary-color": palette["text_secondary"],
         "state-icon-color": palette["text_secondary"],
         "state-icon-hover-color": palette["accent"],
+        "state-active-color": palette["accent"],
+        "state-inactive-color": palette["text_secondary"],
         # ---- dense reading surfaces: opaque --------------------------------
         "table-row-background-color": opaque,
         "table-row-alternative-background-color": opaque,

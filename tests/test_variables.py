@@ -77,6 +77,13 @@ def test_core_palette_is_mapped():
     assert v["error-color"] == "#FF453A"
 
 
+def test_state_icons_use_distinct_active_and_inactive_colors():
+    v = _vars()
+    assert v["state-active-color"] == "#0A84FF"
+    assert v["state-inactive-color"] == "#EBEBF599"
+    assert v["state-active-color"] != v["state-inactive-color"]
+
+
 def test_code_font_family_is_monospace_and_distinct_from_body():
     v = _vars()
     assert v["ha-font-family-code"] == "ui-monospace, SFMono-Regular, monospace"
@@ -320,7 +327,7 @@ def test_frosted_glass_does_not_publish_a_dropdown_override(mode, lite):
     assert "ha-glass-dropdown-surface" not in variables
 
 
-EXPECTED_BASE_KEY_COUNT = 74
+EXPECTED_BASE_KEY_COUNT = 76
 EXPECTED_BACKDROP_FILTER_KEY_COUNT = 7
 EXPECTED_DROPDOWN_SURFACE_KEY_COUNT = 1
 
